@@ -84,6 +84,11 @@ LDIF file with the <A HREF="../../Net/LDAP/LDIF.html">Net::LDAP::LDIF</A> module
 <P>
 <HR>
 <H1><A NAME="constructor">CONSTRUCTOR</A></H1>
+<DL>
+<DT><STRONG><A NAME="item_new">new</A></STRONG><BR>
+<DD>
+Create a new entry object with the changetype set to <CODE>'add'</CODE>
+<P></P></DL>
 <P>
 <HR>
 <H1><A NAME="methods">METHODS</A></H1>
@@ -141,16 +146,45 @@ update will be sent back to the same server.</P>
 <P>The result will be an object of type <A HREF="../../Net/LDAP/Message.html">Net::LDAP::Message</A> as returned
 by the add, modify or delete method called on CLIENT.</P>
 <P></P>
-<DT><STRONG><A NAME="item_attributes">attributes</A></STRONG><BR>
+<DT><STRONG><A NAME="item_attributes">attributes ( [ OPTIONS ] )</A></STRONG><BR>
 <DD>
 Return a list of attributes that this entry has.
-<P></P>
-<DT><STRONG><A NAME="item_get">get ( ATTR )</A></STRONG><BR>
+<P>OPTIONS is a list of name/value pairs, valid options are :-</P>
+<DL>
+<DT><STRONG><A NAME="item_nooptions">nooptions</A></STRONG><BR>
+<DD>
+If TRUE, return a list of the attribute names excluding any options. For example for the entry
+<PRE>
+  name: Graham Barr
+  name;en-us: Bob
+  jpeg;binary: **binary data**</PRE>
+<P>the return list would be <CODE>( 'name', 'jpeg' )</CODE>.</P>
+<P></P></DL>
+<DT><STRONG><A NAME="item_get">get ( ATTR [, OPTIONS ] )</A></STRONG><BR>
 <DD>
 Get the values for the attribute ATTR. The result will be a reference
 to an array, if that attribute exists. If the attribute does not exist
 the <CODE>undef</CODE> will be returned.
-<P></P>
+<P>OPTIONS is a list of name/value pairs, valid options are :-</P>
+<DL>
+<DT><STRONG><A NAME="item_alloptions">alloptions</A></STRONG><BR>
+<DD>
+If TRUE then the result will be a hash reference. The keys of the hash
+will be the options and the hash value will be the values for those attributes.
+For example if an entry had
+<PRE>
+  name: Graham Barr
+  name;en-us: Bob</PRE>
+<P>Then a get for attribute ``name'' with alloptions set would return</P>
+<PRE>
+  {
+    ''       =&gt; [ 'Graham Barr' ],
+    ';en-us' =&gt; [ 'Bob' ]
+  }</PRE>
+<P></P></DL>
+<P><STRONG>NOTE</STRONG>: In the interest of performance the array references returned by <A HREF="#item_get"><CODE>get</CODE></A>
+are references to structures held inside the entry object. These values
+should <STRONG>not</STRONG> be modified directly.</P>
 <DT><STRONG><A NAME="item_changetype">changetype ( [ TYPE ] )</A></STRONG><BR>
 <DD>
 If called without arguments it returns the type of operation that would

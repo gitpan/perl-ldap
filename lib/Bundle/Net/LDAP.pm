@@ -25,6 +25,10 @@ URI
 
 URI::ldap
 
+IO::Socket::SSL
+
+XML::Parser
+
 Net::LDAP
 
 =head1 DESCRIPTION
@@ -37,7 +41,7 @@ Graham Barr
 
 =for html <hr>
 
-I<$Id: //depot/ldap/lib/Bundle/Net/LDAP.pm#2 $>
+I<$Id: //depot/ldap/lib/Bundle/Net/LDAP.pm#4 $>
 
 =cut
 

@@ -10,7 +10,11 @@ Net::LDAP::Util - Utility functions
 
 =head1 SYNOPSIS
 
-  use Net::LDAP::Util qw(ldap_error_text);
+  use Net::LDAP::Util qw(ldap_error_text ldap_error_name);
+
+  $mesg = $ldap->search( .... );
+
+  die "Error ",ldap_error_name($mesg->code) if $mesg->code;
 
 =head1 DESCRIPTION
 

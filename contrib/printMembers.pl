@@ -230,9 +230,64 @@ sub printDynamicMembers
 
 
 
+=head1 NAME
+
+printMembers.pl
 
 
+=head1 DESCRIPTION
 
+Prints out the members of a given group, including members of groups that are also members of the given group.
 
+Defaults to printing out members by DN, but you can specify other attributes for display
 
+=head1 USAGE
 
+perl printMembers.pl -n "Accounting Managers"
+
+  Members of group: cn=Accounting Managers,ou=groups,o=airius.com
+  uid=scarter, ou=People, o=airius.com
+  uid=tmorris, ou=People, o=airius.com
+  cn=HR Managers,ou=groups,o=airius.com
+
+  Members of group: cn=HR Managers,ou=groups,o=airius.com
+  uid=kvaughan, ou=People, o=airius.com
+  uid=cschmith, ou=People, o=airius.com
+  cn=PD Managers,ou=groups,o=airius.com
+
+  Members of group: cn=PD Managers,ou=groups,o=airius.com
+  uid=kwinters, ou=People, o=airius.com
+  uid=trigden, ou=People, o=airius.com
+
+Here's an example of the same group but instead print the cn attribute
+of each entry:
+
+  Members of group: cn=Accounting Managers,ou=groups,o=airius.com
+  Sam Carter
+  Ted Morris
+  HR Managers
+
+  Members of group: cn=HR Managers,ou=groups,o=airius.com
+  Kirsten Vaughan
+  Chris Schmith
+  PD Managers
+
+  Members of group: cn=PD Managers,ou=groups,o=airius.com
+  Kelly Winters
+  Torrey Rigden
+
+  And same group but with the mail attribute:
+
+  Members of group: cn=Accounting Managers,ou=groups,o=airius.com
+  scarter@airius.com
+  tmorris@airius.com
+
+  Members of group: cn=HR Managers,ou=groups,o=airius.com
+  kvaughan@airius.com
+  cschmith@airius.com
+
+  Members of group: cn=PD Managers,ou=groups,o=airius.com
+  kwinters@airius.com
+  trigden@airius.com
+
+=cut

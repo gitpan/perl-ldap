@@ -1,0 +1,121 @@
+<HTML>
+<HEAD>
+<TITLE>Net::LDAP::DSML -- A DSML Writer and Reader for Net::LDAP</TITLE>
+<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+<!--
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#see also">SEE ALSO</A></LI>
+	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+</UL>
+-->
+<!-- INDEX END -->
+
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>Net::LDAP::DSML -- A DSML Writer and Reader for Net::LDAP</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+ use Net::LDAP;
+ use Net::LDAP::DSML;
+ use IO::File;</PRE>
+<PRE>
+ my $server = &quot;localhost&quot;;
+ my $file = &quot;testdsml.xml&quot;;
+ my $ldap = Net::LDAP-&gt;new($server);
+</PRE>
+<PRE>
+
+ $ldap-&gt;bind();</PRE>
+<PRE>
+ my $dsml = Net::LDAP::DSML-&gt;new();</PRE>
+<PRE>
+ my $file = &quot;testdsml.xml&quot;;</PRE>
+<PRE>
+ my $io = IO::File-&gt;new($file,&quot;w&quot;) or die (&quot;failed to open $file as filehandle.$!\n&quot;);
+ $dsml-&gt;open($io) or die (&quot;DSML problems opening $file.$!\n&quot;); ;</PRE>
+<PRE>
+ #or</PRE>
+<PRE>
+ open (IO,&quot;&gt;$file&quot;) or die(&quot;failed to open $file.$!&quot;);</PRE>
+<PRE>
+ $dsml-&gt;open(*IO) or die (&quot;DSML problems opening $file.$!\n&quot;);</PRE>
+<PRE>
+  my $mesg = $ldap-&gt;search(
+                           base     =&gt; 'o=airius.com',
+                           scope    =&gt; 'sub',
+                           filter   =&gt; 'ou=accounting',
+                           callback =&gt; sub {
+                                         my ($mesg,$entry) =@_;
+                                         $dsml-&gt;write($entry) if (ref $entry eq 'Net::LDAP::Entry');
+                                       }
+                            );</PRE>
+<PRE>
+ die (&quot;search failed with &quot;,$mesg-&gt;code(),&quot;\n&quot;) if $mesg-&gt;code();</PRE>
+<PRE>
+ $dsml-&gt;write($schema);
+ $dsml-&gt;finish();</PRE>
+<PRE>
+ print &quot;Finished printing DSML\n&quot;;
+ print &quot;Starting to process DSML\n&quot;;</PRE>
+<PRE>
+ $dsml = new Net::LDAP::DSML();
+ $dsml-&gt;process($file, entry =&gt; \&amp;processEntry);</PRE>
+<PRE>
+ #future when schema support is available will be
+ #$dsml-&gt;process($file, entry =&gt; \&amp;processEntry, schema =&gt; \&amp;processSchema);</PRE>
+<PRE>
+ sub processEntry {
+   my $entry = shift;
+</PRE>
+<PRE>
+
+   $entry-&gt;dump();
+ }</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P>Directory Service Markup Language (DSML) is the XML standard for
+representing directory service information in XML.</P>
+<P>At the moment this module only reads and writes DSML entry entities. It
+cannot process any schema entities because schema entities are processed
+differently than elements.</P>
+<P>Eventually this module will be a full level 2 consumer and producer
+enabling you to give you full DSML conformance.</P>
+<P>The module uses callbacks to improve performance (at least the appearance
+of improving performance ;) and to reduce the amount of memory required to
+parse large DSML files. Every time a single entry or schema is processed
+we pass the Net::LDAP object (either an Entry or Schema object) to the
+callback routine.</P>
+<P>
+<HR>
+<H1><A NAME="author">AUTHOR</A></H1>
+<P>Mark Wilcox <A HREF="mailto:mark@mwjilcox.com">mark@mwjilcox.com</A></P>
+<P>
+<HR>
+<H1><A NAME="see also">SEE ALSO</A></H1>
+<P><A HREF="../../Net/LDAP.html">Net::LDAP</A>,
+<A HREF="../../XML/Parser.html">XML::Parser</A></P>
+<P>
+<HR>
+<H1><A NAME="copyright">COPYRIGHT</A></H1>
+<P>Copyright (c) 2000 Graham Barr and Mark Wilcox. All rights reserved. This program is
+free software; you can redistribute it and/or modify it under the same
+terms as Perl itself.</P>
+
+</BODY>
+
+</HTML>

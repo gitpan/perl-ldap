@@ -41,11 +41,15 @@ http://info.internet.isi.edu/in-notes/rfc/files/rfc2255.txt
 
 http://info.internet.isi.edu/in-notes/rfc/files/rfc2256.txt
 
+=item RFC-2696 - LDAP Control Extension for Simple Paged Results Manipulation
+
+http://info.internet.isi.edu/in-notes/rfc/files/rfc2696.txt
+
 =back
 
 =for html <hr>
 
-I<$Id: //depot/ldap/lib/Net/LDAP/RFC.pod#1 $>
+I<$Id: //depot/ldap/lib/Net/LDAP/RFC.pod#2 $>
 
 =cut
 

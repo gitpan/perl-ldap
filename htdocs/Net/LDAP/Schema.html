@@ -43,7 +43,8 @@
  #
  # Load from LDIF
  #
- $schema = Net::LDAP-&gt;new( &quot;schema.ldif&quot; );</PRE>
+ $schema = Net::LDAP-&gt;new;
+ $schema-&gt;parse( &quot;schema.ldif&quot; ) or die $schema-&gt;error;</PRE>
 <P>
 <HR>
 <H1><A NAME="description">DESCRIPTION</A></H1>
@@ -57,6 +58,19 @@ may be an object class, attribute or syntax) then a case-insensitive name
 or raw oid (object identifier, in dotted numeric string form, e.g. 2.5.4.0)
 may be supplied.</P>
 <DL>
+<DT><STRONG><A NAME="item_parse">parse</A></STRONG><BR>
+<DD>
+Takes a single argument which can be any of, A message objected returned from
+an LDAP search, a Net::LDAP::Entry object or the name of a file containing
+an LDIF form of the schema.
+<P>If the argument is a message result from a search, Net::LDAP::Schema will parse
+the schema from the first entry returned.</P>
+<P>Returns true on success and <CODE>undef</CODE> on error.</P>
+<P></P>
+<DT><STRONG><A NAME="item_error">error</A></STRONG><BR>
+<DD>
+Returns the last error encountered.
+<P></P>
 <DT><STRONG><A NAME="item_attributes">attributes</A></STRONG><BR>
 <DD>
 With no arguments, returns a list of the names all attributes in the schema.
@@ -97,6 +111,25 @@ if the syntax is inherited).
 <PRE>
   $name_syntax = $schema-&gt;syntax( &quot;commonName&quot; );</PRE>
 <P></P>
+<DT><STRONG><A NAME="item_items">items</A></STRONG><BR>
+<DD>
+Given an argument which is the name or oid of a known object class or 
+attribute, returns the items available for this attribute or object class.
+The returned item name may have an undefined value.
+<PRE>
+  @items = $schema-&gt;items( $oid );</PRE>
+<P>Return value is an array or array reference depending on calling context.</P>
+<P></P>
+<DT><STRONG><A NAME="item_item">item</A></STRONG><BR>
+<DD>
+Given two arguments, first of which is the name or oid of a known
+object class or attribute and second of which is the name of the
+item, returns the item's data value.  The item's value may be 
+undefined.
+<PRE>
+  @item = $schema-&gt;item( $oid, &quot;desc&quot; );</PRE>
+<P>Return value is an array or a value depending on calling context.</P>
+<P></P>
 <DT><STRONG><A NAME="item_must">must</A></STRONG><BR>
 <DD>
 Given an argument which is the name or oid of a known object class, returns
@@ -130,6 +163,21 @@ the appropriate type.
   die( &quot;Not an objectclass&quot; ) unless $oid;
   # Yes...so we can do this
   @must = $schema-&gt;must( $oid );</PRE>
+<P></P>
+<DT><STRONG><A NAME="item_dump">dump</A></STRONG><BR>
+<DD>
+Given an argument which is the name of a file, and the file or
+directory has write permission, will dump the raw schema 
+information to a file.  If no argument is given the raw schema 
+information is dumped to standard out.
+<PRE>
+  $result = $schema-&gt;dump( &quot;./schema.dump&quot; );</PRE>
+<PRE>
+  or</PRE>
+<PRE>
+  $result = $schema-&gt;dump();</PRE>
+<P>If no schema data is returned from directory server, the method
+will return undefined.  Otherwise a value of 1 is always returned.</P>
 <P></P></DL>
 <P>
 <HR>

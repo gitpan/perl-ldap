@@ -1,0 +1,156 @@
+<HTML>
+<HEAD>
+<TITLE>Net::LDAPS - use LDAP over an SSL connection</TITLE>
+<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+<!--
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#constructor">CONSTRUCTOR</A></LI>
+	<LI><A HREF="#additional methods">ADDITIONAL METHODS</A></LI>
+	<LI><A HREF="#see also">SEE ALSO</A></LI>
+	<LI><A HREF="#bugs">BUGS</A></LI>
+	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+</UL>
+-->
+<!-- INDEX END -->
+
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>Net::LDAPS - use LDAP over an SSL connection</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+ use Net::LDAPS;</PRE>
+<PRE>
+ $ldaps = new Net::LDAPS('myhost.example.com',
+                         port =&gt; '10000',
+                         verify =&gt; 'require',
+                         capath =&gt; '/usr/local/cacerts/');</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P>Communicate using the LDAP protocol to a directory server using a
+potentially encrypted (SSL) network connection.</P>
+<P>This class is a subclass of Net::LDAP so all the normal Net::LDAP
+methods can be used with a Net::LDAPS object; see the documentation
+for Net::LDAP to find out how to query a directory server using the
+LDAP protocol.</P>
+<P>
+<HR>
+<H1><A NAME="constructor">CONSTRUCTOR</A></H1>
+<DL>
+<DT><STRONG><A NAME="item_new">new ( HOST [, OPTIONS ] )</A></STRONG><BR>
+<DD>
+Create a new connection. HOST is the hostname to contact. OPTIONS is a
+number of key/value pairs - additional keys to those understood by
+Net::LDAP::new are:
+<DL>
+<DT><STRONG><A NAME="item_verify">verify</A></STRONG><BR>
+<DD>
+How to verify the server's certificate, either 'none' (the server may
+provide a cert but don't verify it - this may mean you are be
+connected to the wrong server), 'optional' (verify if the server
+offers a cert), or 'require' (the server must provide a cert, and it
+must be valid.) If you set verify to optional or require, you must
+also set either cafile or capath.
+<P></P>
+<DT><STRONG><A NAME="item_ciphers">ciphers</A></STRONG><BR>
+<DD>
+Specify which subset of cipher suites are permissible for this
+connection, using the standard OpenSSL string format. The default value
+for ciphers is 'ALL', which permits all ciphers.
+<P></P>
+<DT><STRONG><A NAME="item_clientcert">clientcert</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_clientkey">clientkey</A></STRONG><BR>
+<DD>
+If you want to use the client to offer a certificate to the server for
+SSL authentication (which is not the same as for the LDAP Bind
+operation) then set clientcert to the user's certificate file, and
+clientkey to the user's private key file.
+<P></P>
+<DT><STRONG><A NAME="item_capath">capath</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_cafile">cafile</A></STRONG><BR>
+<DD>
+When verifying the server's certificate, either set capath to the
+pathname of the directory containing CA certificates, or set cafile to
+the filename containing the certificate of the CA who signed the
+server's certificate.
+<P>The directory in 'capath' must contain certificates named using the
+hash value of themselves. To generate these names, use OpenSSL thusly:</P>
+<PRE>
+    ln -s cacert.pem `openssl x509 -hash -nout &lt; cacert.pem`.0</PRE>
+<P>(assuming that the certificate of the CA is in cacert.pem.)</P>
+<P></P></DL>
+</DL>
+<P>
+<HR>
+<H1><A NAME="additional methods">ADDITIONAL METHODS</A></H1>
+<DL>
+<DT><STRONG><A NAME="item_cipher">cipher</A></STRONG><BR>
+<DD>
+Returns the cipher mode being used by the connection, in the string
+format used by OpenSSL.
+<P></P>
+<DT><STRONG><A NAME="item_certificate">certificate</A></STRONG><BR>
+<DD>
+Returns an X509_Certificate object containing the server's
+certificate. See the IO::Socket::SSL documentation for information
+about this class.
+<P>For example, to get the subject name (in a peculiar OpenSSL-specific
+format, different from RFC 1779 and RFC 2253) from the server's
+certificate, do this:</P>
+<PRE>
+    print &quot;Subject DN: &quot; . $ldaps-&gt;certificate-&gt;subject_name . &quot;\n&quot;;</PRE>
+<P></P></DL>
+<P>
+<HR>
+<H1><A NAME="see also">SEE ALSO</A></H1>
+<P><A HREF="../Net/LDAP.html">Net::LDAP</A>,
+<A HREF="../IO/Socket/SSL.html">IO::Socket::SSL</A></P>
+<P>
+<HR>
+<H1><A NAME="bugs">BUGS</A></H1>
+<P>Several apparently bogus warnings are emitted when initializing the
+two underlying modules used by Net::LDAPS, namely IO::Socket::SSL and
+Net::SSLeay. To avoid these, don't initialize via 'use Net::LDAPS' and
+instead try initializing Net::LDAPS like this:</P>
+<PRE>
+    BEGIN {
+        # Turn off all warnings etc whilst initializing
+        # IO::Socket::SSL and Net::SSLeay.
+        local $^W = 0;
+        no strict;
+        require Net::SSLeay;
+        # The /dev/urandom is a device on Linux that returns
+        # random data.
+        Net::SSLeay::randomize('/dev/urandom');
+        require Net::LDAPS;
+    }</PRE>
+<P>
+<HR>
+<H1><A NAME="author">AUTHOR</A></H1>
+<P>Chris Ridd &lt;<A HREF="mailto:chris.ridd@messagingdirect.com">chris.ridd@messagingdirect.com</A>&gt;</P>
+<P>
+<HR>
+<H1><A NAME="copyright">COPYRIGHT</A></H1>
+<P>Copyright (c) 2000, Chris Ridd and Graham Barr. All rights reserved. This
+library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.</P>
+
+</BODY>
+
+</HTML>

@@ -14,14 +14,14 @@ hand: left
 attribute: uid 
 attribute: cn 
 attribute: sn 
-attribute: rfc822Mailbox 
+attribute: rfc822mailbox 
 attribute: uidNumber 
 attribute: gidNumber 
-attribute: telephoneNumber 
-attribute: facsimileTelephoneNumber 
-attribute: givenName 
-attribute: fullName 
-attribute: firstName
+attribute: telephonenumber 
+attribute: facsimiletelephonenumber 
+attribute: givenname 
+attribute: fullname 
+attribute: firstname
 #
 # Set up the Directory Servers you want listed on
 # the Select Directory Server button.

@@ -48,25 +48,29 @@ sub check_module {
   $ok;
 }
 
-print "\nChecking for installed modules\n\n";
+print "\nChecking for OPTIONAL modules\n\n";
 
-check_module('Convert::ASN1',0.03) or print <<"EDQ","\n";
-Convert::ASN1 version 0.03 or later is essential for perl-ldap
-EDQ
-
-check_module('URI',1.02) && check_module('URI::ldap',1.10) or print <<"EDQ","\n";
-URI::ldap is needed if you want to parse LDAP URLs
+check_module('URI',1.08) && check_module('URI::ldap',1.10) or print <<"EDQ","\n";
+The URI::ldap module is needed ONLY IF you want to parse LDAP URLs
 EDQ
 
 check_module('Digest::MD5') or print <<"EDQ","\n";
-The Digest::MD5 module is needed if using the CRAM-MD5 SASL authentication
+The Digest::MD5 module is needed ONLY IF intend to use CRAM-MD5 SASL authentication
+EDQ
+
+check_module('IO::Socket::SSL') or print <<"EDQ","\n";
+The IO::Socket::SSL module is needed ONLY IF you intend to use LDAPS
+EDQ
+
+check_module('XML::Parser') or print <<"EDQ","\n";
+The XML::Parser module is needed ONLY IF you intend to read/write DSML files
 EDQ
 
 print "\n",<<"EDQ","\n" if $missing;
 ****************************************************************************
-You are missing some modules that may be needed for the modules in perl-ldap
-to work correctly. Read the above messages and download any required
-modules from http://www.perl.com/CPAN
+You are missing some modules that MAY be needed for some of the features
+in perl-ldap to work correctly. Read the above messages and download
+any required modules from http://www.perl.com/CPAN
 ****************************************************************************
 EDQ
 
@@ -89,6 +93,7 @@ WriteMakefile(
   EXE_FILES    => $opt_s ? [ values %PL_FILES ] : [],
   PL_FILES     => \%PL_FILES,
   clean        => {FILES => 'temp'},
+  PREREQ_PM    => { 'Convert::ASN1' => 0.07 },
   @ppd,
 );
 

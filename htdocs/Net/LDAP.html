@@ -229,8 +229,10 @@ is assumed.</P>
 <DL>
 <DT><STRONG><A NAME="item_noauth">noauth</A></STRONG><BR>
 <DD>
+<DT><STRONG><A NAME="item_anonymous">anonymous</A></STRONG><BR>
+<DD>
 Bind without any password, the value passed with this option is ignored. This
-is the default if no password option is given.
+is the default if no arguments are given.
 <P></P>
 <DT><STRONG><A NAME="item_password">password</A></STRONG><BR>
 <DD>
@@ -423,51 +425,97 @@ See <A HREF="#callbacks">CALLBACKS</A> below.
  );</PRE>
 <DT><STRONG><A NAME="item_search">search ( OPTIONS )</A></STRONG><BR>
 <DD>
-The search method will return an object of class <A HREF="../Net/LDAP/Search.html">Net::LDAP::Search</A>.
+Request that a search be performed.  This can be used to read attributes
+from a single entry, from entries immediately below a particular entry,
+or a whole subtree of entries.
+<P>The result is an object of class <A HREF="../Net/LDAP/Search.html">Net::LDAP::Search</A>.</P>
 <DL>
 <DT><STRONG><A NAME="item_base">base</A></STRONG><BR>
 <DD>
-The base DN to start the search.
+The DN that is the base object entry relative to which the search is
+to be performed.
 <P></P>
 <DT><STRONG><A NAME="item_scope">scope</A></STRONG><BR>
 <DD>
-The scope for the search. This can be one of <STRONG>base</STRONG>, <STRONG>one</STRONG> or <STRONG>sub</STRONG> or
-it can be the numeric value for each of these 0,1,2 respectively. The default
-is <STRONG>sub</STRONG>.
+By default the search is performed on the whole tree below
+the specified base object. This may be chaned by specifying a <A HREF="#item_scope"><CODE>scope</CODE></A>
+parameter with one of the following values.
+<DL>
+<DT><STRONG>base</STRONG><BR>
+<DD>
+Search only the base object.
 <P></P>
+<DT><STRONG><A NAME="item_one">one</A></STRONG><BR>
+<DD>
+Search the entries immediately below the base object.
+<P></P>
+<DT><STRONG><A NAME="item_sub">sub</A></STRONG><BR>
+<DD>
+Search the whole tree below the base object. This is the default.
+<P></P></DL>
 <DT><STRONG><A NAME="item_deref">deref</A></STRONG><BR>
 <DD>
-What to do when a reference is found. This value can be one of <STRONG>never</STRONG>,
-<STRONG>search</STRONG>, <STRONG>find</STRONG> or <STRONG>always</STRONG>. Or it can be the numeric value for each
-of these. The default is <STRONG>find</STRONG>.
+By default aliases are
+dereferenced to locate the base object for the search, but not when
+searching subordinates of the base object. This may be changed by
+specifying a <A HREF="#item_deref"><CODE>deref</CODE></A> parameter with one of the following values.
+<DL>
+<DT><STRONG><A NAME="item_never">never</A></STRONG><BR>
+<DD>
+Do not dereference aliases in searching
+or in locating the base object of the search.
 <P></P>
+<DT><STRONG>search</STRONG><BR>
+<DD>
+Dereference aliases in subordinates of the base object in searching,
+but not in locating the base object of the search.
+<P></P>
+<DT><STRONG><A NAME="item_find">find</A></STRONG><BR>
+<DD>
+Dereference aliases in locating the base object of the search, but not
+when searching subordinates of the base object. This is the default.
+<P></P>
+<DT><STRONG><A NAME="item_always">always</A></STRONG><BR>
+<DD>
+Dereference aliases both in searching and in locating the base object
+of the search.
+<P></P></DL>
 <DT><STRONG><A NAME="item_sizelimit">sizelimit</A></STRONG><BR>
 <DD>
-Set the size limit for the response. zero means no limit. The default is
-no limit.
+A sizelimit that restricts the maximum number of entries to be returned
+as a result of the search. A value of 0, and the default, means that
+no restriction is requested.  Servers may enforce a maximum number of
+entries to return.
 <P></P>
 <DT><STRONG><A NAME="item_timelimit">timelimit</A></STRONG><BR>
 <DD>
-Set the time limit for the response. zero means no limit. The default is
-no limit.
+A timelimit that restricts the maximum time (in seconds) allowed for
+a search. A value of 0, and the default, means that no timelimit will
+be requested.
 <P></P>
 <DT><STRONG><A NAME="item_typesonly">typesonly</A></STRONG><BR>
 <DD>
-If <EM>true</EM> then only the attribute type will be returned. Default is <EM>false</EM>.
+An indicator as to whether search results should contain both attribute
+types and values, or just attribute types.  Setting this parameter to
+a <EM>true</EM> value causes only attribute types (no values) to be returned.
+Setting this field to a <EM>false</EM> causes both attribute types and values
+to be returned. The default is to return both attribute types and values.
 <P></P>
 <DT><STRONG><A NAME="item_filter">filter</A></STRONG><BR>
 <DD>
-The filter to use for the search. This may be a string or a &lt;Net::LDAP::Filter&gt;
-object.
+A filter that defines the conditions an entry in the directory must meet
+in order for it to be returned by the search. This may be a string or a
+<A HREF="../Net/LDAP/Filter.html">Net::LDAP::Filter</A> object. See <A HREF="../Net/LDAP/Filter.html">Net::LDAP::Filter</A> for a defintion of
+the filter format.
 <P></P>
 <DT><STRONG>attrs</STRONG><BR>
 <DD>
-A reference to a list of attributes to be returned from the
-server. If not specified, then the server will return the
-attributes that are specified as accessible by default given
-your bind credentials.
-<P>Certain additional attributes such as ``createtimestamp'' and
-other operational attributes may also be available for the asking:</P>
+A reference to a list of attributes to be returned for each entry that
+matches the search filter.
+<P>If not specified, then the server will return the attributes that are
+specified as accessible by default given your bind credentials.</P>
+<P>Certain additional attributes such as ``createtimestamp'' and other
+operational attributes may also be available for the asking:</P>
 <PRE>
   $ldap-&gt;search( ... , attrs =&gt; ['createtimestamp'] , ... );</PRE>
 <P>To retreive the default attributes and additional ones, use '*'.</P>

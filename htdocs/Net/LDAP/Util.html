@@ -29,7 +29,11 @@
 <HR>
 <H1><A NAME="synopsis">SYNOPSIS</A></H1>
 <PRE>
-  use Net::LDAP::Util qw(ldap_error_text);</PRE>
+  use Net::LDAP::Util qw(ldap_error_text ldap_error_name);</PRE>
+<PRE>
+  $mesg = $ldap-&gt;search( .... );</PRE>
+<PRE>
+  die &quot;Error &quot;,ldap_error_name($mesg-&gt;code) if $mesg-&gt;code;</PRE>
 <P>
 <HR>
 <H1><A NAME="description">DESCRIPTION</A></H1>

@@ -33,7 +33,8 @@
 <H1><A NAME="synopsis">SYNOPSIS</A></H1>
 <PRE>
  use Net::LDAP::Control::Sort;
- use Net::LDAP::Constant qw( LDAP_CONTROL_SORTRESULT );</PRE>
+ use Net::LDAP::Constant qw(LDAP_CONTROL_SORTRESULT);
+ use Net::LDAP::Util qw(ldap_error_name);</PRE>
 <PRE>
  $sort = Net::LDAP::Control::Sort-&gt;new(
    order =&gt; &quot;cn -age&quot;
@@ -43,7 +44,20 @@
 <PRE>
  ($resp) = $mesg-&gt;control( LDAP_CONTROL_SORTRESULT );</PRE>
 <PRE>
- print &quot;Results are sorted\n&quot; if $resp and !$resp-&gt;result;</PRE>
+ if ($resp) {
+   if ($resp-&gt;result) {
+     my $attr = $resp-&gt;attr;
+     print &quot;Problem sorting, &quot;,ldap_error_name($resp-&gt;result);
+     print &quot; ($attr)&quot; if $attr;
+     print &quot;\n&quot;;
+   }
+   else {
+     print &quot;Results are sorted\n&quot;;
+   }
+ }
+ else {
+   print &quot;Server does not support sorting\n&quot;;
+ }</PRE>
 <P>
 <HR>
 <H1><A NAME="description">DESCRIPTION</A></H1>
@@ -51,31 +65,33 @@
 It provides a class for manipulating the LDAP sort request control <CODE>1.2.840.113556.1.4.474</CODE></P>
 <P>A sort result control will be returned by the server in response to a search with a sort
 control. If a sort result control is not returned then the user may assume that the
-server does not support sorting and the resutls are not sorted.</P>
+server does not support sorting and the results are not sorted.</P>
 <P>
 <HR>
 <H1><A NAME="constructor arguments">CONSTRUCTOR ARGUMENTS</A></H1>
 <DL>
-<DT><STRONG><A NAME="item_result">result</A></STRONG><BR>
-<DD>
 <DT><STRONG><A NAME="item_attr">attr</A></STRONG><BR>
 <DD>
-</DL>
+If <A HREF="#item_result"><CODE>result</CODE></A> indicates that there was a problem with sorting and that problem was
+due to one of the attributes specified in the sort control. <A HREF="#item_attr"><CODE>attr</CODE></A> is set to
+the name of the attribute causing the problem.
+<P></P>
+<DT><STRONG><A NAME="item_result">result</A></STRONG><BR>
+<DD>
+This is the result code that describes if the sort operation was sucessful. If will
+be one of the result codes describes below.
+<P></P></DL>
 <P>
 <HR>
 <H1><A NAME="methods">METHODS</A></H1>
-<P>Net::LDAP::Control::SortResult provides the following methods in addition to
-those defined by <A HREF="../../../Net/LDAP/Control.html">Net::LDAP::Control</A></P>
-<DL>
-<DT><STRONG><A NAME="item_result_%5B_RESULT_%5D">result [ RESULT ]</A></STRONG><BR>
-<DD>
-<DT><STRONG><A NAME="item_attr_%5B_ATTR_%5D">attr [ ATTR ]</A></STRONG><BR>
-<DD>
-</DL>
+<P>As with <A HREF="../../../Net/LDAP/Control.html">Net::LDAP::Control</A> each constructor argument
+described above is also avaliable as a method on the object which will
+return the current value for the attribute if called without an argument,
+and set a new value for the attribute if called with an argument.</P>
 <P>
 <HR>
 <H1><A NAME="result codes">RESULT CODES</A></H1>
-<P>Possible results from a sort request are listed below. See <A HREF="../../../Net/LDAP/Constant.html">the Net::LDAP::Constant manpage</A> for
+<P>Possible results from a sort request are listed below. See <A HREF="../../../Net/LDAP/Constant.html">Net::LDAP::Constant</A> for
 a definition of each.</P>
 <DL>
 <DT><STRONG><A NAME="item_LDAP_SUCCESS">LDAP_SUCCESS</A></STRONG><BR>
@@ -119,7 +135,7 @@ a definition of each.</P>
 <P>Copyright (c) 1999-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.</P>
-<hr><P><EM>$Id: //depot/ldap/lib/Net/LDAP/Control/SortResult.pm#3 $</EM></P>
+<hr><P><EM>$Id: //depot/ldap/lib/Net/LDAP/Control/SortResult.pm#5 $</EM></P>
 
 </BODY>
 

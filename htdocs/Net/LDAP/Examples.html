@@ -29,6 +29,7 @@
 		<LI><A HREF="#unbind">UNBIND</A></LI>
 	</UL>
 
+	<LI><A HREF="#ldap schema retrieval">LDAP SCHEMA RETRIEVAL</A></LI>
 	<LI><A HREF="#bugs">BUGS</A></LI>
 	<LI><A HREF="#author (of this document)">AUTHOR  (of this document)</A></LI>
 	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
@@ -439,6 +440,90 @@ own implementation.</P>
 <H2><A NAME="unbind">UNBIND</A></H2>
 <PRE>
     $ldap-&gt;unbind;</PRE>
+<P>
+<HR>
+<H1><A NAME="ldap schema retrieval">LDAP SCHEMA RETRIEVAL</A></H1>
+<P>The following code snippet shows how to retrieve schema information.</P>
+<P>The first procedure is to initialize a new LDAP object using the
+same procedures as listed at the beginning of this document.</P>
+<P>The second procedure is to bind to your directory server.  Some 
+servers may require authentication to retrieve the schema from the 
+directory server.  This procedure is listed at the beginning of 
+this document too.</P>
+<P>After a successful bind you are ready to retrieve the schema 
+information.  You do this by initializing a schema object.</P>
+<PRE>
+ $schema = $ldap-&gt;schema();</PRE>
+<P>In this case Net::LDAP will attempt to determine the dn under which
+the schema can be found. First it will look for the attribute
+<CODE>subschemasubentry</CODE> in the root DSE. If that cannot be found then
+it will default to the assumption of <CODE>cn=schema</CODE></P>
+<P>Alternatively you can specify the dn where the schema is to be found
+with</P>
+<PRE>
+ $schema = $ldap-&gt;schema(dn =&gt; $dn);</PRE>
+<P>Once we have a dn to search for, Net::LDAP will fetch the schema entry with</P>
+<PRE>
+  $mesg = $self-&gt;search(
+    base   =&gt; $dn,
+    scope  =&gt; 'base',
+    filter =&gt; '(objectClass=*)',
+  );</PRE>
+<P>Once the schema object has been initialized, schema methods 
+are used to retrieve the data.  There are a number of ways this
+can be done.  Information on the schema methods can be found 
+in the Net::LDAP::Schema pod documentation.</P>
+<P>The following is a code snippet showing how to get and display 
+information about returned attributes.</P>
+<PRE>
+  #
+  # Get the attributes
+  #</PRE>
+<PRE>
+  @attributes = $schema-&gt;attributes();
+  #
+  # Display the attributes
+  #</PRE>
+<PRE>
+  foreach ( @attributes)
+  {
+        print &quot;attributeType\n&quot;;
+        #
+        # Get the various items associated with
+        # this attribute.
+        #
+        @attribute_items = $schema-&gt;items( &quot;$oid&quot; );
+        #
+        # Read returned item names and display their associated data.
+        #
+        foreach $value ( @attribute_items )
+        {
+           # We know we are dealing with an attribute, ignore type.
+           next if ( $value eq 'type');  # Type  holds oc or at 
+           #
+           # Read the data for this item of this oid.
+           #
+           @item = $schema-&gt;item( $oid, $value );
+           #
+           # Some item names have no data, the name itself is data.
+           # This type of item has 1 as data.
+           #
+           if ( defined(@item) &amp;&amp; $item[0] == 1 )
+           {
+           print &quot;\t$value\n&quot;;
+           next;
+           }
+           if ( defined(@item) &amp;&amp; $#item &gt;= 0 )
+           {
+           print &quot;\t$value:  @item\n&quot;;
+           }</PRE>
+<PRE>
+        }
+  }</PRE>
+<P>The process is the basically the same for getting objectClass 
+information.  Where schema-&gt;<CODE>attributes()</CODE> is used, substitute 
+schema-&gt;objectclasses().  From that point on the process is
+the same for both objectClasses and attributes.</P>
 <P>
 <HR>
 <H1><A NAME="bugs">BUGS</A></H1>

@@ -56,29 +56,31 @@ include a sort result control. This control is handled by <A HREF="../../../Net/
 <DL>
 <DT><STRONG><A NAME="item_order">order</A></STRONG><BR>
 <DD>
-<A HREF="#item_order"><CODE>order</CODE></A> may be a string or a reference to an array. If it is a string it is split
-on whitespace, otherwise the contents of the array is used.
-<P>Each element in the array specifies a sorting order as follows</P>
+A string which defines how entries may be sorted. It consists of
+multiple directives, spearated by whitespace. Each directive describes how
+to sort entries using a single attribute. If two entries have identical
+attributes, then the next directive in the list is used.
+<P>Each directive specifies a sorting order as follows</P>
 <PRE>
   -attributeType:orderingRule</PRE>
 <P>The leading <CODE>-</CODE> is optional, and if present indicates that the sorting order should
-be reversed. attributeType is the attribute name to sort by. orderingRule is optional and
-indicates the rule to use for the sort and should be valid for the given attributeType.</P>
+be reversed. <CODE>attributeType</CODE> is the attribute name to sort by. <CODE>orderingRule</CODE> is optional and
+indicates the rule to use for the sort and should be valid for the given <CODE>attributeType</CODE>.</P>
 <P>Any one attributeType should only appear once in the sorting list.</P>
+<P><STRONG>Examples</STRONG></P>
+<PRE>
+  &quot;cn&quot;         sort by cn using the default ordering rule for the cn attribute
+  &quot;-cn&quot;        sort by cn using the reverse of the default ordering rule
+  &quot;age cn&quot;     sort by age first, then by cn using the default ordering rules
+  &quot;cn:1.2.3.4&quot; sort by cn using the ordering rule defined as 1.2.3.4</PRE>
 <P></P></DL>
 <P>
 <HR>
 <H1><A NAME="methods">METHODS</A></H1>
-<P>Net::LDAP::Control::Sort provides the following methods in addition to
-those defined by <A HREF="../../../Net/LDAP/Control.html">Net::LDAP::Control</A></P>
-<DL>
-<DT><STRONG><A NAME="item_order_%5B_ORDER_%5D">order [ ORDER ]</A></STRONG><BR>
-<DD>
-ORDER may be a string or a list. If it is a string then it is split on whitespace
-and treated as if a list had been passed. See <A HREF="#item_order"><CODE>order</CODE></A> above for a description
-of the format for each element.
-<P>If no arguments are passed then a list is returned of the current ordering elements.</P>
-<P></P></DL>
+<P>As with <A HREF="../../../Net/LDAP/Control.html">Net::LDAP::Control</A> each constructor argument
+described above is also avaliable as a method on the object which will
+return the current value for the attribute if called without an argument,
+and set a new value for the attribute if called with an argument.</P>
 <P>
 <HR>
 <H1><A NAME="see also">SEE ALSO</A></H1>
@@ -97,7 +99,7 @@ of the format for each element.
 <P>Copyright (c) 1999-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.</P>
-<hr><P><EM>$Id: //depot/ldap/lib/Net/LDAP/Control/Sort.pm#4 $</EM></P>
+<hr><P><EM>$Id: //depot/ldap/lib/Net/LDAP/Control/Sort.pm#6 $</EM></P>
 
 </BODY>
 

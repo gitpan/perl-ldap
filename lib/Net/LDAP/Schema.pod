@@ -17,7 +17,8 @@ Net::LDAP::Schema - Load and manipulate an LDAP v3 Schema
  #
  # Load from LDIF
  #
- $schema = Net::LDAP->new( "schema.ldif" );
+ $schema = Net::LDAP->new;
+ $schema->parse( "schema.ldif" ) or die $schema->error;
 
 =head1 DESCRIPTION
 
@@ -32,6 +33,21 @@ or raw oid (object identifier, in dotted numeric string form, e.g. 2.5.4.0)
 may be supplied.
 
 =over 4
+
+=item parse
+
+Takes a single argument which can be any of, A message objected returned from
+an LDAP search, a Net::LDAP::Entry object or the name of a file containing
+an LDIF form of the schema.
+
+If the argument is a message result from a search, Net::LDAP::Schema will parse
+the schema from the first entry returned.
+
+Returns true on success and C<undef> on error.
+
+=item error
+
+Returns the last error encountered.
 
 =item attributes
 
@@ -77,6 +93,27 @@ if the syntax is inherited).
 
   $name_syntax = $schema->syntax( "commonName" );
 
+=item items
+
+Given an argument which is the name or oid of a known object class or 
+attribute, returns the items available for this attribute or object class.
+The returned item name may have an undefined value.
+
+  @items = $schema->items( $oid );
+
+Return value is an array or array reference depending on calling context.
+
+=item item
+
+Given two arguments, first of which is the name or oid of a known
+object class or attribute and second of which is the name of the
+item, returns the item's data value.  The item's value may be 
+undefined.
+
+  @item = $schema->item( $oid, "desc" );
+
+Return value is an array or a value depending on calling context.
+
 =item must
 
 Given an argument which is the name or oid of a known object class, returns
@@ -112,6 +149,22 @@ the appropriate type.
   die( "Not an objectclass" ) unless $oid;
   # Yes...so we can do this
   @must = $schema->must( $oid );
+
+=item dump
+
+Given an argument which is the name of a file, and the file or
+directory has write permission, will dump the raw schema 
+information to a file.  If no argument is given the raw schema 
+information is dumped to standard out.
+
+  $result = $schema->dump( "./schema.dump" );
+
+  or
+
+  $result = $schema->dump();
+
+If no schema data is returned from directory server, the method
+will return undefined.  Otherwise a value of 1 is always returned.
 
 =back
 
