@@ -80,6 +80,11 @@ certificate), or 'require' (the server must provide a certificate, and it
 must be valid.) If you set verify to optional or require, you must also set
 either cafile or capath. The most secure option is 'require'.
 
+<DT><STRONG><A NAME="item_sslversion">sslversion</A></STRONG><DD>
+<P>
+This defines the version of the SSL/TLS protocol to use. Defaults to
+'sslv2/3', other possible values are 'sslv2', 'sslv3', and 'tlsv1'.
+
 <DT><STRONG><A NAME="item_ciphers">ciphers</A></STRONG><DD>
 <P>
 Specify which subset of cipher suites are permissible for this connection,

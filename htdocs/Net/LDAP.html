@@ -56,13 +56,12 @@ Net::LDAP - Lightweight Directory Access Protocol
  
  $ldap = Net::LDAP-&gt;new('ldap.umich.edu');
  
- $ldap-&gt;bind (   # bind to a directory with dn and password
-              dn       =&gt; 'cn=root, o=University of Michigan, c=us',
+ # bind to a directory with dn and password
+ $ldap-&gt;bind ( 'cn=root, o=University of Michigan, c=us',
               password =&gt; 'secret'
              );
  
- $result = $ldap-&gt;add (
-               dn   =&gt; 'cn = Barbara Jensen, o=University of Michigan, c=us',
+ $result = $ldap-&gt;add ( 'cn = Barbara Jensen, o=University of Michigan, c=us',
                attr =&gt; [ 'cn'   =&gt; ['Barbara Jensen', 'Barbs Jensen'],
                          'sn    =&gt; 'Jensen',
                          'mail' =&gt; 'b.jensen@umich.edu',
@@ -496,10 +495,26 @@ See <A HREF="#CALLBACKS">CALLBACKS</A> below.
    ]
  );
 </PRE>
-<DT><STRONG><A NAME="item_root_dse">root_dse</A></STRONG><DD>
+<DT><STRONG><A NAME="item_root_dse">root_dse ( OPTIONS )</A></STRONG><DD>
 <P>
 The root_dse method retrieves information from the server's rootDSE entry.
 
+<DL>
+<DT><STRONG>attrs</STRONG><DD>
+<P>
+A reference to a list of attributes to be returned. If not specified, then
+the following attributes will be requested
+
+<P>
+<PRE>  subschemaSubentry
+  namingContexts
+  altServer
+  supportedExtension
+  supportedControl
+  supportedSASLMechanisms
+  supportedLDAPVersion
+</PRE>
+</DL>
 <P>
 The result is an object of class <A HREF="../Net/LDAP/Search.html">Net::LDAP::Search</A>.
 
@@ -733,6 +748,11 @@ certificate), or 'require' (the server must provide a certificate, and it
 must be valid.) If you set verify to optional or require, you must also set
 either cafile or capath. The most secure option is 'require'.
 
+<DT><STRONG><A NAME="item_sslversion">sslversion</A></STRONG><DD>
+<P>
+This defines the version of the SSL/TLS protocol to use. Defaults to
+'tlsv1', other possible values are 'sslv2', 'sslv3', and 'sslv2/3'.
+
 <DT><STRONG><A NAME="item_ciphers">ciphers</A></STRONG><DD>
 <P>
 Specify which subset of cipher suites are permissible for this connection,
@@ -908,7 +928,7 @@ terms as Perl itself.
 <hr>
 
 <P>
-<EM>$Id: LDAP.pod,v 1.11 2001/08/24 19:31:14 gbarr Exp $</EM>
+<EM>$Id: LDAP.pod,v 1.14 2001/10/24 12:37:14 gbarr Exp $</EM>
 
 
 

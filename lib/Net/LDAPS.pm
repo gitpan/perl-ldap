@@ -55,7 +55,8 @@ sub SSL_context_init_args {
     SSL_use_cert    => $clientcert ? 1 : 0,
     SSL_cert_file   => $clientcert,
     SSL_verify_mode => $verify,
-    SSL_version     => 'sslv2/3',
+    SSL_version     => defined $arg->{'sslversion'} ? $arg->{'sslversion'} :
+                       'sslv2/3',
   );
 }
 
@@ -113,6 +114,11 @@ server offers a certificate), or 'require' (the server must provide a
 certificate, and it must be valid.) If you set verify to optional or
 require, you must also set either cafile or capath. The most secure
 option is 'require'.
+
+=item sslversion
+
+This defines the version of the SSL/TLS protocol to use. Defaults to
+'sslv2/3', other possible values are 'sslv2', 'sslv3', and 'tlsv1'.
 
 =item ciphers
 

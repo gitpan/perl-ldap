@@ -50,6 +50,7 @@
 		<LI><A HREF="#RFC_2829_Authentication_Methods_">RFC-2829 Authentication Methods for LDAP</A>
 		<LI><A HREF="#RFC_2831_Using_Digest_Authentica">RFC-2831 Using Digest Authentication as a SASL Mechanism</A>
 		<LI><A HREF="#RFC_2891_LDAP_Control_Extension_">RFC-2891 LDAP Control Extension for Server Side Sorting of Search</A>
+		<LI><A HREF="#RFC_2849_The_LDAP_Data_Interchan">RFC-2849 The LDAP Data Interchange Format (LDIF) - Technical</A>
 	</UL>
 
 	<LI><A HREF="#Current_Internet_Drafts">Current Internet Drafts</A>
@@ -60,7 +61,6 @@
 		<LI><A HREF="#draft_behera_ldap_password_polic">draft-behera-ldap-password-policy - Password Policy for LDAP Directories</A>
 		<LI><A HREF="#draft_daigle_tisdag_Technical">draft-daigle-tisdag - Technical Infrastructure for Swedish Directory Access Gateways</A>
 		<LI><A HREF="#draft_good_ldap_changelog_Def">draft-good-ldap-changelog - Definition of an Object Class to Hold LDAP Change Records</A>
-		<LI><A HREF="#draft_good_ldap_ldif_The_LDAP">draft-good-ldap-ldif - The LDAP Data Interchange Format (LDIF) - Technical</A>
 		<LI><A HREF="#draft_greenblatt_ldapext_sos_">draft-greenblatt-ldapext-sos - Simple Operations on Subtrees (for LDAP)</A>
 		<LI><A HREF="#draft_greenblatt_ldapextstyle_">draft-greenblatt-ldapextstyle - LDAP Extension Style Guide</A>
 		<LI><A HREF="#draft_haripriya_ldapext_entrysel">draft-haripriya-ldapext-entryselect - EntrySelection Control for LDAP Modify and Delete Operations on</A>
@@ -631,6 +631,23 @@ operations are not defined in this extension.
 
 <P>
 <HR>
+<H2><A NAME="RFC_2849_The_LDAP_Data_Interchan">RFC-2849 The LDAP Data Interchange Format (LDIF) - Technical
+Specification</A></H2>
+<P>
+<A
+HREF="http://www.ietf.org/rfc/rfc2849.txt">http://www.ietf.org/rfc/rfc2849.txt</A>
+
+
+<P>
+This document describes a file format suitable for describing directory
+information or modifications made to directory information. The file
+format, known as LDIF, for LDAP Data Interchange Format, is typically used
+to import and export directory information between LDAP-based directory
+servers, or to describe a set of changes which are to be applied to a
+directory.
+
+<P>
+<HR>
 <H1><A NAME="Current_Internet_Drafts">Current Internet Drafts</A></H1>
 <P>
 <HR>
@@ -694,18 +711,6 @@ represent changes applied to an LDAP server. It also specifies a method for
 discovering the location of the container object which holds these change
 records, so that clients and servers have a common rendezvous point for
 this information.
-
-<P>
-<HR>
-<H2><A NAME="draft_good_ldap_ldif_The_LDAP">draft-good-ldap-ldif -- The LDAP Data Interchange Format (LDIF) - Technical
-Specification</A></H2>
-<P>
-This document describes a file format suitable for describing directory
-information or modifications made to directory information. The file
-format, known as LDIF, for LDAP Data Interchange Format, is typically used
-to import and export directory information between LDAP-based directory
-servers, or to describe a set of changes which are to be applied to a
-directory.
 
 <P>
 <HR>
@@ -1408,7 +1413,7 @@ identify LDAPv3bis work items.
 <hr>
 
 <P>
-<EM>$Id: RFC.pod,v 1.4 2001/06/14 20:12:06 gbarr Exp $</EM>
+<EM>$Id: RFC.pod,v 1.5 2001/10/24 14:08:54 chrisridd Exp $</EM>
 
 
 

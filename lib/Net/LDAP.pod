@@ -24,13 +24,12 @@ Net::LDAP - Lightweight Directory Access Protocol
  
  $ldap = Net::LDAP->new('ldap.umich.edu');
  
- $ldap->bind (   # bind to a directory with dn and password
-              dn       => 'cn=root, o=University of Michigan, c=us',
+ # bind to a directory with dn and password
+ $ldap->bind ( 'cn=root, o=University of Michigan, c=us',
               password => 'secret'
              );
  
- $result = $ldap->add (
-               dn   => 'cn = Barbara Jensen, o=University of Michigan, c=us',
+ $result = $ldap->add ( 'cn = Barbara Jensen, o=University of Michigan, c=us',
                attr => [ 'cn'   => ['Barbara Jensen', 'Barbs Jensen'],
                 	 'sn    => 'Jensen',
                 	 'mail' => 'b.jensen@umich.edu',
@@ -461,10 +460,27 @@ B<Example>
    ]
  );
 
-=item root_dse
+=item root_dse ( OPTIONS )
 
 The root_dse method retrieves information from the server's
 rootDSE entry.
+
+=over 4
+
+=item attrs
+
+A reference to a list of attributes to be returned.
+If not specified, then the following attributes will be requested
+
+  subschemaSubentry
+  namingContexts
+  altServer
+  supportedExtension
+  supportedControl
+  supportedSASLMechanisms
+  supportedLDAPVersion
+
+=back
 
 The result is an object of class L<Net::LDAP::Search>.
 
@@ -692,6 +708,11 @@ certificate, and it must be valid.) If you set verify to optional or
 require, you must also set either cafile or capath. The most secure
 option is 'require'.
 
+=item sslversion
+
+This defines the version of the SSL/TLS protocol to use. Defaults to
+'tlsv1', other possible values are 'sslv2', 'sslv3', and 'sslv2/3'.
+
 =item ciphers
 
 Specify which subset of cipher suites are permissible for this
@@ -849,6 +870,6 @@ terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: LDAP.pod,v 1.11 2001/08/24 19:31:14 gbarr Exp $>
+I<$Id: LDAP.pod,v 1.14 2001/10/24 12:37:14 gbarr Exp $>
 
 =cut

@@ -9,7 +9,7 @@ use Net::LDAP::ASN qw(LDAPEntry);
 use Net::LDAP::Constant qw(LDAP_LOCAL_ERROR);
 use vars qw($VERSION);
 
-$VERSION = "0.13";
+$VERSION = "0.15";
 
 sub new {
   my $self = shift;
@@ -178,8 +178,13 @@ sub delete {
       my %values;
       @values{@$val} = ();
 
-      @{$attrs->{$type}}
-        = grep { !exists $values{$_} } @{$attrs->{$type}};
+      unless( @{$attrs->{$type}}
+        = grep { !exists $values{$_} } @{$attrs->{$type}})
+      {
+	delete $attrs->{$type};
+	@{$self->{asn}{attributes}}
+	  = grep { $type ne lc($_->{type}) } @{$self->{asn}{attributes}};
+      }
 
       push @$cmd, $type, [ ref($val) ? @$val : $val ]
 	if $cmd;
@@ -209,6 +214,13 @@ sub update {
   }
   elsif ($self->{'changetype'} eq 'delete') {
     $mesg = $ldap->delete($self, 'callback' => $cb);
+  }
+  elsif ($self->{'changetype'} =~ /modr?dn/) {
+    my @args = (newrdn => $self->get_value('newrdn'),
+                deleteoldrdn => $self->get_value('deleteoldrdn'));
+    my $newsuperior = $self->get_value('newsuperior');
+    push(@args, newsuperior => $newsuperior) if $newsuperior;
+    $mesg = $ldap->moddn($self, @args, 'callback' => $cb);
   }
   elsif (@{$self->{'changes'}}) {
     $mesg = $ldap->modify($self, 'changes' => $self->{'changes'}, 'callback' => $cb);
