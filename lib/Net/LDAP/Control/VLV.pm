@@ -1,4 +1,4 @@
-# $Id: //depot/ldap/lib/Net/LDAP/Control/VLV.pm#4 $
+# $Id: VLV.pm,v 1.3 2000/07/30 21:03:50 gbarr Exp $
 # Copyright (c) 2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
@@ -399,5 +399,5 @@ terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: //depot/ldap/lib/Net/LDAP/Control/VLV.pm#4 $>
+I<$Id: VLV.pm,v 1.3 2000/07/30 21:03:50 gbarr Exp $>
 

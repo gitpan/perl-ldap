@@ -1,42 +1,40 @@
 <HTML>
 <HEAD>
 <TITLE>Net::LDAP::Reference - search reference</TITLE>
-<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+<LINK REV="made" HREF="mailto:hackers@FreeBSD.org">
 </HEAD>
 
 <BODY>
 
-<A NAME="__index__"></A>
 <!-- INDEX BEGIN -->
 <!--
 
 <UL>
 
-	<LI><A HREF="#name">NAME</A></LI>
-	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
-	<LI><A HREF="#description">DESCRIPTION</A></LI>
-	<LI><A HREF="#methods">METHODS</A></LI>
-	<LI><A HREF="#see also">SEE ALSO</A></LI>
-	<LI><A HREF="#author">AUTHOR</A></LI>
-	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+	<LI><A HREF="#NAME">NAME</A>
+	<LI><A HREF="#SYNOPSIS">SYNOPSIS</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<LI><A HREF="#METHODS">METHODS</A>
+	<LI><A HREF="#SEE_ALSO">SEE ALSO</A>
+	<LI><A HREF="#AUTHOR">AUTHOR</A>
+	<LI><A HREF="#COPYRIGHT">COPYRIGHT</A>
 </UL>
 -->
 <!-- INDEX END -->
 
 <P>
-<H1><A NAME="name">NAME</A></H1>
-<P>Net::LDAP::Reference - search reference</P>
+<H1><A NAME="NAME">NAME</A></H1>
+<P>
+Net::LDAP::Reference - search reference
+
 <P>
 <HR>
-<H1><A NAME="synopsis">SYNOPSIS</A></H1>
-<PRE>
-  use Net::LDAP;
-</PRE>
-<PRE>
-
-  $ldap-&gt;search( @search_args, callback =&gt; \&amp;process);</PRE>
-<PRE>
-
+<H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
+<P>
+<PRE>  use Net::LDAP;
+  
+  $ldap-&gt;search( @search_args, callback =&gt; \&amp;process);
+  
   sub process {
     my $mesg = shift;
     my $obj = shift;
@@ -44,9 +42,8 @@
       # Search complete
     }
     elsif ($obj-&gt;isa('Net::LDAP::Reference')) {
-      my $ref;</PRE>
-<PRE>
-
+      my $ref;
+      
       foreach $ref ($obj-&gt;references) {
         # process ref
       }
@@ -54,36 +51,55 @@
     else {
       # Process Net::LDAP::Entry
     }
-  }</PRE>
+  }
+</PRE>
 <P>
 <HR>
-<H1><A NAME="description">DESCRIPTION</A></H1>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
 <P>
 <HR>
-<H1><A NAME="methods">METHODS</A></H1>
+<H1><A NAME="METHODS">METHODS</A></H1>
 <DL>
-<DT><STRONG><A NAME="item_references">references</A></STRONG><BR>
-<DD>
+<DT><STRONG><A NAME="item_references">references</A></STRONG><DD>
+<P>
 Returns a list of references from the server.
-<P></P></DL>
+
+</DL>
 <P>
 <HR>
-<H1><A NAME="see also">SEE ALSO</A></H1>
-<P><A HREF="../../Net/LDAP.html">Net::LDAP</A>,
-<A HREF="../../Net/LDAP/Search.html">Net::LDAP::Search</A></P>
+<H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
+<P>
+<A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A>,
+<A HREF="../../Net/LDAP/Search|Net/LDAP/Search.html">Net::LDAP::Search|Net::LDAP::Search</A>
+
+
+
 <P>
 <HR>
-<H1><A NAME="author">AUTHOR</A></H1>
-<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;.</P>
-<P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-&lt;<A HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;.</P>
+<H1><A NAME="AUTHOR">AUTHOR</A></H1>
+<P>
+Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;
+
+<P>
+Please report any bugs, or post any suggestions, to the perl-ldap mailing
+list &lt;<A
+HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;
+
+
 <P>
 <HR>
-<H1><A NAME="copyright">COPYRIGHT</A></H1>
-<P>Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
+<H1><A NAME="COPYRIGHT">COPYRIGHT</A></H1>
+<P>
+Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
-terms as Perl itself.</P>
-<hr><P><EM>$Id$</EM></P>
+terms as Perl itself.
+
+<hr>
+
+<P>
+<EM>$Id: Reference.pod,v 1.2 2000/05/09 16:09:49 gbarr Exp $</EM>
+
+
 
 </BODY>
 

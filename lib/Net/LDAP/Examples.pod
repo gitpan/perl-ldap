@@ -550,7 +550,7 @@ All rights to this document are hereby relinquished to Graham Barr.
 
 =for html <hr>
 
-I<$Id$>
+I<$Id: Examples.pod,v 1.4 2000/09/12 09:17:09 gbarr Exp $>
 
 =cut
 

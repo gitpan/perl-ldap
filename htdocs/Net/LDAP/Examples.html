@@ -1,167 +1,202 @@
 <HTML>
 <HEAD>
 <TITLE>Net::LDAP::Examples - PERL LDAP by Example</TITLE>
-<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+<LINK REV="made" HREF="mailto:hackers@FreeBSD.org">
 </HEAD>
 
 <BODY>
 
-<A NAME="__index__"></A>
 <!-- INDEX BEGIN -->
 <!--
 
 <UL>
 
-	<LI><A HREF="#name">NAME</A></LI>
-	<LI><A HREF="#description">DESCRIPTION</A></LI>
-	<LI><A HREF="#code">CODE</A></LI>
+	<LI><A HREF="#NAME">NAME</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<LI><A HREF="#CODE">CODE</A>
 	<UL>
 
-		<LI><A HREF="#package  definitions">PACKAGE - Definitions</A></LI>
-		<LI><A HREF="#initializing">INITIALIZING</A></LI>
-		<LI><A HREF="#binding">BINDING</A></LI>
-		<LI><A HREF="#operation  generating a search">OPERATION - Generating a SEARCH</A></LI>
-		<LI><A HREF="#processing  displaying search results">PROCESSING - Displaying SEARCH Results</A></LI>
-		<LI><A HREF="#operation  modifying entries">OPERATION - Modifying entries</A></LI>
-		<LI><A HREF="#operation  changing the rdn">OPERATION - Changing the RDN</A></LI>
-		<LI><A HREF="#operation  adding a new record">OPERATION - Adding a new Record</A></LI>
-		<LI><A HREF="#error  retrieving and displaying error information">ERROR - Retrieving and Displaying ERROR information</A></LI>
-		<LI><A HREF="#unbind">UNBIND</A></LI>
+		<LI><A HREF="#PACKAGE_Definitions">PACKAGE - Definitions</A>
+		<LI><A HREF="#INITIALIZING">INITIALIZING</A>
+		<LI><A HREF="#BINDING">BINDING</A>
+		<LI><A HREF="#OPERATION_Generating_a_SEARCH">OPERATION - Generating a SEARCH</A>
+		<LI><A HREF="#PROCESSING_Displaying_SEARCH_R">PROCESSING - Displaying SEARCH Results</A>
+		<LI><A HREF="#OPERATION_Modifying_entries">OPERATION - Modifying entries</A>
+		<LI><A HREF="#OPERATION_Changing_the_RDN">OPERATION - Changing the RDN</A>
+		<LI><A HREF="#OPERATION_Adding_a_new_Record">OPERATION - Adding a new Record</A>
+		<LI><A HREF="#ERROR_Retrieving_and_Displayin">ERROR - Retrieving and Displaying ERROR information</A>
+		<LI><A HREF="#UNBIND">UNBIND</A>
 	</UL>
 
-	<LI><A HREF="#ldap schema retrieval">LDAP SCHEMA RETRIEVAL</A></LI>
-	<LI><A HREF="#bugs">BUGS</A></LI>
-	<LI><A HREF="#author (of this document)">AUTHOR  (of this document)</A></LI>
-	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+	<LI><A HREF="#LDAP_SCHEMA_RETRIEVAL">LDAP SCHEMA RETRIEVAL</A>
+	<LI><A HREF="#BUGS">BUGS</A>
+	<LI><A HREF="#AUTHOR_of_this_document_">AUTHOR  (of this document)</A>
+	<LI><A HREF="#COPYRIGHT">COPYRIGHT</A>
 </UL>
 -->
 <!-- INDEX END -->
 
 <P>
-<H1><A NAME="name">NAME</A></H1>
-<P>Net::LDAP::Examples - PERL LDAP by Example</P>
+<H1><A NAME="NAME">NAME</A></H1>
+<P>
+Net::LDAP::Examples - PERL LDAP by Example
+
 <P>
 <HR>
-<H1><A NAME="description">DESCRIPTION</A></H1>
-<P>The following examples are of course PERL code, found to work
-with the Net::LDAP modules.</P>
-<P>The intent of this document is to give the reader a <EM>cut and paste</EM>
-jump start to getting an LDAP application working.</P>
-<P>Below you will find snippets of code that should work as-is with only
-a small amount of work to correct any variable assignments and LDAP
-specifics, e.g. Distinguished Name Syntax, related to the user's
-own implementation.</P>
-<P>The <EM>S</EM>tandard <EM>O</EM>perating <EM>P</EM>roceedure that is followed here is:</P>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+The following examples are of course PERL code, found to work with the
+Net::LDAP modules.
+
+<P>
+The intent of this document is to give the reader a <EM>cut and paste</EM>
+jump start to getting an LDAP application working.
+
+<P>
+Below you will find snippets of code that should work as-is with only a
+small amount of work to correct any variable assignments and LDAP
+specifics, e.g. Distinguished Name Syntax, related to the user's own
+implementation.
+
+<P>
+The <EM>S</EM>tandard <EM>O</EM>perating <EM>P</EM>roceedure that is followed here is:
+
 <OL>
-<LI><STRONG><A NAME="item_Package_%2D_use_Net%3A%3ALDAP">Package		- use Net::LDAP</A></STRONG><BR>
-
-<LI><STRONG><A NAME="item_Initialization_%2D_new">Initialization	- new</A></STRONG><BR>
-
-<LI><STRONG><A NAME="item_Binding_%2D_bind">Binding		- bind</A></STRONG><BR>
-
-<LI><STRONG><A NAME="item_Operation_%2D_add_modify_moddn_search">Operation	- add modify moddn search</A></STRONG><BR>
-
-<LI><STRONG><A NAME="item_1_Processing_%2D_displaying_data_from_a_search">1 Processing	- displaying data from a search</A></STRONG><BR>
-
-<LI><STRONG><A NAME="item_Error_%2D_displaying_error_information">Error		- displaying error information</A></STRONG><BR>
-
-<LI><STRONG><A NAME="item_Unbinding_%2D_unbind">Unbinding	- unbind</A></STRONG><BR>
-
+<LI><STRONG><A NAME="item_Package_use_Net_LDAP">Package		- use Net::LDAP</A></STRONG>
+<LI><STRONG><A NAME="item_Initialization_new">Initialization	- new</A></STRONG>
+<LI><STRONG><A NAME="item_Binding_bind">Binding		- bind</A></STRONG>
+<LI><STRONG><A NAME="item_Operation_add_modify_moddn_sea">Operation	- add modify moddn search</A></STRONG>
+<LI><STRONG><A NAME="item_1_Processing_displaying_data_f">1 Processing	- displaying data from a search</A></STRONG>
+<LI><STRONG><A NAME="item_Error_displaying_error_informa">Error		- displaying error information</A></STRONG>
+<LI><STRONG><A NAME="item_Unbinding_unbind">Unbinding	- unbind</A></STRONG>
 </OL>
-<P>Look to each of these for a snippet of code to meet your needs.</P>
-<P><STRONG>What is not covered in these examples at this time:</STRONG></P>
+<P>
+Look to each of these for a snippet of code to meet your needs.
+
+<P>
+<STRONG>What is not covered in these examples at this time:</STRONG>
+
+
+
 <DL>
-<DT><STRONG><A NAME="item_abandon_and_compare_methods"><EM>abandon</EM> and <EM>compare</EM> methods</A></STRONG><BR>
-<DD>
-<DT><STRONG><A NAME="item_callback_subroutines"><EM>callback</EM> subroutines</A></STRONG><BR>
-<DD>
+<DT><STRONG><A NAME="item_abandon">abandon and compare methods</A></STRONG><DD>
+<DT><STRONG><A NAME="item_callback">callback subroutines</A></STRONG><DD>
 </DL>
 <P>
 <HR>
-<H1><A NAME="code">CODE</A></H1>
+<H1><A NAME="CODE">CODE</A></H1>
 <P>
-<H2><A NAME="package  definitions">PACKAGE - Definitions</A></H2>
-<PRE>
-   use Net::LDAP qw(:all);                      # use for all code</PRE>
-<PRE>
-   use Net::LDAP::Util qw(ldap_error_name       
-                          ldap_error_text) ;    # use for Error handling</PRE>
+<HR>
+<H2><A NAME="PACKAGE_Definitions">PACKAGE - Definitions</A></H2>
 <P>
-<H2><A NAME="initializing">INITIALIZING</A></H2>
-<PRE>
-   $ldap = Net::LDAP-&gt;new(&quot;yourLDAPhost.yourCompany.com&quot;) or die &quot;$@&quot;;</PRE>
+<PRE>   use Net::LDAP qw(:all);                      # use for all code
+</PRE>
 <P>
-<H2><A NAME="binding">BINDING</A></H2>
-<PRE>
-   $mesg = $ldap-&gt;bind( version =&gt; 3 );         # use for searches</PRE>
-<PRE>
-   $mesg = $ldap-&gt;bind(&quot;$userToAuthenticate&quot;,           
+<PRE>   use Net::LDAP::Util qw(ldap_error_name       
+                          ldap_error_text) ;    # use for Error handling
+</PRE>
+<P>
+<HR>
+<H2><A NAME="INITIALIZING">INITIALIZING</A></H2>
+<P>
+<PRE>   $ldap = Net::LDAP-&gt;new(&quot;yourLDAPhost.yourCompany.com&quot;) or die &quot;$@&quot;;
+</PRE>
+<P>
+<HR>
+<H2><A NAME="BINDING">BINDING</A></H2>
+<P>
+<PRE>   $mesg = $ldap-&gt;bind( version =&gt; 3 );         # use for searches
+</PRE>
+<P>
+<PRE>   $mesg = $ldap-&gt;bind(&quot;$userToAuthenticate&quot;,           
                         password =&gt; &quot;$passwd&quot;,
-                        version =&gt; 3 );         # use for changes/edits</PRE>
-<PRE>
-   # see your LDAP administrator for information concerning the
-   # user authentication setup at your site.</PRE>
+                        version =&gt; 3 );         # use for changes/edits
+</PRE>
 <P>
-<H2><A NAME="operation  generating a search">OPERATION - Generating a SEARCH</A></H2>
-<PRE>
-    sub LDAPsearch
+<PRE>   # see your LDAP administrator for information concerning the
+   # user authentication setup at your site.
+</PRE>
+<P>
+<HR>
+<H2><A NAME="OPERATION_Generating_a_SEARCH">OPERATION - Generating a SEARCH</A></H2>
+<P>
+<PRE>    sub LDAPsearch
         {
-          my ($ldap,$searchString,$attrs,$base) = @_ ;</PRE>
-<PRE>
-          # if they don't pass a base... set it for them</PRE>
-<PRE>
-          if (!$base ) { $base = &quot;o=mycompany, c=mycountry&quot;; }</PRE>
-<PRE>
-          # if they don't pass an array of attributes...
-          # set up something for them</PRE>
-<PRE>
-          if (!$attrs ) { $attrs = ['cn','mail' ]; }</PRE>
-<PRE>
-          my $result = $ldap-&gt;search (
+          my ($ldap,$searchString,$attrs,$base) = @_ ;
+</PRE>
+<P>
+<PRE>          # if they don't pass a base... set it for them
+</PRE>
+<P>
+<PRE>          if (!$base ) { $base = &quot;o=mycompany, c=mycountry&quot;; }
+</PRE>
+<P>
+<PRE>          # if they don't pass an array of attributes...
+          # set up something for them
+</PRE>
+<P>
+<PRE>          if (!$attrs ) { $attrs = ['cn','mail' ]; }
+</PRE>
+<P>
+<PRE>          my $result = $ldap-&gt;search (
                 base    =&gt; &quot;$base&quot;,
                 scope   =&gt; &quot;sub&quot;,
                 filter  =&gt; &quot;$searchString&quot;,
                 attrs   =&gt;  $attrs
-                );</PRE>
-<PRE>
-        }</PRE>
-<PRE>
-    my @Attrs = ();             # request all available attributes
-                                # to be returned.</PRE>
-<PRE>
-    my $result = LDAPsearch($ldap,&quot;sn=*&quot;,\@Attrs);</PRE>
+                );
+</PRE>
 <P>
-<H2><A NAME="processing  displaying search results">PROCESSING - Displaying SEARCH Results</A></H2>
-<PRE>
-     #------------
+<PRE>        }
+</PRE>
+<P>
+<PRE>    my @Attrs = ();             # request all available attributes
+                                # to be returned.
+</PRE>
+<P>
+<PRE>    my $result = LDAPsearch($ldap,&quot;sn=*&quot;,\@Attrs);
+</PRE>
+<P>
+<HR>
+<H2><A NAME="PROCESSING_Displaying_SEARCH_R">PROCESSING - Displaying SEARCH Results</A></H2>
+<P>
+<PRE>     #------------
      #
      # Accessing the data as if in a structure
      #  i.e. Using the &quot;as_struct&quot;  method
-     #</PRE>
-<PRE>
-        my $href = $result-&gt;as_struct;</PRE>
-<PRE>
-        # get an array of the DN names</PRE>
-<PRE>
-        my @arrayOfDNs  = keys %$href ;        # use DN hashes</PRE>
-<PRE>
-        # process each DN using it as a key</PRE>
-<PRE>
-        foreach (@arrayOfDNs) {
+     #
+</PRE>
+<P>
+<PRE>        my $href = $result-&gt;as_struct;
+</PRE>
+<P>
+<PRE>        # get an array of the DN names
+</PRE>
+<P>
+<PRE>        my @arrayOfDNs  = keys %$href ;        # use DN hashes
+</PRE>
+<P>
+<PRE>        # process each DN using it as a key
+</PRE>
+<P>
+<PRE>        foreach (@arrayOfDNs) {
            print $_,&quot;\n&quot;;
-           my $valref = $$href{$_};</PRE>
-<PRE>
-           # get an array of the attribute names
+           my $valref = $$href{$_};
+</PRE>
+<P>
+<PRE>           # get an array of the attribute names
            # passed for this one DN.
-           my @arrayOfAttrs = sort keys %$valref; #use Attr hashes</PRE>
-<PRE>
-           my $attrName;        
-           foreach $attrName (@arrayOfAttrs) {</PRE>
-<PRE>
-             # skip any binary data: yuck!
-             next if ( $attrName =~ /;binary$/ );</PRE>
-<PRE>
-             # get the attribute value (pointer) using the
+           my @arrayOfAttrs = sort keys %$valref; #use Attr hashes
+</PRE>
+<P>
+<PRE>           my $attrName;        
+           foreach $attrName (@arrayOfAttrs) {
+</PRE>
+<P>
+<PRE>             # skip any binary data: yuck!
+             next if ( $attrName =~ /;binary$/ );
+</PRE>
+<P>
+<PRE>             # get the attribute value (pointer) using the
              # attribute name as the hash
              my $attrVal =  @$valref{$attrName} ;
                 print &quot;\t $attrName: @$attrVal \n&quot;;
@@ -172,39 +207,46 @@ own implementation.</P>
       #
       #  end of as_struct method
       #
-      #--------</PRE>
-<PRE>
-      #------------
+      #--------
+</PRE>
+<P>
+<PRE>      #------------
       #
       # handle each of the results independently
       # ... i.e. using the walk through method
       #
-        my @entries = $result-&gt;entries;</PRE>
-<PRE>
-        my $entr ;
+        my @entries = $result-&gt;entries;
+</PRE>
+<P>
+<PRE>        my $entr ;
         foreach $entr ( @entries )
            {
             print &quot;DN: &quot;,$entr-&gt;dn,&quot;\n&quot;;
-            #my @attrs = sort $entr-&gt;attributes;</PRE>
-<PRE>
-            my $attr;
+            #my @attrs = sort $entr-&gt;attributes;
+</PRE>
+<P>
+<PRE>            my $attr;
            foreach $attr ( sort $entr-&gt;attributes ){
                 #skip binary we can't handle
                 next if ( $attr =~ /;binary$/ );
                 print &quot;  $attr : &quot;,$entr-&gt;get_value($attr),&quot;\n&quot;;
-                }</PRE>
-<PRE>
-            #print &quot;@attrs\n&quot;;
-                print &quot;#-------------------------------\n&quot;;
-           }</PRE>
-<PRE>
-      #
-      # end of walk through method
-      #------------</PRE>
+                }
+</PRE>
 <P>
-<H2><A NAME="operation  modifying entries">OPERATION - Modifying entries</A></H2>
-<PRE>
-    #
+<PRE>            #print &quot;@attrs\n&quot;;
+                print &quot;#-------------------------------\n&quot;;
+           }
+</PRE>
+<P>
+<PRE>      #
+      # end of walk through method
+      #------------
+</PRE>
+<P>
+<HR>
+<H2><A NAME="OPERATION_Modifying_entries">OPERATION - Modifying entries</A></H2>
+<P>
+<PRE>    #
     #   Modify
     #
     #  for each of the modifies below you'll need to supply
@@ -213,44 +255,55 @@ own implementation.</P>
     #    cn=Jo User,ou=person,o=mycompany,c=mycountry
     #
     #   I would recommend doing a search (listed above)
-    #   then use the dn returned to populate the $dn variable.</PRE>
-<PRE>
-    #
-    #  Do we only have one result returned from the search?</PRE>
-<PRE>
-    if ( $result-&gt;count != 1 ) { exit ; }  # Nope.. exit</PRE>
-<PRE>
-        my $dn = $entries[0]-&gt;dn;          # yes.. get the DN</PRE>
-<PRE>
-    #######################################
+    #   then use the dn returned to populate the $dn variable.
+</PRE>
+<P>
+<PRE>    #
+    #  Do we only have one result returned from the search?
+</PRE>
+<P>
+<PRE>    if ( $result-&gt;count != 1 ) { exit ; }  # Nope.. exit
+</PRE>
+<P>
+<PRE>        my $dn = $entries[0]-&gt;dn;          # yes.. get the DN
+</PRE>
+<P>
+<PRE>    #######################################
     #
     #   MODIFY using a HASH
-    #</PRE>
-<PRE>
-    my %ReplaceHash = ( keyword =&gt; &quot;x&quot;, proxy =&gt; &quot;x&quot; );</PRE>
-<PRE>
-    my $result = LDAPmodifyUsingHash($ldap,$dn, \%ReplaceHash );</PRE>
-<PRE>
-    sub LDAPmodifyUsingHash
+    #
+</PRE>
+<P>
+<PRE>    my %ReplaceHash = ( keyword =&gt; &quot;x&quot;, proxy =&gt; &quot;x&quot; );
+</PRE>
+<P>
+<PRE>    my $result = LDAPmodifyUsingHash($ldap,$dn, \%ReplaceHash );
+</PRE>
+<P>
+<PRE>    sub LDAPmodifyUsingHash
       {
       my ($ldap,$dn,$whatToChange ) = @_ ;
       my $result = $ldap-&gt;modify($dn,
                              replace =&gt; { %$whatToChange }
                                );
       return ($result );
-      }</PRE>
-<PRE>
-    #######################################
+      }
+</PRE>
+<P>
+<PRE>    #######################################
     #
     #   MODIFY using a ARRAY List
-    #</PRE>
-<PRE>
-    my @ReplaceArrayList = [  'keyword', &quot;xxxxxxxxxx&quot; ,
-                               'proxy' , &quot;yyyyyyyyyy&quot;   ];</PRE>
-<PRE>
-    my $result = LDAPmodifyUsingArrayList($ldap,$dn, \@ReplaceArrayList );</PRE>
-<PRE>
-    sub LDAPmodifyUsingArrayList
+    #
+</PRE>
+<P>
+<PRE>    my @ReplaceArrayList = [  'keyword', &quot;xxxxxxxxxx&quot; ,
+                               'proxy' , &quot;yyyyyyyyyy&quot;   ];
+</PRE>
+<P>
+<PRE>    my $result = LDAPmodifyUsingArrayList($ldap,$dn, \@ReplaceArrayList );
+</PRE>
+<P>
+<PRE>    sub LDAPmodifyUsingArrayList
       {
       my ($ldap,$dn,$whatToChange ) = @_ ;
       my $result = $ldap-&gt;modify($dn,
@@ -259,19 +312,23 @@ own implementation.</P>
                        ]
                        );
        return ($result );
-      }</PRE>
-<PRE>
-    #######################################
+      }
+</PRE>
+<P>
+<PRE>    #######################################
     #
     #   MODIFY using a ARRAY
-    #</PRE>
-<PRE>
-    my @ReplaceArray    = (  'keyword', &quot;xxxxxxxxxx&quot; ,
-                              'proxy' , &quot;yyyyyyyyyy&quot;   );</PRE>
-<PRE>
-    my $result = LDAPmodifyUsingArray($ldap,$dn, \@ReplaceArray );</PRE>
-<PRE>
-    sub LDAPmodifyUsingArray
+    #
+</PRE>
+<P>
+<PRE>    my @ReplaceArray    = (  'keyword', &quot;xxxxxxxxxx&quot; ,
+                              'proxy' , &quot;yyyyyyyyyy&quot;   );
+</PRE>
+<P>
+<PRE>    my $result = LDAPmodifyUsingArray($ldap,$dn, \@ReplaceArray );
+</PRE>
+<P>
+<PRE>    sub LDAPmodifyUsingArray
       {
       my ($ldap,$dn,$whatToChange ) = @_ ;
       my $result = $ldap-&gt;modify($dn,
@@ -280,25 +337,29 @@ own implementation.</P>
                        ]
                        );
        return ($result );
-      }</PRE>
-<PRE>
-    #######################################
+      }
+</PRE>
+<P>
+<PRE>    #######################################
     #
     #   MODIFY an existing record using 'Changes'
     #    (or combination of add/delete/replace)
-    #</PRE>
-<PRE>
-        my @whatToChange ;
+    #
+</PRE>
+<P>
+<PRE>        my @whatToChange ;
         my @ReplaceArray ;
         my @DeleteArray ;
-        my @AddArray ;</PRE>
-<PRE>
-        push @AddArray, 'cn',&quot;me myself&quot;;
+        my @AddArray ;
+</PRE>
+<P>
+<PRE>        push @AddArray, 'cn',&quot;me myself&quot;;
         push @ReplaceArray, 'sn','!@#$%^&amp;*()__+Hello THere';
         push @ReplaceArray, 'cn',&quot;me myself I&quot;;
-        push @DeleteArray, 'cn',&quot;me myself&quot;;</PRE>
-<PRE>
-        if ( $#ReplaceArray &gt; 0 ) {
+        push @DeleteArray, 'cn',&quot;me myself&quot;;
+</PRE>
+<P>
+<PRE>        if ( $#ReplaceArray &gt; 0 ) {
             push @whatToChange, 'replace' ;
             push @whatToChange, \@ReplaceArray  ;
            }
@@ -309,43 +370,53 @@ own implementation.</P>
         if ( $#AddArray &gt; 0 ) {
             push @whatToChange, 'add' ;
             push @whatToChange, \@AddArray  ;
-           }</PRE>
-<PRE>
-        $result = LDAPmodify($ldap,$dn, \@whatToChange );</PRE>
-<PRE>
-    sub LDAPmodify
+           }
+</PRE>
+<P>
+<PRE>        $result = LDAPmodify($ldap,$dn, \@whatToChange );
+</PRE>
+<P>
+<PRE>    sub LDAPmodify
     {
-       my ($ldap,$dn,$whatToChange) = @_ ;</PRE>
-<PRE>
-       my $result = $ldap-&gt;modify($dn,
+       my ($ldap,$dn,$whatToChange) = @_ ;
+</PRE>
+<P>
+<PRE>       my $result = $ldap-&gt;modify($dn,
                         changes =&gt; [
                         @$whatToChange
                         ]
                         );
      return ($result );
-    }</PRE>
+    }
+</PRE>
 <P>
-<H2><A NAME="operation  changing the rdn">OPERATION - Changing the RDN</A></H2>
-<PRE>
-    my $newRDN = &quot;cn=Joseph User&quot;;</PRE>
-<PRE>
-    my $result = LDAPrdnChange($ldap,$dn,$newRDN,&quot;archive&quot;);</PRE>
-<PRE>
-    sub LDAPrdnChange
+<HR>
+<H2><A NAME="OPERATION_Changing_the_RDN">OPERATION - Changing the RDN</A></H2>
+<P>
+<PRE>    my $newRDN = &quot;cn=Joseph User&quot;;
+</PRE>
+<P>
+<PRE>    my $result = LDAPrdnChange($ldap,$dn,$newRDN,&quot;archive&quot;);
+</PRE>
+<P>
+<PRE>    sub LDAPrdnChange
     {
-     my ($ldap,$dn,$whatToChange,$action) = @_ ;</PRE>
-<PRE>
-      my $branch ;</PRE>
-<PRE>
-      #
+     my ($ldap,$dn,$whatToChange,$action) = @_ ;
+</PRE>
+<P>
+<PRE>      my $branch ;
+</PRE>
+<P>
+<PRE>      #
       # if the archive action is selected, move this
       # entry to another place in the directory.
       #
       if ( $action =~ /archive/i )  {
          $branch = &quot;ou=newbranch,o=mycompany,c=mycountry&quot;;
-         }</PRE>
-<PRE>
-      #
+         }
+</PRE>
+<P>
+<PRE>      #
       # use the 'deleteoldrdn' to keep from getting
       # multivalues in the NAMING attribute.
       # in most cases that would be the 'CN' attribute
@@ -354,17 +425,22 @@ own implementation.</P>
                 newrdn =&gt; $whatToChange,
                 deleteoldrdn =&gt; '1',
                 newsuperior =&gt; $branch
-                );</PRE>
-<PRE>
-     return ($result );</PRE>
-<PRE>
-    }</PRE>
+                );
+</PRE>
 <P>
-<H2><A NAME="operation  adding a new record">OPERATION - Adding a new Record</A></H2>
-<PRE>
-    my $DNbranch = &quot;ou=bailiwick, o=mycompany, c=mycountry&quot;;</PRE>
-<PRE>
-    #
+<PRE>     return ($result );
+</PRE>
+<P>
+<PRE>    }
+</PRE>
+<P>
+<HR>
+<H2><A NAME="OPERATION_Adding_a_new_Record">OPERATION - Adding a new Record</A></H2>
+<P>
+<PRE>    my $DNbranch = &quot;ou=bailiwick, o=mycompany, c=mycountry&quot;;
+</PRE>
+<P>
+<PRE>    #
     # check with your Directory Schema or Administrator
     # for the correct objectClass... I'm sure it'll be different
     #
@@ -374,127 +450,168 @@ own implementation.</P>
                      uid =&gt; &quot;0000001&quot;,
                       sn =&gt; &quot;User&quot;,
                     mail =&gt; &quot;JaneUser@mycompany.com&quot;
-                ];</PRE>
-<PRE>
-    #
+                ];
+</PRE>
+<P>
+<PRE>    #
     # create the  new DN to look like this
     # &quot; cn=Jo User + uid=0000001 , ou=bailiwick, o=mycompany, c=mycountry &quot;
     #
     # NOTE: this DN  MUST be changed to meet your implementation
-    #</PRE>
-<PRE>
-     my $NewDN =  &quot;@$CreateArray[2]=&quot;.
+    #
+</PRE>
+<P>
+<PRE>     my $NewDN =  &quot;@$CreateArray[2]=&quot;.
                   &quot;@$CreateArray[3]+&quot;.
                   &quot;@$CreateArray[4]=&quot;.
                   &quot;@$CreateArray[5],&quot;.
-                  $DNbranch;</PRE>
-<PRE>
-    LDAPentryCreate($ldap,$NewDN,$CreateArray);</PRE>
-<PRE>
-    #
+                  $DNbranch;
+</PRE>
+<P>
+<PRE>    LDAPentryCreate($ldap,$NewDN,$CreateArray);
+</PRE>
+<P>
+<PRE>    #
     # CreateArray is a reference to an anonymous array
     # you have to dereference it in the  subroutine it's
     # passed to.
-    #</PRE>
-<PRE>
-    sub LDAPentryCreate
-    {</PRE>
-<PRE>
-     my ($ldap,$dn,$whatToCreate) = @_ ;
-     my $result = $ldap-&gt;add( $dn, attrs =&gt; [  @$whatToCreate ] );
-     return ($result );</PRE>
-<PRE>
-    }</PRE>
+    #
+</PRE>
 <P>
-<H2><A NAME="error  retrieving and displaying error information">ERROR - Retrieving and Displaying ERROR information</A></H2>
-<PRE>
-      use Net::LDAP::Util qw( ldap_error_name
-                          ldap_error_text) ;</PRE>
-<PRE>
-      if ( $result-&gt;code ) {
+<PRE>    sub LDAPentryCreate
+    {
+</PRE>
+<P>
+<PRE>     my ($ldap,$dn,$whatToCreate) = @_ ;
+     my $result = $ldap-&gt;add( $dn, attrs =&gt; [  @$whatToCreate ] );
+     return ($result );
+</PRE>
+<P>
+<PRE>    }
+</PRE>
+<P>
+<HR>
+<H2><A NAME="ERROR_Retrieving_and_Displayin">ERROR - Retrieving and Displaying ERROR information</A></H2>
+<P>
+<PRE>      use Net::LDAP::Util qw( ldap_error_name
+                          ldap_error_text) ;
+</PRE>
+<P>
+<PRE>      if ( $result-&gt;code ) {
         #
         # if we've got an error... record it
         #
         LDAPerror(&quot;Searching&quot;,$result);
-        }</PRE>
-<PRE>
-    sub LDAPerror
+        }
+</PRE>
+<P>
+<PRE>    sub LDAPerror
       {
         my ($from,$mesg) = @_;
         print &quot;Return code: &quot;,$mesg-&gt;code ;
         print &quot;\tMessage: &quot;, ldap_error_name($mesg-&gt;code);
         print &quot; :&quot;,        ldap_error_text($mesg-&gt;code);
         print &quot;MessageID: &quot;,$mesg-&gt;mesg_id;
-        print &quot;\tDN: &quot;,$mesg-&gt;dn;</PRE>
-<PRE>
-        #---
+        print &quot;\tDN: &quot;,$mesg-&gt;dn;
+</PRE>
+<P>
+<PRE>        #---
         # Programmer note:
         #
         #  &quot;$mesg-&gt;error&quot;  DOESN'T work!!!
         #
         #print &quot;\tMessage: &quot;, $mesg-&gt;error;
-        #-----</PRE>
-<PRE>
-      }</PRE>
+        #-----
+</PRE>
 <P>
-<H2><A NAME="unbind">UNBIND</A></H2>
-<PRE>
-    $ldap-&gt;unbind;</PRE>
+<PRE>      }
+</PRE>
 <P>
 <HR>
-<H1><A NAME="ldap schema retrieval">LDAP SCHEMA RETRIEVAL</A></H1>
-<P>The following code snippet shows how to retrieve schema information.</P>
-<P>The first procedure is to initialize a new LDAP object using the
-same procedures as listed at the beginning of this document.</P>
-<P>The second procedure is to bind to your directory server.  Some 
-servers may require authentication to retrieve the schema from the 
-directory server.  This procedure is listed at the beginning of 
-this document too.</P>
-<P>After a successful bind you are ready to retrieve the schema 
-information.  You do this by initializing a schema object.</P>
-<PRE>
- $schema = $ldap-&gt;schema();</PRE>
-<P>In this case Net::LDAP will attempt to determine the dn under which
-the schema can be found. First it will look for the attribute
-<CODE>subschemasubentry</CODE> in the root DSE. If that cannot be found then
-it will default to the assumption of <CODE>cn=schema</CODE></P>
-<P>Alternatively you can specify the dn where the schema is to be found
-with</P>
-<PRE>
- $schema = $ldap-&gt;schema(dn =&gt; $dn);</PRE>
-<P>Once we have a dn to search for, Net::LDAP will fetch the schema entry with</P>
-<PRE>
-  $mesg = $self-&gt;search(
+<H2><A NAME="UNBIND">UNBIND</A></H2>
+<P>
+<PRE>    $ldap-&gt;unbind;
+</PRE>
+<P>
+<HR>
+<H1><A NAME="LDAP_SCHEMA_RETRIEVAL">LDAP SCHEMA RETRIEVAL</A></H1>
+<P>
+The following code snippet shows how to retrieve schema information.
+
+<P>
+The first procedure is to initialize a new LDAP object using the same
+procedures as listed at the beginning of this document.
+
+<P>
+The second procedure is to bind to your directory server. Some servers may
+require authentication to retrieve the schema from the directory server.
+This procedure is listed at the beginning of this document too.
+
+<P>
+After a successful bind you are ready to retrieve the schema information.
+You do this by initializing a schema object.
+
+<P>
+<PRE> $schema = $ldap-&gt;schema();
+</PRE>
+<P>
+In this case Net::LDAP will attempt to determine the dn under which the
+schema can be found. First it will look for the attribute
+<CODE>subschemasubentry</CODE> in the root DSE. If that cannot be found then it will default to the
+assumption of <CODE>cn=schema</CODE>
+
+
+
+<P>
+Alternatively you can specify the dn where the schema is to be found with
+
+<P>
+<PRE> $schema = $ldap-&gt;schema(dn =&gt; $dn);
+</PRE>
+<P>
+Once we have a dn to search for, Net::LDAP will fetch the schema entry with
+
+<P>
+<PRE>  $mesg = $self-&gt;search(
     base   =&gt; $dn,
     scope  =&gt; 'base',
     filter =&gt; '(objectClass=*)',
-  );</PRE>
-<P>Once the schema object has been initialized, schema methods 
-are used to retrieve the data.  There are a number of ways this
-can be done.  Information on the schema methods can be found 
-in the Net::LDAP::Schema pod documentation.</P>
-<P>The following is a code snippet showing how to get and display 
-information about returned attributes.</P>
-<PRE>
-  #
+  );
+</PRE>
+<P>
+Once the schema object has been initialized, schema methods are used to
+retrieve the data. There are a number of ways this can be done. Information
+on the schema methods can be found in the Net::LDAP::Schema pod
+documentation.
+
+<P>
+The following is a code snippet showing how to get and display information
+about returned attributes.  
+
+<P>
+<PRE>  #
   # Get the attributes
-  #</PRE>
-<PRE>
-  @attributes = $schema-&gt;attributes();
+  #
+</PRE>
+<P>
+<PRE>  @attributes = $schema-&gt;attributes();
   #
   # Display the attributes
-  #</PRE>
-<PRE>
-  foreach ( @attributes)
+  #
+</PRE>
+<P>
+<PRE>  foreach ( @attributes)
   {
-        print &quot;attributeType\n&quot;;</PRE>
-<PRE>
-        #
+        print &quot;attributeType\n&quot;;
+</PRE>
+<P>
+<PRE>        #
         # Get and display the oid number of the objectclass.
         #
-        $oid = $schema-&gt;name2oid( &quot;$_&quot; );</PRE>
-<PRE>
-        #
+        $oid = $schema-&gt;name2oid( &quot;$_&quot; );
+</PRE>
+<P>
+<PRE>        #
         # Get the various items associated with
         # this attribute.
         #
@@ -522,27 +639,42 @@ information about returned attributes.</P>
            if ( defined(@item) &amp;&amp; $#item &gt;= 0 )
            {
            print &quot;\t$value:  @item\n&quot;;
-           }</PRE>
-<PRE>
-        }
-  }</PRE>
-<P>The process is the basically the same for getting objectClass 
-information.  Where schema-&gt;<CODE>attributes()</CODE> is used, substitute 
-schema-&gt;objectclasses().  From that point on the process is
-the same for both objectClasses and attributes.</P>
+           }
+</PRE>
+<P>
+<PRE>        }
+  }
+</PRE>
+<P>
+The process is the basically the same for getting objectClass information.
+Where schema-&gt;attributes() is used, substitute
+schema-&gt;objectclasses(). From that point on the process is the same for
+both objectClasses and attributes. 
+
 <P>
 <HR>
-<H1><A NAME="bugs">BUGS</A></H1>
-<P>None known, but there may be some</P>
+<H1><A NAME="BUGS">BUGS</A></H1>
+<P>
+None known, but there may be some
+
 <P>
 <HR>
-<H1><A NAME="author (of this document)">AUTHOR  (of this document)</A></H1>
-<P>Russell Biggs &lt;<A HREF="mailto:rgb@ticnet.com">rgb@ticnet.com</A>&gt;</P>
+<H1><A NAME="AUTHOR_of_this_document_">AUTHOR  (of this document)</A></H1>
+<P>
+Russell Biggs &lt;<A HREF="mailto:rgb@ticnet.com">rgb@ticnet.com</A>&gt;
+
 <P>
 <HR>
-<H1><A NAME="copyright">COPYRIGHT</A></H1>
-<P>All rights to this document are hereby relinquished to Graham Barr.</P>
-<hr><P><EM>$Id$</EM></P>
+<H1><A NAME="COPYRIGHT">COPYRIGHT</A></H1>
+<P>
+All rights to this document are hereby relinquished to Graham Barr.
+
+<hr>
+
+<P>
+<EM>$Id: Examples.pod,v 1.4 2000/09/12 09:17:09 gbarr Exp $</EM>
+
+
 
 </BODY>
 

@@ -1,0 +1,156 @@
+<HTML>
+<HEAD>
+<TITLE>Net::LDAP::Control::Paged - LDAPv3 Paged results control object</TITLE>
+<LINK REV="made" HREF="mailto:hackers@FreeBSD.org">
+</HEAD>
+
+<BODY>
+
+<!-- INDEX BEGIN -->
+<!--
+
+<UL>
+
+	<LI><A HREF="#NAME">NAME</A>
+	<LI><A HREF="#SYNOPSIS">SYNOPSIS</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<LI><A HREF="#CONSTRUCTOR_ARGUMENTS">CONSTRUCTOR ARGUMENTS</A>
+	<LI><A HREF="#METHODS">METHODS</A>
+	<LI><A HREF="#SEE_ALSO">SEE ALSO</A>
+	<LI><A HREF="#AUTHOR">AUTHOR</A>
+	<LI><A HREF="#COPYRIGHT">COPYRIGHT</A>
+</UL>
+-->
+<!-- INDEX END -->
+
+<P>
+<H1><A NAME="NAME">NAME</A></H1>
+<P>
+Net::LDAP::Control::Paged - LDAPv3 Paged results control object
+
+<P>
+<HR>
+<H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
+<P>
+<PRE> use Net::LDAP;
+ use Net::LDAP::Control::Paged;
+ use Net::LDAP::Constant qw( LDAP_CONTROL_PAGED );
+</PRE>
+<P>
+<PRE> $ldap = Net::LDAP-&gt;new( &quot;ldap.mydomain.eg&quot; );
+</PRE>
+<P>
+<PRE> $page = Net::LDAP::Control::Paged-&gt;new( size =&gt; 100 );
+</PRE>
+<P>
+<PRE> @args = ( base     =&gt; &quot;cn=subnets,cn=sites,cn=configuration,$BASE_DN&quot;,
+           scope    =&gt; &quot;subtree&quot;,
+           filter   =&gt; &quot;(objectClass=subnet)&quot;,
+           callback =&gt; \&amp;process_entry, # Call this sub for each entry
+           control  =&gt; [ $page ],
+ );
+</PRE>
+<P>
+<PRE> my $cookie;
+ while(1) {
+   # Perform search
+   my $mesg = $ldap-&gt;search( @args );
+</PRE>
+<P>
+<PRE>   # Only continue on LDAP_SUCCESS
+   $mesg-&gt;code and last;
+</PRE>
+<P>
+<PRE>   # Get cookie from paged control
+   my($resp)  = $mesg-&gt;control( LDAP_CONTROL_PAGED ) or last;
+   $cookie    = $resp-&gt;cookie or last;
+</PRE>
+<P>
+<PRE>   # Set cookie in paged control
+   $page-&gt;cookie($cookie);
+ }
+</PRE>
+<P>
+<PRE> if ($cookie) {
+   # We had an abnormal exit, so let the server know we do not want any more
+   $page-&gt;cookie($cookie);
+   $page-&gt;size(0);
+   $ldap-&gt;search( @args );
+ }
+</PRE>
+<P>
+<HR>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+<CODE>Net::LDAP::Control::Paged</CODE> provides an interface for the creation and manipulatrion of objects that
+represent the <CODE>pagedResultsControl</CODE> as described by RFC-2696.
+
+<P>
+<HR>
+<H1><A NAME="CONSTRUCTOR_ARGUMENTS">CONSTRUCTOR ARGUMENTS</A></H1>
+<P>
+In addition to the constructor arguments described in
+<A HREF="../../../Net/LDAP/Control|Net/LDAP/Control.html">Net::LDAP::Control|Net::LDAP::Control</A> the following are provided.
+
+<DL>
+<DT><STRONG><A NAME="item_cookie">cookie</A></STRONG><DD>
+<P>
+The value to use as the cookie. This is not normally set when an object is
+created, but is set from the cookie value returned bu the server. This
+associates a search with a previous search, so the server knows to return
+the page of entries following the entries it returned the previous time.
+
+<DT><STRONG><A NAME="item_size">size</A></STRONG><DD>
+<P>
+The page size that is required. This is the maximum number of entries that
+the server will return to the search request.
+
+</DL>
+<P>
+<HR>
+<H1><A NAME="METHODS">METHODS</A></H1>
+<P>
+As with <A HREF="../../../Net/LDAP/Control|Net/LDAP/Control.html">Net::LDAP::Control|Net::LDAP::Control</A> each constructor argument described above is also avaliable as a method on
+the object which will return the current value for the attribute if called
+without an argument, and set a new value for the attribute if called with
+an argument.
+
+<P>
+<HR>
+<H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
+<P>
+<A HREF="../../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A>,
+<A HREF="../../../Net/LDAP/Control|Net/LDAP/Control.html">Net::LDAP::Control|Net::LDAP::Control</A>, <A
+HREF="http://info.internet.isi.edu/in-notes/rfc/files/rfc2696.txt">http://info.internet.isi.edu/in-notes/rfc/files/rfc2696.txt</A>
+
+
+<P>
+<HR>
+<H1><A NAME="AUTHOR">AUTHOR</A></H1>
+<P>
+Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;
+
+<P>
+Please report any bugs, or post any suggestions, to the perl-ldap mailing
+list &lt;<A
+HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;
+
+
+<P>
+<HR>
+<H1><A NAME="COPYRIGHT">COPYRIGHT</A></H1>
+<P>
+Copyright (c) 2000 Graham Barr. All rights reserved. This program is free
+software; you can redistribute it and/or modify it under the same terms as
+Perl itself.
+
+<hr>
+
+<P>
+<EM>$Id: Paged.pm,v 1.3 2000/07/30 21:03:50 gbarr Exp $</EM>
+
+
+
+</BODY>
+
+</HTML>

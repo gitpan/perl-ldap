@@ -28,9 +28,12 @@ print OUT <<'!NO!SUBS!';
 #
 # c.ridd@isode.com
 #
-# $Id: myldapsearch,v 1.3 1999/01/11 08:33:34 cjr Exp $
+# $Id: ldapsearch.PL,v 1.3 2000/08/03 17:10:26 gbarr Exp $
 #
-# $Log: myldapsearch,v $
+# $Log: ldapsearch.PL,v $
+# Revision 1.3  2000/08/03 17:10:26  gbarr
+# *** empty log message ***
+#
 # Revision 1.3  1999/01/11 08:33:34  cjr
 # Revised for 0.09 API
 #

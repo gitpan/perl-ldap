@@ -76,17 +76,6 @@ sub parse {
   return $schema;
 }
 
-sub error {
-  $_[0]->{error};
-}
-
-#
-# Return base entry
-#
-sub entry {
-  $_[0]->{entry};
-}
-
 #
 # Dump as LDIF
 #
@@ -158,6 +147,38 @@ sub matchingrules {
   return wantarray ? @$res : $res;
 }
 
+# The names of all the matchingruleuse
+
+sub matchingruleuse {
+  my $self = shift;
+  my $res = $self->{mru};
+  return wantarray ? @$res : $res;
+}
+
+# The names of all the ditstructurerules
+
+sub ditstructurerules {
+  my $self = shift;
+  my $res = $self->{dts};
+  return wantarray ? @$res : $res;
+}
+
+# The names of all the ditcontentrules
+
+sub ditcontentrules {
+  my $self = shift;
+  my $res = $self->{dtc};
+  return wantarray ? @$res : $res;
+}
+
+# The names of all the nameforms
+
+sub nameforms {
+  my $self = shift;
+  my $res = $self->{nfm};
+  return wantarray ? @$res : $res;
+}
+
 sub superclass {
    my $self = shift;
    my $oc = shift;
@@ -187,24 +208,23 @@ sub may {
 sub _must_or_may {
   my $self = shift;
   my $must_or_may = shift;
-  my @oc = shift;
+  my @oc = @_ or return;
   
   #
   # If called with an entry, get the OC names and continue
   #
   if( UNIVERSAL::isa( $oc[0], "Net::LDAP::Entry" ) ) {
     my $entry = $oc[0];
-    @oc = $entry->get_value( "objectclass" );
+    @oc = $entry->get_value( "objectclass" )
+      or return;
   }
-
-  return unless @oc;
 
   my %res;		# Use hash to get uniqueness
 
   foreach my $oc ( @oc ) {
     my $oid = $self->is_objectclass( $oc );
     if( $oid ) {
-      my $res = $self->{oid}->{$oid}->{$must_or_may};
+      my $res = $self->{oid}->{$oid}->{$must_or_may} or next;
       @res{ @$res } = (); 	# Add in, getting uniqueness
     }
   }
@@ -300,6 +320,26 @@ sub is_matchingrule {
   return $self->_is_type( "mr", @_ );
 }
 
+sub is_matchingruleuse {
+  my $self = shift;
+  return $self->_is_type( "mru", @_ );
+}
+
+sub is_ditstructurerule {
+  my $self = shift;
+  return $self->_is_type( "dts", @_ );
+}
+
+sub is_ditcontentrule {
+  my $self = shift;
+  return $self->_is_type( "dtc", @_ );
+}
+
+sub is_nameform {
+  my $self = shift;
+  return $self->_is_type( "nfm", @_ );
+}
+
 # --------------------------------------------------
 # Internal functions
 # --------------------------------------------------
@@ -349,6 +389,10 @@ sub _is_type {
 # ->{oc}  = [ list of can. names of objectclasses ]
 # ->{syn} = [ list of can. names of syntaxes (we make names from descripts) ]
 # ->{mr}  = [ list of can. names of matchingrules ]
+# ->{mru} = [ list of can. names of matchingruleuse ]
+# ->{dts} = [ list of can. names of ditstructurerules ]
+# ->{dtc} = [ list of can. names of ditcontentrules ]
+# ->{nfm} = [ list of can. names of nameForms ]
 #
 # This is used to optimise name => oid lookups (to avoid searching).
 # This could be removed or made into a cache to reduce memory usage.
@@ -383,6 +427,10 @@ my %type2attr = ( at	=> "attributetypes",
 		  oc	=> "objectclasses",
 		  syn	=> "ldapsyntaxes",
 		  mr	=> "matchingrules",
+		  mru	=> "matchingruleuse",
+		  dts	=> "ditstructurerules",
+		  dtc	=> "ditcontentrules",
+		  nfm	=> "nameforms",
 		  );
 
 #
@@ -406,6 +454,12 @@ sub _parse_schema {
 
     foreach my $val (@$vals) {
       #
+      # The following statement takes care of defined attributes
+      # that have no data associated with them.
+      #
+      next if $val eq '';
+
+      #
       # We assume that each value can be turned into an OID, a canonical
       # name and a 'schema_entry' which is a hash ref containing the items
       # present in the value.
@@ -425,7 +479,7 @@ sub _parse_schema {
                       |
                        '([^']*)'
                       )\s*/xcg;
-      die "Cannot parse [$val]" unless @tokens and pos($val) == length($val);
+      die "Cannot parse [$val] ",substr($val,pos($val)) unless @tokens and pos($val) == length($val);
 
       # remove () from start/end
       shift @tokens if $tokens[0]  eq '(';
@@ -540,6 +594,17 @@ sub name {
   my $arg = shift;
   my $oid = $self->name2oid( $arg ) or return undef;
   return $self->oid2name( $oid );
+}
+
+sub error {
+  $_[0]->{error};
+}
+
+#
+# Return base entry
+#
+sub entry {
+  $_[0]->{entry};
 }
 
 1;

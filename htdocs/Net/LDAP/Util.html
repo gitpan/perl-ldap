@@ -1,77 +1,135 @@
 <HTML>
 <HEAD>
 <TITLE>Net::LDAP::Util - Utility functions</TITLE>
-<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+<LINK REV="made" HREF="mailto:hackers@FreeBSD.org">
 </HEAD>
 
 <BODY>
 
-<A NAME="__index__"></A>
 <!-- INDEX BEGIN -->
 <!--
 
 <UL>
 
-	<LI><A HREF="#name">NAME</A></LI>
-	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
-	<LI><A HREF="#description">DESCRIPTION</A></LI>
-	<LI><A HREF="#functions">FUNCTIONS</A></LI>
-	<LI><A HREF="#author">AUTHOR</A></LI>
-	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+	<LI><A HREF="#NAME">NAME</A>
+	<LI><A HREF="#SYNOPSIS">SYNOPSIS</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<LI><A HREF="#FUNCTIONS">FUNCTIONS</A>
+	<LI><A HREF="#AUTHOR">AUTHOR</A>
+	<LI><A HREF="#COPYRIGHT">COPYRIGHT</A>
 </UL>
 -->
 <!-- INDEX END -->
 
 <P>
-<H1><A NAME="name">NAME</A></H1>
-<P>Net::LDAP::Util - Utility functions</P>
+<H1><A NAME="NAME">NAME</A></H1>
+<P>
+Net::LDAP::Util - Utility functions
+
 <P>
 <HR>
-<H1><A NAME="synopsis">SYNOPSIS</A></H1>
-<PRE>
-  use Net::LDAP::Util qw(ldap_error_text
+<H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
+<P>
+<PRE>  use Net::LDAP::Util qw(ldap_error_text
                          ldap_error_name
                          ldap_error_desc
-                        );</PRE>
-<PRE>
-  $mesg = $ldap-&gt;search( .... );</PRE>
-<PRE>
-  die &quot;Error &quot;,ldap_error_name($mesg-&gt;code) if $mesg-&gt;code;</PRE>
+                        );
+</PRE>
+<P>
+<PRE>  $mesg = $ldap-&gt;search( .... );
+</PRE>
+<P>
+<PRE>  die &quot;Error &quot;,ldap_error_name($mesg-&gt;code) if $mesg-&gt;code;
+</PRE>
 <P>
 <HR>
-<H1><A NAME="description">DESCRIPTION</A></H1>
-<P><STRONG>Net::LDAP::Util</STRONG> is a collection of utility functions for use with
-the <A HREF="../../Net/LDAP.html">Net::LDAP</A> modules.</P>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+<STRONG>Net::LDAP::Util</STRONG> is a collection of utility functions for use with the <A HREF="../../Net/LDAP.html">Net::LDAP</A> modules.
+
 <P>
 <HR>
-<H1><A NAME="functions">FUNCTIONS</A></H1>
+<H1><A NAME="FUNCTIONS">FUNCTIONS</A></H1>
 <DL>
-<DT><STRONG><A NAME="item_ldap_error_name">ldap_error_name ( NUM )</A></STRONG><BR>
-<DD>
+<DT><STRONG><A NAME="item_ldap_error_name">ldap_error_name ( NUM )</A></STRONG><DD>
+<P>
 Returns the name corresponding with the error number passed in. If the
 error is not known the a string in the form <CODE>&quot;LDAP error code %d(0x%02X)&quot;</CODE>
 is returned.
-<P></P>
-<DT><STRONG><A NAME="item_ldap_error_text">ldap_error_text ( NUM )</A></STRONG><BR>
-<DD>
-Returns the text from the POD description for the given error. If the
-error code given is unknown then <CODE>undef</CODE> is returned.
-<P></P>
-<DT><STRONG><A NAME="item_ldap_error_desc">ldap_error_desc ( NUM )</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_ldap_error_text">ldap_error_text ( NUM )</A></STRONG><DD>
+<P>
+Returns the text from the POD description for the given error. If the error
+code given is unknown then <CODE>undef</CODE> is returned.
+
+<DT><STRONG><A NAME="item_ldap_error_desc">ldap_error_desc ( NUM )</A></STRONG><DD>
+<P>
 Returns a short text description of the error.
-<P></P></DL>
+
+<DT><STRONG><A NAME="item_canonical_dn">canonical_dn ( DN )</A></STRONG><DD>
+<P>
+Returns the given DN in a canonical form. Returns undef if DN is not a
+valid Distinguished Name
+
+<P>
+It performs the following operations on the given DN
+
+<UL>
+<LI>
+<P>
+Lowercases values that are # followed by hex.
+
+<LI>
+<P>
+Uppercases type names.
+
+<LI>
+<P>
+Removes the leading OID. characters if the type is an OID instead of a
+name.
+
+<LI>
+<P>
+Escapes all RFC 2253 special characters, and any other character where the
+ASCII code is &lt;32 or &gt;= 127, with a backslash and a two digit hex
+code.
+
+<LI>
+<P>
+Converts all leading and trailing spaces in values to be \20.
+
+<LI>
+<P>
+If an RDN contains multiple parts, the parts are re-ordered so that the
+attribute names are in alphabetical order.
+
+</UL>
+<P>
+<STRONG>Note</STRONG> values that are hex encoded (ie start with a #) are not decoded. So <CODE>SN=Barr</CODE> is not treated the same as <CODE>SN=#42617272</CODE>
+
+
+
+</DL>
 <P>
 <HR>
-<H1><A NAME="author">AUTHOR</A></H1>
-<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;</P>
+<H1><A NAME="AUTHOR">AUTHOR</A></H1>
+<P>
+Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;
+
 <P>
 <HR>
-<H1><A NAME="copyright">COPYRIGHT</A></H1>
-<P>Copyright (c) 1999-2000 Graham Barr. All rights reserved. This program is
+<H1><A NAME="COPYRIGHT">COPYRIGHT</A></H1>
+<P>
+Copyright (c) 1999-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
-terms as Perl itself.</P>
-<hr><P><EM>$Id$</EM></P>
+terms as Perl itself.
+
+<hr>
+
+<P>
+<EM>$Id: Util.pm,v 1.11 2001/04/12 16:40:40 gbarr Exp $</EM>
+
+
 
 </BODY>
 

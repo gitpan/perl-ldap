@@ -1,4 +1,4 @@
-# $Id: //depot/ldap/lib/Net/LDAP/Control/SortResult.pm#6 $
+# $Id: SortResult.pm,v 1.4 2000/09/12 09:17:10 gbarr Exp $
 # Copyright (c) 1999-2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
@@ -173,6 +173,6 @@ terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: //depot/ldap/lib/Net/LDAP/Control/SortResult.pm#6 $>
+I<$Id: SortResult.pm,v 1.4 2000/09/12 09:17:10 gbarr Exp $>
 
 =cut

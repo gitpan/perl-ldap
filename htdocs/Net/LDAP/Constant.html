@@ -1,351 +1,385 @@
 <HTML>
 <HEAD>
 <TITLE>Net::LDAP::Constant - Constants for use with Net::LDAP</TITLE>
-<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+<LINK REV="made" HREF="mailto:hackers@FreeBSD.org">
 </HEAD>
 
 <BODY>
 
-<A NAME="__index__"></A>
 <!-- INDEX BEGIN -->
 <!--
 
 <UL>
 
-	<LI><A HREF="#name">NAME</A></LI>
-	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
-	<LI><A HREF="#description">DESCRIPTION</A></LI>
-	<LI><A HREF="#see also">SEE ALSO</A></LI>
-	<LI><A HREF="#author">AUTHOR</A></LI>
-	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+	<LI><A HREF="#NAME">NAME</A>
+	<LI><A HREF="#SYNOPSIS">SYNOPSIS</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<LI><A HREF="#SEE_ALSO">SEE ALSO</A>
+	<LI><A HREF="#AUTHOR">AUTHOR</A>
+	<LI><A HREF="#COPYRIGHT">COPYRIGHT</A>
 </UL>
 -->
 <!-- INDEX END -->
 
 <P>
-<H1><A NAME="name">NAME</A></H1>
-<P>Net::LDAP::Constant - Constants for use with Net::LDAP</P>
+<H1><A NAME="NAME">NAME</A></H1>
+<P>
+Net::LDAP::Constant - Constants for use with Net::LDAP
+
 <P>
 <HR>
-<H1><A NAME="synopsis">SYNOPSIS</A></H1>
-<PRE>
- use Net::LDAP qw(LDAP_SUCCESS LDAP_PROTOCOL_ERROR);</PRE>
-<PRE>
- # import all constants 
- use Net::LDAP qw(:all);</PRE>
+<H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
+<P>
+<PRE> use Net::LDAP qw(LDAP_SUCCESS LDAP_PROTOCOL_ERROR);
+</PRE>
+<P>
+<PRE> # import all constants 
+ use Net::LDAP qw(:all);
+</PRE>
 <P>
 <HR>
-<H1><A NAME="description">DESCRIPTION</A></H1>
-<P><STRONG>Net::LDAP::Constant</STRONG> exports constant subroutines for the following LDAP
-error codes.</P>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+<STRONG>Net::LDAP::Constant</STRONG> exports constant subroutines for the following LDAP error codes.
+
 <DL>
-<DT><STRONG><A NAME="item_LDAP_SUCCESS">LDAP_SUCCESS</A></STRONG><BR>
-<DD>
+<DT><STRONG><A NAME="item_LDAP_SUCCESS">LDAP_SUCCESS</A></STRONG><DD>
+<P>
 Operation completed without error
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_OPERATIONS_ERROR">LDAP_OPERATIONS_ERROR</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_OPERATIONS_ERROR">LDAP_OPERATIONS_ERROR</A></STRONG><DD>
+<P>
 Server encountered an internal error
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_PROTOCOL_ERROR">LDAP_PROTOCOL_ERROR</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_PROTOCOL_ERROR">LDAP_PROTOCOL_ERROR</A></STRONG><DD>
+<P>
 Unrecognized version number or incorrect PDU structure
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_TIMELIMIT_EXCEEDED">LDAP_TIMELIMIT_EXCEEDED</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_TIMELIMIT_EXCEEDED">LDAP_TIMELIMIT_EXCEEDED</A></STRONG><DD>
+<P>
 The time limit on a search operation has been exceeded
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_SIZELIMIT_EXCEEDED">LDAP_SIZELIMIT_EXCEEDED</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_SIZELIMIT_EXCEEDED">LDAP_SIZELIMIT_EXCEEDED</A></STRONG><DD>
+<P>
 The maximum number of search results to return has been exceeded.
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_COMPARE_FALSE">LDAP_COMPARE_FALSE</A></STRONG><BR>
-<DD>
-This code is returned when a compare request completes and the attribute value
-given is not in the entry specified
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_COMPARE_TRUE">LDAP_COMPARE_TRUE</A></STRONG><BR>
-<DD>
-This code is returned when a compare request completes and the attribute value
-given is in the entry specified
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_AUTH_METHOD_NOT_SUPPORTED">LDAP_AUTH_METHOD_NOT_SUPPORTED</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_COMPARE_FALSE">LDAP_COMPARE_FALSE</A></STRONG><DD>
+<P>
+This code is returned when a compare request completes and the attribute
+value given is not in the entry specified
+
+<DT><STRONG><A NAME="item_LDAP_COMPARE_TRUE">LDAP_COMPARE_TRUE</A></STRONG><DD>
+<P>
+This code is returned when a compare request completes and the attribute
+value given is in the entry specified
+
+<DT><STRONG><A NAME="item_LDAP_AUTH_METHOD_NOT_SUPPORTED">LDAP_AUTH_METHOD_NOT_SUPPORTED</A></STRONG><DD>
+<P>
 Unrecognized SASL mechanism name
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_STRONG_AUTH_REQUIRED">LDAP_STRONG_AUTH_REQUIRED</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_STRONG_AUTH_REQUIRED">LDAP_STRONG_AUTH_REQUIRED</A></STRONG><DD>
+<P>
 The server requires authentication be performed with a SASL mechanism
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_PARTIAL_RESULTS">LDAP_PARTIAL_RESULTS</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_PARTIAL_RESULTS">LDAP_PARTIAL_RESULTS</A></STRONG><DD>
+<P>
 Returned to version 2 clients when a referral is returned. The response
 will contain a list of URL's for other servers.
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_REFERRAL">LDAP_REFERRAL</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_REFERRAL">LDAP_REFERRAL</A></STRONG><DD>
+<P>
 The server is referring the client to another server. The response will
 contain a list of URL's
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_ADMIN_LIMIT_EXCEEDED">LDAP_ADMIN_LIMIT_EXCEEDED</A></STRONG><BR>
-<DD>
-The server has exceed the maximum number of entries to search while gathering
-a list of search result candidates
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_UNAVAILABLE_CRITICAL_EXT">LDAP_UNAVAILABLE_CRITICAL_EXT</A></STRONG><BR>
-<DD>
-A control or matching rule specified in the request is not supported by
-the server
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_CONFIDENTIALITY_REQUIRED">LDAP_CONFIDENTIALITY_REQUIRED</A></STRONG><BR>
-<DD>
-This result code is returned when confidentiality is required to perform
-a given operation
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_SASL_BIND_IN_PROGRESS">LDAP_SASL_BIND_IN_PROGRESS</A></STRONG><BR>
-<DD>
-The server requires the client to send a new bind request, with the same SASL
-mechanism, to continue the authentication process
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_NO_SUCH_ATTRIBUTE">LDAP_NO_SUCH_ATTRIBUTE</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_ADMIN_LIMIT_EXCEEDED">LDAP_ADMIN_LIMIT_EXCEEDED</A></STRONG><DD>
+<P>
+The server has exceed the maximum number of entries to search while
+gathering a list of search result candidates
+
+<DT><STRONG><A NAME="item_LDAP_UNAVAILABLE_CRITICAL_EXT">LDAP_UNAVAILABLE_CRITICAL_EXT</A></STRONG><DD>
+<P>
+A control or matching rule specified in the request is not supported by the
+server
+
+<DT><STRONG><A NAME="item_LDAP_CONFIDENTIALITY_REQUIRED">LDAP_CONFIDENTIALITY_REQUIRED</A></STRONG><DD>
+<P>
+This result code is returned when confidentiality is required to perform a
+given operation
+
+<DT><STRONG><A NAME="item_LDAP_SASL_BIND_IN_PROGRESS">LDAP_SASL_BIND_IN_PROGRESS</A></STRONG><DD>
+<P>
+The server requires the client to send a new bind request, with the same
+SASL mechanism, to continue the authentication process
+
+<DT><STRONG><A NAME="item_LDAP_NO_SUCH_ATTRIBUTE">LDAP_NO_SUCH_ATTRIBUTE</A></STRONG><DD>
+<P>
 The request referenced an attribute that does not exist
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_UNDEFINED_TYPE">LDAP_UNDEFINED_TYPE</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_UNDEFINED_TYPE">LDAP_UNDEFINED_TYPE</A></STRONG><DD>
+<P>
 The request contains an undefined attribute type
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_INAPPROPRIATE_MATCHING">LDAP_INAPPROPRIATE_MATCHING</A></STRONG><BR>
-<DD>
-An extensible matching rule in the given filter does not apply to the specified
-attribute
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_CONSTRAINT_VIOLATION">LDAP_CONSTRAINT_VIOLATION</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_INAPPROPRIATE_MATCHING">LDAP_INAPPROPRIATE_MATCHING</A></STRONG><DD>
+<P>
+An extensible matching rule in the given filter does not apply to the
+specified attribute
+
+<DT><STRONG><A NAME="item_LDAP_CONSTRAINT_VIOLATION">LDAP_CONSTRAINT_VIOLATION</A></STRONG><DD>
+<P>
 The request contains a value which does not meet with certain constraints.
 This result can be returned as a consequence of
+
 <UL>
 <LI>
+<P>
 The request was to add or modify a user password, and the password fails to
 meet the criteria the server is configured to check. This could be that the
 password is too short, or a recognizable word (e.g. it matches one of the
 attributes in the users entry) or it matches a previous password used by
 the same user.
-<P></P>
+
 <LI>
+<P>
 The request is a bind request to a user account that has been locked
-<P></P></UL>
-<DT><STRONG><A NAME="item_LDAP_TYPE_OR_VALUE_EXISTS">LDAP_TYPE_OR_VALUE_EXISTS</A></STRONG><BR>
-<DD>
+
+</UL>
+<DT><STRONG><A NAME="item_LDAP_TYPE_OR_VALUE_EXISTS">LDAP_TYPE_OR_VALUE_EXISTS</A></STRONG><DD>
+<P>
 The request attempted to add an attribute type or value that already exists
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_INVALID_SYNTAX">LDAP_INVALID_SYNTAX</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_INVALID_SYNTAX">LDAP_INVALID_SYNTAX</A></STRONG><DD>
+<P>
 Some part of the request contained an invalid syntax. It could be a search
 with an invalid filter or a request to modify the schema and the given
 schema has a bad syntax.
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_NO_SUCH_OBJECT">LDAP_NO_SUCH_OBJECT</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_NO_SUCH_OBJECT">LDAP_NO_SUCH_OBJECT</A></STRONG><DD>
+<P>
 The server cannot find an object specified in the request
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_ALIAS_PROBLEM">LDAP_ALIAS_PROBLEM</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_ALIAS_PROBLEM">LDAP_ALIAS_PROBLEM</A></STRONG><DD>
+<P>
 Server encountered a problem while attempting to dereference an alias
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_INVALID_DN_SYNTAX">LDAP_INVALID_DN_SYNTAX</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_INVALID_DN_SYNTAX">LDAP_INVALID_DN_SYNTAX</A></STRONG><DD>
+<P>
 The request contained an invalid DN
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_IS_LEAF">LDAP_IS_LEAF</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_IS_LEAF">LDAP_IS_LEAF</A></STRONG><DD>
+<P>
 The specified entry is a leaf entry
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_ALIAS_DEREF_PROBLEM">LDAP_ALIAS_DEREF_PROBLEM</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_ALIAS_DEREF_PROBLEM">LDAP_ALIAS_DEREF_PROBLEM</A></STRONG><DD>
+<P>
 Server encountered a problem while attempting to dereference an alias
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_INAPPROPRIATE_AUTH">LDAP_INAPPROPRIATE_AUTH</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_INAPPROPRIATE_AUTH">LDAP_INAPPROPRIATE_AUTH</A></STRONG><DD>
+<P>
 The server requires the client which had attempted to bind anonymously or
 without supplying credentials to provide some form of credentials
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_INVALID_CREDENTIALS">LDAP_INVALID_CREDENTIALS</A></STRONG><BR>
-<DD>
-The wrong password was supplied or the SASL credentials could not be processed
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_INSUFFICIENT_ACCESS">LDAP_INSUFFICIENT_ACCESS</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_INVALID_CREDENTIALS">LDAP_INVALID_CREDENTIALS</A></STRONG><DD>
+<P>
+The wrong password was supplied or the SASL credentials could not be
+processed
+
+<DT><STRONG><A NAME="item_LDAP_INSUFFICIENT_ACCESS">LDAP_INSUFFICIENT_ACCESS</A></STRONG><DD>
+<P>
 The client does not have sufficient access to perform the requested
 operation
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_BUSY">LDAP_BUSY</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_BUSY">LDAP_BUSY</A></STRONG><DD>
+<P>
 The server is too busy to perform requested operation
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_UNAVAILABLE">LDAP_UNAVAILABLE</A></STRONG><BR>
-<DD>
-The server in unavailable to perform the request, or the server is
-shutting down
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_UNWILLING_TO_PERFORM">LDAP_UNWILLING_TO_PERFORM</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_UNAVAILABLE">LDAP_UNAVAILABLE</A></STRONG><DD>
+<P>
+The server in unavailable to perform the request, or the server is shutting
+down
+
+<DT><STRONG><A NAME="item_LDAP_UNWILLING_TO_PERFORM">LDAP_UNWILLING_TO_PERFORM</A></STRONG><DD>
+<P>
 The server is unwilling to perform the requested operation
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_LOOP_DETECT">LDAP_LOOP_DETECT</A></STRONG><BR>
-<DD>
-The server was unable to perform the request due to an internal loop detected
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_SORT_CONTROL_MISSING">LDAP_SORT_CONTROL_MISSING</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_LOOP_DETECT">LDAP_LOOP_DETECT</A></STRONG><DD>
+<P>
+The server was unable to perform the request due to an internal loop
+detected
+
+<DT><STRONG><A NAME="item_LDAP_SORT_CONTROL_MISSING">LDAP_SORT_CONTROL_MISSING</A></STRONG><DD>
+<P>
 The search contained a ``virtual list view'' control, but not a server-side
 sorting control, which is required when a ``virtual list view'' is given.
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_INDEX_RANGE_ERROR">LDAP_INDEX_RANGE_ERROR</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_INDEX_RANGE_ERROR">LDAP_INDEX_RANGE_ERROR</A></STRONG><DD>
+<P>
 The search contained a control for a ``virtual list view'' and the results
 exceeded the range specified by the requested offsets.
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_NAMING_VIOLATION">LDAP_NAMING_VIOLATION</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_NAMING_VIOLATION">LDAP_NAMING_VIOLATION</A></STRONG><DD>
+<P>
 The request violates the structure of the DIT
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_OBJECT_CLASS_VIOLATION">LDAP_OBJECT_CLASS_VIOLATION</A></STRONG><BR>
-<DD>
-The request specifies a change to an existing entry or the addition of a new
-entry that does not comply with the servers schema
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_NOT_ALLOWED_ON_NONLEAF">LDAP_NOT_ALLOWED_ON_NONLEAF</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_OBJECT_CLASS_VIOLATION">LDAP_OBJECT_CLASS_VIOLATION</A></STRONG><DD>
+<P>
+The request specifies a change to an existing entry or the addition of a
+new entry that does not comply with the servers schema
+
+<DT><STRONG><A NAME="item_LDAP_NOT_ALLOWED_ON_NONLEAF">LDAP_NOT_ALLOWED_ON_NONLEAF</A></STRONG><DD>
+<P>
 The requested operation is not allowed on an entry that has child entries
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_NOT_ALLOWED_ON_RDN">LDAP_NOT_ALLOWED_ON_RDN</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_NOT_ALLOWED_ON_RDN">LDAP_NOT_ALLOWED_ON_RDN</A></STRONG><DD>
+<P>
 The requested operation ill affect the RDN of the entry
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_ALREADY_EXISTS">LDAP_ALREADY_EXISTS</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_ALREADY_EXISTS">LDAP_ALREADY_EXISTS</A></STRONG><DD>
+<P>
 The client attempted to add an entry that already exists. This can occur as
 a result of
+
 <UL>
 <LI>
+<P>
 An add request was submitted with a DN that already exists
-<P></P>
+
 <LI>
-A modify DN requested was submitted, where the requested new DN already exists
-<P></P>
+<P>
+A modify DN requested was submitted, where the requested new DN already
+exists
+
 <LI>
+<P>
 The request is adding an attribute to the schema and an attribute with the
 given OID or name already exists
-<P></P></UL>
-<DT><STRONG><A NAME="item_LDAP_NO_OBJECT_CLASS_MODS">LDAP_NO_OBJECT_CLASS_MODS</A></STRONG><BR>
-<DD>
+
+</UL>
+<DT><STRONG><A NAME="item_LDAP_NO_OBJECT_CLASS_MODS">LDAP_NO_OBJECT_CLASS_MODS</A></STRONG><DD>
+<P>
 Request attempt to modify the object class of an entry that should not be
 modified
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_RESULTS_TOO_LARGE">LDAP_RESULTS_TOO_LARGE</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_RESULTS_TOO_LARGE">LDAP_RESULTS_TOO_LARGE</A></STRONG><DD>
+<P>
 The results of the request are to large
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_AFFECTS_MULTIPLE_DSAS">LDAP_AFFECTS_MULTIPLE_DSAS</A></STRONG><BR>
-<DD>
-The requested operation needs to be performed on multiple servers where
-the requested operation is not permitted
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_OTHER">LDAP_OTHER</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_AFFECTS_MULTIPLE_DSAS">LDAP_AFFECTS_MULTIPLE_DSAS</A></STRONG><DD>
+<P>
+The requested operation needs to be performed on multiple servers where the
+requested operation is not permitted
+
+<DT><STRONG><A NAME="item_LDAP_OTHER">LDAP_OTHER</A></STRONG><DD>
+<P>
 An unknown error has occurred
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_SERVER_DOWN">LDAP_SERVER_DOWN</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_SERVER_DOWN">LDAP_SERVER_DOWN</A></STRONG><DD>
+<P>
 <CODE>Net::LDAP</CODE> cannot establish a connection or the connection has been lost
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_LOCAL_ERROR">LDAP_LOCAL_ERROR</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_LOCAL_ERROR">LDAP_LOCAL_ERROR</A></STRONG><DD>
+<P>
 An error occurred in <CODE>Net::LDAP</CODE>
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_ENCODING_ERROR">LDAP_ENCODING_ERROR</A></STRONG><BR>
-<DD>
-<CODE>Net::LDAP</CODE> encountered an error while encoding the request packet that would
-have been sent to the server
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_DECODING_ERROR">LDAP_DECODING_ERROR</A></STRONG><BR>
-<DD>
-<CODE>Net::LDAP</CODE> encountered an error while decoding a response packet from
-the server.
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_TIMEOUT">LDAP_TIMEOUT</A></STRONG><BR>
-<DD>
+
+
+
+<DT><STRONG><A NAME="item_LDAP_ENCODING_ERROR">LDAP_ENCODING_ERROR</A></STRONG><DD>
+<P>
+<CODE>Net::LDAP</CODE> encountered an error while encoding the request packet that would have been
+sent to the server
+
+<DT><STRONG><A NAME="item_LDAP_DECODING_ERROR">LDAP_DECODING_ERROR</A></STRONG><DD>
+<P>
+<CODE>Net::LDAP</CODE> encountered an error while decoding a response packet from the server.
+
+<DT><STRONG><A NAME="item_LDAP_TIMEOUT">LDAP_TIMEOUT</A></STRONG><DD>
+<P>
 <CODE>Net::LDAP</CODE> timeout while waiting for a response from the server
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_AUTH_UNKNOWN">LDAP_AUTH_UNKNOWN</A></STRONG><BR>
-<DD>
-The method of authentication requested in a bind request is unknown to
-the server
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_FILTER_ERROR">LDAP_FILTER_ERROR</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_AUTH_UNKNOWN">LDAP_AUTH_UNKNOWN</A></STRONG><DD>
+<P>
+The method of authentication requested in a bind request is unknown to the
+server
+
+<DT><STRONG><A NAME="item_LDAP_FILTER_ERROR">LDAP_FILTER_ERROR</A></STRONG><DD>
+<P>
 An error occurred while encoding the given search filter.
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_USER_CANCELED">LDAP_USER_CANCELED</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_USER_CANCELED">LDAP_USER_CANCELED</A></STRONG><DD>
+<P>
 The user canceled the operation
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_PARAM_ERROR">LDAP_PARAM_ERROR</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_PARAM_ERROR">LDAP_PARAM_ERROR</A></STRONG><DD>
+<P>
 An invalid parameter was specified
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_NO_MEMORY">LDAP_NO_MEMORY</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_NO_MEMORY">LDAP_NO_MEMORY</A></STRONG><DD>
+<P>
 Out of memory error
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_CONNECT_ERROR">LDAP_CONNECT_ERROR</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_CONNECT_ERROR">LDAP_CONNECT_ERROR</A></STRONG><DD>
+<P>
 A connection to the server could not be established
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_NOT_SUPPORTED">LDAP_NOT_SUPPORTED</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_NOT_SUPPORTED">LDAP_NOT_SUPPORTED</A></STRONG><DD>
+<P>
 An attempt has been made to use a feature not supported by Net::LDAP
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_CONTROL_NOT_FOUND">LDAP_CONTROL_NOT_FOUND</A></STRONG><BR>
-<DD>
-The controls required to perform the requested operation were not
-found.
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_NO_RESULTS_RETURNED">LDAP_NO_RESULTS_RETURNED</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_CONTROL_NOT_FOUND">LDAP_CONTROL_NOT_FOUND</A></STRONG><DD>
+<P>
+The controls required to perform the requested operation were not found.
+
+<DT><STRONG><A NAME="item_LDAP_NO_RESULTS_RETURNED">LDAP_NO_RESULTS_RETURNED</A></STRONG><DD>
+<P>
 No results were returned from the server.
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_MORE_RESULTS_TO_RETURN">LDAP_MORE_RESULTS_TO_RETURN</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_MORE_RESULTS_TO_RETURN">LDAP_MORE_RESULTS_TO_RETURN</A></STRONG><DD>
+<P>
 There are more results in the chain of results.
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_CLIENT_LOOP">LDAP_CLIENT_LOOP</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_CLIENT_LOOP">LDAP_CLIENT_LOOP</A></STRONG><DD>
+<P>
 A loop has been detected. For example when following referals.
-<P></P>
-<DT><STRONG><A NAME="item_LDAP_REFERRAL_LIMIT_EXCEEDED">LDAP_REFERRAL_LIMIT_EXCEEDED</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_LDAP_REFERRAL_LIMIT_EXCEEDED">LDAP_REFERRAL_LIMIT_EXCEEDED</A></STRONG><DD>
+<P>
 The referral hop limit has been exceeded.
-<P></P></DL>
+
+</DL>
 <P>
 <HR>
-<H1><A NAME="see also">SEE ALSO</A></H1>
-<P><A HREF="../../Net/LDAP.html">Net::LDAP</A>,
-<A HREF="../../Net/LDAP/Message.html">Net::LDAP::Message</A></P>
+<H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
+<P>
+<A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A>,
+<A HREF="../../Net/LDAP/Message|Net/LDAP/Message.html">Net::LDAP::Message|Net::LDAP::Message</A>
+
+
+
 <P>
 <HR>
-<H1><A NAME="author">AUTHOR</A></H1>
-<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;</P>
-<P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-&lt;<A HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;</P>
+<H1><A NAME="AUTHOR">AUTHOR</A></H1>
+<P>
+Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;
+
+<P>
+Please report any bugs, or post any suggestions, to the perl-ldap mailing
+list &lt;<A
+HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;
+
+
 <P>
 <HR>
-<H1><A NAME="copyright">COPYRIGHT</A></H1>
-<P>Copyright (c) 1998-2000 Graham Barr. All rights reserved. This program is
+<H1><A NAME="COPYRIGHT">COPYRIGHT</A></H1>
+<P>
+Copyright (c) 1998-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
-terms as Perl itself.</P>
-<hr><P><EM>$Id: //depot/ldap-asn/lib/Net/LDAP/Constant.pod#3 $</EM></P>
+terms as Perl itself.
+
+<hr>
+
+<P>
+<EM>$Id: Constant.pod,v 1.2 2000/05/09 16:09:49 gbarr Exp $</EM>
+
+
 
 </BODY>
 

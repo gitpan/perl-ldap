@@ -7,7 +7,7 @@ package Net::LDAP;
 use strict;
 use IO::Socket;
 use IO::Select;
-use vars qw($VERSION $LDAP_VERSION);
+use vars qw($VERSION $LDAP_VERSION @ISA);
 use Convert::ASN1 qw(asn_read);
 use Net::LDAP::Message;
 use Net::LDAP::ASN qw(LDAPResponse);
@@ -22,9 +22,16 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 			   LDAP_INAPPROPRIATE_AUTH
 			);
 
-$VERSION = 0.22;
+$VERSION 	= 0.23;
+@ISA     	= qw(Net::LDAP::Extra);
+$LDAP_VERSION 	= 2;      # default LDAP protocol version
 
-$LDAP_VERSION = 2;      # default LDAP protocol version
+# Net::LDAP::Extra will only exist is someone use's the module. But we need
+# to ensure the package stash exists or perl will complain that we inherit
+# from a non-existant package. I could just use the module, but I did not
+# want to.
+
+$Net::LDAP::Extra::create = $Net::LDAP::Extra::create = 0;
 
 sub import {
     shift;
@@ -38,7 +45,7 @@ sub _options {
   my $once = 0;
   for my $v (grep { /^-/ } keys %ret) {
     require Carp;
-    $once++ or Carp::carp("depricated use of leading - for options");
+    $once++ or Carp::carp("deprecated use of leading - for options");
     $ret{substr($v,1)} = $ret{$v};
   }
 
@@ -619,7 +626,10 @@ sub _recvresp {
     my $mid = $result->{messageID};
 
     my $mesg = $ldap->{net_ldap_mesg}->{$mid} or
-      return LDAP_PROTOCOL_ERROR;
+      do {
+	print STDERR "Unexpected PDU, ignored\n" if $debug & 10;
+	next;
+      };
 
     $mesg->decode($result) or
       return $mesg->code;
@@ -645,6 +655,16 @@ sub _forgetmesg {
 #Mark Wilcox 3-20-2000
 #now accepts named parameters
 #dn => "dn of subschema entry"
+#
+#
+# Clif Harden 2-4-2001.
+# corrected filter for subschema search.
+# added attributes to retrieve on subschema search.
+# added attributes to retrieve on rootDSE search.
+# changed several double qoute character to single quote
+# character, just to be consistent throughout the schema
+# and root_dse functions.
+#
 
 sub schema {
   require Net::LDAP::Schema;
@@ -660,13 +680,22 @@ sub schema {
     my $root = $self->root_dse
       or return undef;
 
-    $base = $root->get_value('subschemasubentry') || 'cn=schema';
+    $base = $root->get_value('subschemaSubentry') || 'cn=schema';
   }
 
   $mesg = $self->search(
     base   => $base,
     scope  => 'base',
-    filter => '(objectClass=*)',
+    filter => '(objectClass=subschema)',
+    attrs  => [ "objectClasses", 
+                "attributeTypes", 
+                "matchingRules",
+                "matchingRuleUse",
+                "dITStructureRules",
+                "dITContentRules",
+                "nameForms",
+                "ldapSyntaxes",
+              ],
   );
 
   $mesg->code
@@ -680,9 +709,17 @@ sub root_dse {
   
   unless ($ldap->{net_ldap_rootdse}) {
     $mesg = $ldap->search(
-      base   => "",
+      base   => '',
       scope  => 'base',
-      filter => "(objectClass=*)",
+      filter => '(objectClass=*)',
+      attrs => [ "subschemaSubentry",
+                 "namingContexts",
+                 "altServer",
+                 "supportedExtension",
+                 "supportedControl",
+                 "supportedSASLMechanisms",
+                 "supportedLDAPVersion",
+               ],
     );
     $ldap->{net_ldap_rootdse} = $mesg->entry;
   }

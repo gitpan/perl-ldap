@@ -22,7 +22,7 @@ Net::LDAP::Util - Utility functions
 =head1 DESCRIPTION
 
 B<Net::LDAP::Util> is a collection of utility functions for use with
-the L<Net::LDAP|Net::LDAP> modules.
+the L<Net::LDAP> modules.
 
 =head1 FUNCTIONS
 
@@ -37,8 +37,9 @@ require Exporter;
   ldap_error_name
   ldap_error_text
   ldap_error_desc
+  canonical_dn
 );
-$VERSION = "0.04";
+$VERSION = "0.06";
 
 =item ldap_error_name ( NUM )
 
@@ -221,6 +222,104 @@ sub ldap_error_desc {
   $err2desc[$code] || sprintf("LDAP error code %d(0x%02X)",$code,$code);
 }
 
+
+
+=item canonical_dn ( DN )
+
+Returns the given DN in a canonical form. Returns undef if DN is
+not a valid Distinguished Name
+
+It performs the following operations on the given DN
+
+=over 4
+
+=item *
+
+Lowercases values that are # followed by hex.
+
+=item *
+
+Uppercases type names.
+
+=item *
+
+Removes the leading OID. characters if the type is an OID instead
+of a name.
+
+=item *
+
+Escapes all RFC 2253 special characters, and any other character
+where the ASCII code is <32 or >= 127, with a backslash and a two
+digit hex code.
+
+=item *
+
+Converts all leading and trailing spaces in values to be \20.
+
+=item *
+
+If an RDN contains multiple parts, the parts are re-ordered so that
+the attribute names are in alphabetical order.
+
+=back
+
+B<Note> values that are hex encoded (ie start with a #) are not
+decoded. So C<SN=Barr> is not treated the same as C<SN=#42617272>
+
+=cut
+
+
+sub canonical_dn {
+  my $dn = shift;
+  $dn = $dn->dn if ref($dn);
+  
+  my (@dn, @rdn);
+  while (
+	 $dn =~ /\G(?:
+		\s*
+		([a-zA-Z][-a-zA-Z0-9]*|(?:[Oo][Ii][Dd]\.)?\d+(?:\.\d+)*)
+		\s*
+		=
+		\s*
+		(
+		  (?:[^\\",=+<>\#;]*[^\\",=+<>\#;\s]|\\(?:[\\ ",=+<>#;]|[0-9a-fA-F]{2}))*
+		  |
+		  \#(?:[0-9a-fA-F]{2})+
+		  |
+		  "(?:[^\\"]+|\\(?:[\\",=+<>#;]|[0-9a-fA-F]{2}))*"
+		)
+		\s*
+		(?:([;,+])\s*(?=\S)|$)
+		)\s*/gcx)
+  {
+    my($type,$val,$sep) = ($1,$2,$3);
+
+    $type =~ s/^oid\.(\d+(\.\d+)*)$/$1/i;
+
+    if ($val !~ /^#/) {
+      $val =~ s/^"(.*)"$/$1/;
+      $val =~ s/\\([\\ ",=+<>#;]|[0-9a-fA-F]{2})
+	       /length($1)==1 ? $1 : chr(hex($1))
+	       /xeg;
+      $val =~ s/([\\",=+<>#;])/\\$1/g;
+      $val =~ s/([\x00-\x1f\x7f-\xff])/sprintf("\\%02x",ord($1))/eg;
+
+      $val =~ s/(^\s+|\s+$)/"\\20" x length $1/ge;
+    }
+
+    push @rdn, "\U$type\E=$val";
+
+    unless (defined $sep and $sep eq '+') {
+      push @dn, join("+", sort @rdn);
+      @rdn = ();
+    }
+  }
+
+  (length($dn) != (pos($dn)||0))
+    ? undef
+    : join(",",@dn);
+}
+
 =back
 
 =head1 AUTHOR
@@ -235,7 +334,7 @@ terms as Perl itself.
 
 =for html <hr>
 
-I<$Id$>
+I<$Id: Util.pm,v 1.11 2001/04/12 16:40:40 gbarr Exp $>
 
 =cut
 

@@ -192,7 +192,7 @@ terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: //depot/ldap/lib/Net/LDAP/Control/VLVResponse.pm#4 $>
+I<$Id: VLVResponse.pm,v 1.3 2000/07/30 21:03:50 gbarr Exp $>
 
 =cut
 

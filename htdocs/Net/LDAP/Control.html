@@ -1,168 +1,205 @@
 <HTML>
 <HEAD>
 <TITLE>Net::LDAP::Control - LDAPv3 control object base class</TITLE>
-<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+<LINK REV="made" HREF="mailto:hackers@FreeBSD.org">
 </HEAD>
 
 <BODY>
 
-<A NAME="__index__"></A>
 <!-- INDEX BEGIN -->
 <!--
 
 <UL>
 
-	<LI><A HREF="#name">NAME</A></LI>
-	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
-	<LI><A HREF="#description">DESCRIPTION</A></LI>
-	<LI><A HREF="#constructors">CONSTRUCTORS</A></LI>
-	<LI><A HREF="#methods">METHODS</A></LI>
-	<LI><A HREF="#see also">SEE ALSO</A></LI>
-	<LI><A HREF="#author">AUTHOR</A></LI>
-	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+	<LI><A HREF="#NAME">NAME</A>
+	<LI><A HREF="#SYNOPSIS">SYNOPSIS</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<LI><A HREF="#CONSTRUCTORS">CONSTRUCTORS</A>
+	<LI><A HREF="#METHODS">METHODS</A>
+	<LI><A HREF="#SEE_ALSO">SEE ALSO</A>
+	<LI><A HREF="#AUTHOR">AUTHOR</A>
+	<LI><A HREF="#COPYRIGHT">COPYRIGHT</A>
 </UL>
 -->
 <!-- INDEX END -->
 
 <P>
-<H1><A NAME="name">NAME</A></H1>
-<P>Net::LDAP::Control - LDAPv3 control object base class</P>
+<H1><A NAME="NAME">NAME</A></H1>
+<P>
+Net::LDAP::Control - LDAPv3 control object base class
+
 <P>
 <HR>
-<H1><A NAME="synopsis">SYNOPSIS</A></H1>
-<PRE>
- use Net::LDAP::Control;
- use Net::LDAP::Constant qw( LDAP_CONTROL_MATCHEDVALS );</PRE>
-<PRE>
- $ctrl = Net::LDAP::Control-&gt;new(
+<H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
+<P>
+<PRE> use Net::LDAP::Control;
+ use Net::LDAP::Constant qw( LDAP_CONTROL_MATCHEDVALS );
+</PRE>
+<P>
+<PRE> $ctrl = Net::LDAP::Control-&gt;new(
    type     =&gt; &quot;1.2.3.4&quot;,
    value    =&gt; &quot;help&quot;,
    critical =&gt; 0
- );</PRE>
-<PRE>
- $mesg = $ldap-&gt;search( @args, control =&gt; [ $ctrl ]);</PRE>
-<PRE>
- $ctrl = Net::LDAP::Control-&gt;new( type =&gt; LDAP_CONTROL_MATCHEDVALS );</PRE>
+ );
+</PRE>
+<P>
+<PRE> $mesg = $ldap-&gt;search( @args, control =&gt; [ $ctrl ]);
+</PRE>
+<P>
+<PRE> $ctrl = Net::LDAP::Control-&gt;new( type =&gt; LDAP_CONTROL_MATCHEDVALS );
+</PRE>
 <P>
 <HR>
-<H1><A NAME="description">DESCRIPTION</A></H1>
-<P><CODE>Net::LDAP::Control</CODE> is a base-class for LDAPv3 control objects.</P>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+<CODE>Net::LDAP::Control</CODE> is a base-class for LDAPv3 control objects.
+
 <P>
 <HR>
-<H1><A NAME="constructors">CONSTRUCTORS</A></H1>
+<H1><A NAME="CONSTRUCTORS">CONSTRUCTORS</A></H1>
 <DL>
-<DT><STRONG><A NAME="item_new">new ARGS</A></STRONG><BR>
-<DD>
+<DT><STRONG><A NAME="item_new">new ARGS</A></STRONG><DD>
+<P>
 ARGS is a list of name/value pairs, valid arguments are.
+
 <DL>
-<DT><STRONG><A NAME="item_critical">critical</A></STRONG><BR>
-<DD>
+<DT><STRONG><A NAME="item_critical">critical</A></STRONG><DD>
+<P>
 A booloean value, if TRUE and the control is unrecognized by the server or
-is inappropriate for the requested operation then the server will return
-an error and the operation will not be performed.
-<P>If FALSE and the control is unrecognized by the server or
-is inappropriate for the requested operation then the server will ignore
-the control and perform the requested operation as if the control was
-not given.</P>
-<P>If absent, FALSE is assume.</P>
-<P></P>
-<DT><STRONG><A NAME="item_type">type</A></STRONG><BR>
-<DD>
-A dotted-decimal representation of an OBJECT IDENTIFIER which
-uniquely identifies the control. This prevents conflicts between
-control names.
-<P>This may be ommitted if the contructor is being called on a sub-class of
-Net::LDAP::Control which has registered to be associated with an OID.
-If the contructor is being called on the Net::LDAP::Control
-package, then this argument must be given.  If the given OID has been
-registered by a package, then the returned object will be of the type
-registered to handle that OID.</P>
-<P></P>
-<DT><STRONG><A NAME="item_value">value</A></STRONG><BR>
-<DD>
+is inappropriate for the requested operation then the server will return an
+error and the operation will not be performed.
+
+<P>
+If FALSE and the control is unrecognized by the server or is inappropriate
+for the requested operation then the server will ignore the control and
+perform the requested operation as if the control was not given.
+
+<P>
+If absent, FALSE is assume.
+
+<DT><STRONG><A NAME="item_type">type</A></STRONG><DD>
+<P>
+A dotted-decimal representation of an OBJECT IDENTIFIER which uniquely
+identifies the control. This prevents conflicts between control names.
+
+<P>
+This may be ommitted if the contructor is being called on a sub-class of
+Net::LDAP::Control which has registered to be associated with an OID. If
+the contructor is being called on the Net::LDAP::Control package, then this
+argument must be given. If the given OID has been registered by a package,
+then the returned object will be of the type registered to handle that OID.
+
+<DT><STRONG><A NAME="item_value">value</A></STRONG><DD>
+<P>
 Optional information associated with the control. It's format is specific
 to the particular control.
-<P></P></DL>
-<DT><STRONG><A NAME="item_from_asn_ASN">from_asn ASN</A></STRONG><BR>
-<DD>
-ASN is a HASH reference, normally extracted from a PDU. It will contain
-a <A HREF="#item_type"><CODE>type</CODE></A> element and optionally <A HREF="#item_critical"><CODE>critical</CODE></A> and <A HREF="#item_value"><CODE>value</CODE></A> elements. On
-return ASN will be blessed into a package. If <A HREF="#item_type"><CODE>type</CODE></A> is a registered
-OID, then ASN will be blessed into the registered package, if not then ASN
-will be blessed into Net::LDAP::Control.
-<P>This constructor is used internally by Net::LDAP and assumes that HASH
-passed contains a valid control. It should be used with <STRONG>caution</STRONG>.</P>
-<P></P></DL>
+
+</DL>
+<DT><STRONG><A NAME="item_from_asn">from_asn ASN</A></STRONG><DD>
+<P>
+ASN is a HASH reference, normally extracted from a PDU. It will contain a <A HREF="#item_type">type</A> element and optionally <A HREF="#item_critical">critical</A> and <A HREF="#item_value">value</A> elements. On return ASN will be blessed into a package. If <A HREF="#item_type">type</A> is a registered OID, then ASN will be blessed into the registered package,
+if not then ASN will be blessed into Net::LDAP::Control.
+
+<P>
+This constructor is used internally by Net::LDAP and assumes that HASH
+passed contains a valid control. It should be used with <STRONG>caution</STRONG>.
+
+</DL>
 <P>
 <HR>
-<H1><A NAME="methods">METHODS</A></H1>
-<P>In addition to the methods listed below, each of the named parameters
-to <A HREF="#item_new"><CODE>new</CODE></A> is also avaliable as a method. <A HREF="#item_type"><CODE>type</CODE></A> will return the OID of
-the control object. <A HREF="#item_value"><CODE>value</CODE></A> and <A HREF="#item_critical"><CODE>critical</CODE></A> are set/get methods and will
-return the current value for each attribute if called without arguments,
-but may also be called with arguments to set new values.</P>
+<H1><A NAME="METHODS">METHODS</A></H1>
+<P>
+In addition to the methods listed below, each of the named parameters to <A HREF="#item_new">new</A> is also avaliable as a method. <A HREF="#item_type">type</A> will return the OID of the control object. <A HREF="#item_value">value</A> and <A HREF="#item_critical">critical</A> are set/get methods and will return the current value for each attribute if
+called without arguments, but may also be called with arguments to set new
+values.
+
 <DL>
-<DT><STRONG><A NAME="item_error">error</A></STRONG><BR>
-<DD>
-If there has been an error returns a description of the error, otherwise it will
-return <CODE>undef</CODE>
-<P></P>
-<DT><STRONG><A NAME="item_init">init</A></STRONG><BR>
-<DD>
-<A HREF="#item_init"><CODE>init</CODE></A> will be called as the last step in both contructors. What it does will depend
-on the sub-class. It must always return the object.
-<P></P>
-<DT><STRONG><A NAME="item_register">register OID</A></STRONG><BR>
-<DD>
-<A HREF="#item_register"><CODE>register</CODE></A> is provided for sub-class implementors. It should be called as a class method
-on a sub-class of Net::LDAP::Control with the OID that the class will handle. Net::LDAP::Control
-will remember this class and OID pair and use it in the following
-situations.
+<DT><STRONG><A NAME="item_error">error</A></STRONG><DD>
+<P>
+If there has been an error returns a description of the error, otherwise it
+will return <CODE>undef</CODE>
+
+
+
+<DT><STRONG><A NAME="item_init">init</A></STRONG><DD>
+<P>
+<A HREF="#item_init">init</A> will be called as the last step in both contructors. What it does will
+depend on the sub-class. It must always return the object.
+
+<DT><STRONG><A NAME="item_register">register OID</A></STRONG><DD>
+<P>
+<A HREF="#item_register">register</A> is provided for sub-class implementors. It should be called as a class
+method on a sub-class of Net::LDAP::Control with the OID that the class
+will handle. Net::LDAP::Control will remember this class and OID pair and
+use it in the following situations.
+
 <UL>
 <LI>
-<A HREF="#item_new"><CODE>new</CODE></A> is called as a class method on the Net::LDAP::Control package and OID is passed
-as the type. The returned object will be blessed into the package that registered
-the OID.
-<P></P>
+<P>
+<A HREF="#item_new">new</A> is called as a class method on the Net::LDAP::Control package and OID is
+passed as the type. The returned object will be blessed into the package
+that registered the OID.
+
 <LI>
-<A HREF="#item_new"><CODE>new</CODE></A> is called as a class method on a registered package and the <A HREF="#item_type"><CODE>type</CODE></A> is not
-specified. The <A HREF="#item_type"><CODE>type</CODE></A> will be set to the OID registered by that package.
-<P></P>
+<P>
+<A HREF="#item_new">new</A> is called as a class method on a registered package and the <A HREF="#item_type">type</A> is not specified. The <A HREF="#item_type">type</A> will be set to the OID registered by that package.
+
 <LI>
-<CODE>from_asn</CODE> is called to construct an object from ASN. The returned object will be
+<P>
+<A HREF="#item_from_asn">from_asn</A> is called to construct an object from ASN. The returned object will be
 blessed into the package which was registered to handle the OID in the ASN.
-<P></P></UL>
-<DT><STRONG><A NAME="item_to_asn">to_asn</A></STRONG><BR>
-<DD>
-Returns a structure suitable for passing to Convert::ASN1 for
-encoding. This method will be called by <A HREF="../../Net/LDAP.html">Net::LDAP</A> when the
-control is used.
-<P>The base class implementation of this method will call the <A HREF="#item_value"><CODE>value</CODE></A> method
-without arguments to allow a sub-class to encode it's value. Sub-classes
-should not need to override this method.</P>
-<P></P>
-<DT><STRONG><A NAME="item_valid">valid</A></STRONG><BR>
-<DD>
-Returns true if the object is valid and can be encoded. The default implementation
-for this method is to return TRUE if there is no error, but sub-classes may override that.
-<P></P></DL>
+
+</UL>
+<DT><STRONG><A NAME="item_to_asn">to_asn</A></STRONG><DD>
+<P>
+Returns a structure suitable for passing to Convert::ASN1 for encoding.
+This method will be called by <A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A> when the control is used.
+
+<P>
+The base class implementation of this method will call the <A HREF="#item_value">value</A> method without arguments to allow a sub-class to encode it's value.
+Sub-classes should not need to override this method.
+
+<DT><STRONG><A NAME="item_valid">valid</A></STRONG><DD>
+<P>
+Returns true if the object is valid and can be encoded. The default
+implementation for this method is to return TRUE if there is no error, but
+sub-classes may override that.
+
+</DL>
 <P>
 <HR>
-<H1><A NAME="see also">SEE ALSO</A></H1>
-<P><A HREF="../../Net/LDAP.html">Net::LDAP</A></P>
+<H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
+<P>
+<A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A>
+
+
+
 <P>
 <HR>
-<H1><A NAME="author">AUTHOR</A></H1>
-<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;</P>
-<P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-&lt;<A HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;</P>
+<H1><A NAME="AUTHOR">AUTHOR</A></H1>
+<P>
+Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;
+
+<P>
+Please report any bugs, or post any suggestions, to the perl-ldap mailing
+list &lt;<A
+HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;
+
+
 <P>
 <HR>
-<H1><A NAME="copyright">COPYRIGHT</A></H1>
-<P>Copyright (c) 1999-2000 Graham Barr. All rights reserved. This program is
+<H1><A NAME="COPYRIGHT">COPYRIGHT</A></H1>
+<P>
+Copyright (c) 1999-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
-terms as Perl itself.</P>
-<hr><P><EM>$Id: //depot/ldap/lib/Net/LDAP/Control.pm#13 $</EM></P>
+terms as Perl itself.
+
+<hr>
+
+<P>
+<EM>$Id: Control.pm,v 1.5 2001/04/10 16:30:27 gbarr Exp $</EM>
+
+
 
 </BODY>
 

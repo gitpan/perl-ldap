@@ -1,100 +1,141 @@
 <HTML>
 <HEAD>
 <TITLE>Net::LDAP::LDIF - LDIF reading and writing</TITLE>
-<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+<LINK REV="made" HREF="mailto:hackers@FreeBSD.org">
 </HEAD>
 
 <BODY>
 
-<A NAME="__index__"></A>
 <!-- INDEX BEGIN -->
 <!--
 
 <UL>
 
-	<LI><A HREF="#name">NAME</A></LI>
-	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
-	<LI><A HREF="#description">DESCRIPTION</A></LI>
-	<LI><A HREF="#constructor">CONSTRUCTOR</A></LI>
-	<LI><A HREF="#methods">METHODS</A></LI>
-	<LI><A HREF="#author">AUTHOR</A></LI>
-	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+	<LI><A HREF="#NAME">NAME</A>
+	<LI><A HREF="#SYNOPSIS">SYNOPSIS</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<LI><A HREF="#CONSTRUCTOR">CONSTRUCTOR</A>
+	<LI><A HREF="#METHODS">METHODS</A>
+	<LI><A HREF="#AUTHOR">AUTHOR</A>
+	<LI><A HREF="#COPYRIGHT">COPYRIGHT</A>
 </UL>
 -->
 <!-- INDEX END -->
 
 <P>
-<H1><A NAME="name">NAME</A></H1>
-<P>Net::LDAP::LDIF - LDIF reading and writing</P>
+<H1><A NAME="NAME">NAME</A></H1>
+<P>
+Net::LDAP::LDIF - LDIF reading and writing
+
 <P>
 <HR>
-<H1><A NAME="synopsis">SYNOPSIS</A></H1>
-<PRE>
-  use Net::LDAP::LDIF;</PRE>
-<PRE>
-  $ldif = Net::LDAP::LDIF-&gt;new( &quot;file.ldif&quot;, &quot;r&quot; );
+<H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
+<P>
+<PRE>  use Net::LDAP::LDIF;
+</PRE>
+<P>
+<PRE>  $ldif = Net::LDAP::LDIF-&gt;new( &quot;file.ldif&quot;, &quot;r&quot; );
   while( $entry = $ldif-&gt;read() ) {
           # Do things with $entry
   }
-  $ldif-&gt;done();</PRE>
-<PRE>
-  $ldif = Net::LDAP::LDIF-&gt;new( $fh, &quot;r&quot; );
-  @entries = $ldif-&gt;read();</PRE>
+  $ldif-&gt;done();
+</PRE>
+<P>
+<PRE>  $ldif = Net::LDAP::LDIF-&gt;new( $fh, &quot;r&quot; );
+  @entries = $ldif-&gt;read();
+</PRE>
 <P>
 <HR>
-<H1><A NAME="description">DESCRIPTION</A></H1>
-<P><STRONG>Net::LDAP::LDIF</STRONG> provides a means to convert between
-<A HREF="../../Net/LDAP/Entry.html">Net::LDAP::Entry</A> objects and LDAP entries represented
-in LDIF format files. Reading and writing are supported and may manipulate
-single entries or lists of entries.</P>
-<P>As when reading an entire file into memory with perl normally, take into
-account the possibility of memory use when loading an LDIF file in one go.</P>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+<STRONG>Net::LDAP::LDIF</STRONG> provides a means to convert between
+<A HREF="../../Net/LDAP/Entry|Net/LDAP/Entry.html">Net::LDAP::Entry|Net::LDAP::Entry</A> objects and LDAP entries represented in LDIF format files. Reading and
+writing are supported and may manipulate single entries or lists of
+entries.
+
+<P>
+As when reading an entire file into memory with perl normally, take into
+account the possibility of memory use when loading an LDIF file in one go.
+
 <P>
 <HR>
-<H1><A NAME="constructor">CONSTRUCTOR</A></H1>
+<H1><A NAME="CONSTRUCTOR">CONSTRUCTOR</A></H1>
 <DL>
-<DT><STRONG><A NAME="item_new">new ( [ FILE [, MODE]] )</A></STRONG><BR>
-<DD>
+<DT><STRONG><A NAME="item_new">new ( [ FILE [, MODE [,OPTIONS ]]] )</A></STRONG><DD>
+<P>
 FILE may be the name of a file or an already open filehandle. If a filename
 is passed in then it will be opened with the mode specified.
-<P>MODE defaults to ``r'' for read. You may specify ``w'' to for write+truncate or
-``a'' for write+append.</P>
-<P></P></DL>
+
 <P>
-<HR>
-<H1><A NAME="methods">METHODS</A></H1>
+MODE defaults to ``r'' for read. You may specify ``w'' to for
+write+truncate or ``a'' for write+append.
+
+<P>
+OPTIONS is a list of key-value pairs. Valid options are:
+
 <DL>
-<DT><STRONG><A NAME="item_read">read</A></STRONG><BR>
-<DD>
-<P>In a similar fashion to the perl &lt;$fh&gt; operator, read will read one entry or
-the entire file depending on whether it is called in a scalar or array context.</P>
-<DT><STRONG><A NAME="item_read_cmd">read_cmd</A></STRONG><BR>
-<DD>
-<DT><STRONG><A NAME="item_write">write ( ENTRIES )</A></STRONG><BR>
-<DD>
-<DT><STRONG><A NAME="item_write_cmd">write_cmd ( ENTRIES )</A></STRONG><BR>
-<DD>
-<DT><STRONG><A NAME="item_done">done</A></STRONG><BR>
-<DD>
-<P>This method signals that the LDIF object is no longer needed. If a file was
-opened automatically when the object was created it will be closed. This
-method is called automatically via DESTROY when the object goes out of scope.</P>
-<PRE>
-  $ldif-&gt;done();</PRE>
+<DT><STRONG><A NAME="item_encode">encode</A></STRONG><DD>
+<P>
+some values in LDIF cannot be written verbatim and have to be encoded in
+some way. This option lets you specify how. Valid encoding options are
+'none' (the default), 'canonical' (see
+<A HREF="../../Net/LDAP/Util.html#canonical_dn">canonical_dn</A>), or 'base64'.
+
+</DL>
 </DL>
 <P>
 <HR>
-<H1><A NAME="author">AUTHOR</A></H1>
-<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;.</P>
-<P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-&lt;<A HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;.</P>
+<H1><A NAME="METHODS">METHODS</A></H1>
+<DL>
+<DT><STRONG><A NAME="item_read">read</A></STRONG><DD>
+<P>
+In a similar fashion to the perl &lt;$fh&gt; operator, read will read one
+entry or the entire file depending on whether it is called in a scalar or
+array context.
+
+
+<DL>
+<DT><STRONG><A NAME="item_read_cmd">read_cmd</A></STRONG><DD>
+<DT><STRONG><A NAME="item_write">write ( ENTRIES )</A></STRONG><DD>
+<DT><STRONG><A NAME="item_write_cmd">write_cmd ( ENTRIES )</A></STRONG><DD>
+<DT><STRONG><A NAME="item_done">done</A></STRONG><DD>
+<P>
+This method signals that the LDIF object is no longer needed. If a file was
+opened automatically when the object was created it will be closed. This
+method is called automatically via DESTROY when the object goes out of
+scope.
+
+<P>
+<PRE>  $ldif-&gt;done();
+</PRE>
+
+
 <P>
 <HR>
-<H1><A NAME="copyright">COPYRIGHT</A></H1>
-<P>Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
+<H1><A NAME="AUTHOR">AUTHOR</A></H1>
+<P>
+Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;
+
+<P>
+Please report any bugs, or post any suggestions, to the perl-ldap mailing
+list &lt;<A
+HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;
+
+
+<P>
+<HR>
+<H1><A NAME="COPYRIGHT">COPYRIGHT</A></H1>
+<P>
+Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
-terms as Perl itself.</P>
-<hr><P><EM>$Id$</EM></P>
+terms as Perl itself.
+
+<hr>
+
+<P>
+<EM>$Id: LDIF.pod,v 1.3 2001/03/21 16:21:18 chrisridd Exp $</EM>
+
+
 
 </BODY>
 

@@ -1,6 +1,6 @@
 <HTML>
 <HEAD>
-<TITLE>Net::LDAP::Control::SortResult - Server Side Sort result control object</TITLE>
+<TITLE>Net::LDAP::Control::VLVResponse -- LDAPv3 Virtual List View server response</TITLE>
 <LINK REV="made" HREF="mailto:hackers@FreeBSD.org">
 </HEAD>
 
@@ -27,71 +27,59 @@
 <P>
 <H1><A NAME="NAME">NAME</A></H1>
 <P>
-Net::LDAP::Control::SortResult - Server Side Sort (SSS) result control
-object
+Net::LDAP::Control::VLVResponse -- LDAPv3 Virtual List View server response
 
 <P>
 <HR>
 <H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
 <P>
-<PRE> use Net::LDAP::Control::Sort;
- use Net::LDAP::Constant qw(LDAP_CONTROL_SORTRESULT);
- use Net::LDAP::Util qw(ldap_error_name);
-</PRE>
-<P>
-<PRE> $sort = Net::LDAP::Control::Sort-&gt;new(
-   order =&gt; &quot;cn -age&quot;
- );
-</PRE>
-<P>
-<PRE> $mesg = $ldap-&gt;search( @args, control =&gt; [ $sort ]);
-</PRE>
-<P>
-<PRE> ($resp) = $mesg-&gt;control( LDAP_CONTROL_SORTRESULT );
-</PRE>
-<P>
-<PRE> if ($resp) {
-   if ($resp-&gt;result) {
-     my $attr = $resp-&gt;attr;
-     print &quot;Problem sorting, &quot;,ldap_error_name($resp-&gt;result);
-     print &quot; ($attr)&quot; if $attr;
-     print &quot;\n&quot;;
-   }
-   else {
-     print &quot;Results are sorted\n&quot;;
-   }
- }
- else {
-   print &quot;Server does not support sorting\n&quot;;
- }
-</PRE>
+See <A HREF="../../../Net/LDAP/Control/VLV|Net/LDAP/Control/VLV.html">Net::LDAP::Control::VLV|Net::LDAP::Control::VLV</A>
+
+
+
 <P>
 <HR>
 <H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
 <P>
-<CODE>Net::LDAP::Control::SortResult</CODE> is a sub-class of
-<A HREF="../../../Net/LDAP/Control|Net/LDAP/Control.html">Net::LDAP::Control|Net::LDAP::Control</A>. It provides a class for manipulating the LDAP sort request control <CODE>1.2.840.113556.1.4.474</CODE>
-as defined in RFC-2891
+<CODE>Net::LDAP::Control::VLVResponse</CODE> is a sub-class of <A HREF="../../../Net/LDAP/Control|Net/LDAP/Control.html">Net::LDAP::Control|Net::LDAP::Control</A>. It provides a class for manipulating the LDAP Virtual List View Response
+control
+<CODE></CODE>
+
+
 
 <P>
-A sort result control will be returned by the server in response to a
-search with a Server Side Sort control. If a sort result control is not
-returned then the user may assume that the server does not support sorting
-and the results are not sorted.
+If the server supports Virtual List Views, then the response from a search
+operation will include a VLVResponse control.
 
 <P>
 <HR>
 <H1><A NAME="CONSTRUCTOR_ARGUMENTS">CONSTRUCTOR ARGUMENTS</A></H1>
-<DL>
-<DT><STRONG><A NAME="item_attr">attr</A></STRONG><DD>
 <P>
-If <A HREF="#item_result">result</A> indicates that there was a problem with sorting and that problem was due to
-one of the attributes specified in the sort control. <A HREF="#item_attr">attr</A> is set to the name of the attribute causing the problem.
+In addition to the constructor arguments described in
+<A HREF="../../../Net/LDAP/Control|Net/LDAP/Control.html">Net::LDAP::Control|Net::LDAP::Control</A> the following are provided.
+
+<DL>
+<DT><STRONG><A NAME="item_content">content</A></STRONG><DD>
+<P>
+An estimate of the number of entries in the complete list. This value
+should be used in any subsequent Virtual List View control using the same
+list.
+
+<DT><STRONG><A NAME="item_context">context</A></STRONG><DD>
+<P>
+An arbitary value which is used to associate subsequent requests with the
+request which this control is a response for. This value should be copied
+by the client into the Virtual List View control for any subsequent search
+that uses the same list.
 
 <DT><STRONG><A NAME="item_result">result</A></STRONG><DD>
 <P>
-This is the result code that describes if the sort operation was sucessful.
-If will be one of the result codes describes below.
+A result code indicating the result of the Virtual List View request. This
+may be any of the codes listed below.
+
+<DT><STRONG><A NAME="item_target">target</A></STRONG><DD>
+<P>
+The list offset of the target entry.
 
 </DL>
 <P>
@@ -113,23 +101,21 @@ Possible results from a sort request are listed below. See <A HREF="../../../Net
 <DT><STRONG><A NAME="item_LDAP_SUCCESS">LDAP_SUCCESS</A></STRONG><DD>
 <DT><STRONG><A NAME="item_LDAP_OPERATIONS_ERROR">LDAP_OPERATIONS_ERROR</A></STRONG><DD>
 <DT><STRONG><A NAME="item_LDAP_TIMELIMIT_EXCEEDED">LDAP_TIMELIMIT_EXCEEDED</A></STRONG><DD>
-<DT><STRONG><A NAME="item_LDAP_STRONG_AUTH_REQUIRED">LDAP_STRONG_AUTH_REQUIRED</A></STRONG><DD>
 <DT><STRONG><A NAME="item_LDAP_ADMIN_LIMIT_EXCEEDED">LDAP_ADMIN_LIMIT_EXCEEDED</A></STRONG><DD>
-<DT><STRONG><A NAME="item_LDAP_NO_SUCH_ATTRIBUTE">LDAP_NO_SUCH_ATTRIBUTE</A></STRONG><DD>
-<DT><STRONG><A NAME="item_LDAP_INAPPROPRIATE_MATCHING">LDAP_INAPPROPRIATE_MATCHING</A></STRONG><DD>
 <DT><STRONG><A NAME="item_LDAP_INSUFFICIENT_ACCESS">LDAP_INSUFFICIENT_ACCESS</A></STRONG><DD>
 <DT><STRONG><A NAME="item_LDAP_BUSY">LDAP_BUSY</A></STRONG><DD>
 <DT><STRONG><A NAME="item_LDAP_UNWILLING_TO_PERFORM">LDAP_UNWILLING_TO_PERFORM</A></STRONG><DD>
 <DT><STRONG><A NAME="item_LDAP_OTHER">LDAP_OTHER</A></STRONG><DD>
+<DT><STRONG><A NAME="item_LDAP_SORT_CONTROL_MISSING">LDAP_SORT_CONTROL_MISSING</A></STRONG><DD>
+<DT><STRONG><A NAME="item_LDAP_INDEX_RANGE_ERROR">LDAP_INDEX_RANGE_ERROR</A></STRONG><DD>
 </DL>
 <P>
 <HR>
 <H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
 <P>
 <A HREF="../../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A>,
-<A HREF="../../../Net/LDAP/Control/Sort|Net/LDAP/Control/Sort.html">Net::LDAP::Control::Sort|Net::LDAP::Control::Sort</A>,
 <A HREF="../../../Net/LDAP/Control|Net/LDAP/Control.html">Net::LDAP::Control|Net::LDAP::Control</A>, <A
-HREF="http://info.internet.isi.edu/in-notes/rfc/files/rfc2891.txt">http://info.internet.isi.edu/in-notes/rfc/files/rfc2891.txt</A>
+HREF="http://info.internet.isi.edu/in-notes/rfc/files/rfc2696.txt">http://info.internet.isi.edu/in-notes/rfc/files/rfc2696.txt</A>
 
 
 <P>
@@ -148,14 +134,14 @@ HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforg
 <HR>
 <H1><A NAME="COPYRIGHT">COPYRIGHT</A></H1>
 <P>
-Copyright (c) 1999-2000 Graham Barr. All rights reserved. This program is
-free software; you can redistribute it and/or modify it under the same
-terms as Perl itself.
+Copyright (c) 2000 Graham Barr. All rights reserved. This program is free
+software; you can redistribute it and/or modify it under the same terms as
+Perl itself.
 
 <hr>
 
 <P>
-<EM>$Id: SortResult.pm,v 1.4 2000/09/12 09:17:10 gbarr Exp $</EM>
+<EM>$Id: VLVResponse.pm,v 1.3 2000/07/30 21:03:50 gbarr Exp $</EM>
 
 
 

@@ -28,9 +28,12 @@ print OUT <<'!NO!SUBS!';
 #
 # c.ridd@isode.com
 #
-# $Id: myldapmodrdn,v 1.1 1999/01/11 08:39:12 cjr Exp $
+# $Id: ldapmodrdn.PL,v 1.2 2000/07/30 21:03:50 gbarr Exp $
 #
-# $Log: myldapmodrdn,v $
+# $Log: ldapmodrdn.PL,v $
+# Revision 1.2  2000/07/30 21:03:50  gbarr
+# *** empty log message ***
+#
 # Revision 1.1  1999/01/11 08:39:12  cjr
 # Initial revision
 #

@@ -9,7 +9,7 @@ use SelectSaver;
 require Net::LDAP::Entry;
 use vars qw($VERSION);
 
-$VERSION = "0.05";
+$VERSION = "0.06";
 
 my %mode = qw(w > r < a >>);
 
@@ -42,6 +42,9 @@ sub new {
     }
   }
 
+  # Default the encoding of DNs to 'none' unless the user specifies
+  $opt{'encode'} = 'none' unless exists $opt{'encode'};
+  
   my $self = {
     changetype => "modify",
     modify => 'add',
@@ -70,7 +73,7 @@ sub _read_one {
   }
   shift @ldif if @ldif && $ldif[0] !~ /\D/;
 
-  return unless @ldif > 1 && $ldif[0] =~ s/^dn:(:?) //;
+  return unless @ldif > 1 && $ldif[0] =~ s/^dn:(:?) *//;
 
   my $dn = shift @ldif;
 
@@ -155,6 +158,27 @@ sub _write_attrs {
   }
 }
 
+sub _write_dn {
+  my($dn,$encode,$wrap) = @_;
+  if ($dn =~ /^[ :<]|[\x00-\x1f\x7f-\xff]/) {
+    if ($encode =~ /canonical/i) {
+      require Net::LDAP::Util;
+      $dn = Net::LDAP::Util::canonical_dn($dn);
+      # Canonicalizer won't fix leading spaces, colons or less-thans, which
+      # are special in LDIF, so we fix those up here.
+      $dn =~ s/^([ :<])/\\$1/;
+    } elsif ($encode =~ /base64/i) {
+      require MIME::Base64;
+      $dn = "dn:: " . MIME::Base64::encode($dn,"");
+    } else {
+      $dn = "dn: $dn";
+    }
+  } else {
+    $dn = "dn: $dn";
+  }
+  print _wrap($dn,$wrap), "\n";
+}
+
 sub write {
   my $self = shift;
   my $entry;
@@ -167,17 +191,7 @@ sub write {
   my $fh = $self->{'fh'};
   foreach $entry (@_) {
     print "\n" if tell($self->{'fh'});
-    my $dn = $entry->dn;
-
-    if ($dn =~ /(^[ :]|[\x00-\x1f\x7f-\xff])/) {
-      require MIME::Base64;
-      $dn = "dn:: " . MIME::Base64::encode($dn,"");
-    }
-    else {
-      $dn = "dn: " . $dn;
-    }
-
-    print _wrap($dn,$wrap),"\n";
+    _write_dn($entry->dn,$self->{'encode'},$wrap);
     _write_attrs($entry,$wrap);
   }
 
@@ -211,7 +225,7 @@ sub _read_one_cmd {
     chomp(@ldif = split(/^/, $ln));
   }
   shift @ldif if @ldif && $ldif[0] !~ /\D/;
-  return unless @ldif > 1 && $ldif[0] =~ s/^dn:(:?) //;
+  return unless @ldif > 1 && $ldif[0] =~ s/^dn:(:?) *//;
 
   my $dn = shift @ldif;
 
@@ -238,7 +252,7 @@ sub _read_one_cmd {
     my $modattr;
     my $lastattr;
     if($changetype eq "modify") {
-      (my $tmp = shift @ldif) =~ s/^(add|delete|replace):\s*(\w+)//
+      (my $tmp = shift @ldif) =~ s/^(add|delete|replace):\s*([-;\w]+)//
 	or return; # Bad LDIF
       $lastattr = $modattr = $2;
       $modify  = $1;
@@ -256,8 +270,11 @@ sub _read_one_cmd {
 	last;
       }
 
-      $line =~ s/^(\w+):\s*//;
-      $attr = $1;      
+	  $line =~ s/^([-;\w]+):\s*// and $attr = $1;
+	  if ($line =~ s/^:\s*//) {
+	    require MIME::Base64;
+	    $line = MIME::Base64::decode($line);
+	  }
 
       if(defined($modattr)) {
         warn "bad LDIF" unless $attr eq $modattr;
@@ -288,11 +305,17 @@ sub write_cmd {
   my $saver = SelectSaver->new($self->{'fh'});
   
   foreach $entry (grep { defined } @_) {
+    my @changes = $entry->changes;
     my $type = $entry->changetype;
-    my $dn = "dn: " . $entry->dn;
+
+    # Skip entry if there is nothing to write
+    next if $type eq 'modify' and !@changes;
 
     print "\n" if tell($self->{'fh'});
-    print _wrap($dn,$wrap),"\n","changetype: ",$type,"\n";
+
+    _write_dn($entry->dn,$self->{'encode'},$wrap);
+
+    print "changetype: $type\n";
 
     if ($type eq 'delete') {
       next;
@@ -301,10 +324,17 @@ sub write_cmd {
       _write_attrs($entry,$wrap);
       next;
     }
+    elsif ($type eq 'modrdn') {
+      print _write_attr('newrdn',$entry->get_value('newrdn'),$wrap);
+      print 'deleteoldrdn: ',$entry->get_value('deleteoldrdn'),"\n";
+      my $ns = $entry->get_value('newsuperior');
+      print _write_attr('newsuperior',$ns,$wrap) if defined $ns;
+      next;
+    }
 
     my $change;
     my $first = 0;
-    foreach $change ($entry->changes) {
+    foreach $change (@changes) {
       unless (ref($change)) {
         $type = $change;
 	next;

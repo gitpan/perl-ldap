@@ -1,83 +1,88 @@
 <HTML>
 <HEAD>
 <TITLE>Net::LDAP::Filter - representation of LDAP filters</TITLE>
-<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+<LINK REV="made" HREF="mailto:hackers@FreeBSD.org">
 </HEAD>
 
 <BODY>
 
-<A NAME="__index__"></A>
 <!-- INDEX BEGIN -->
 <!--
 
 <UL>
 
-	<LI><A HREF="#name">NAME</A></LI>
-	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
-	<LI><A HREF="#description">DESCRIPTION</A></LI>
-	<LI><A HREF="#constructor">CONSTRUCTOR</A></LI>
-	<LI><A HREF="#methods">METHODS</A></LI>
-	<LI><A HREF="#filter syntax">FILTER SYNTAX</A></LI>
-	<LI><A HREF="#see also">SEE ALSO</A></LI>
-	<LI><A HREF="#acknowledgements">ACKNOWLEDGEMENTS</A></LI>
-	<LI><A HREF="#author">AUTHOR</A></LI>
-	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+	<LI><A HREF="#NAME">NAME</A>
+	<LI><A HREF="#SYNOPSIS">SYNOPSIS</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<LI><A HREF="#CONSTRUCTOR">CONSTRUCTOR</A>
+	<LI><A HREF="#METHODS">METHODS</A>
+	<LI><A HREF="#FILTER_SYNTAX">FILTER SYNTAX</A>
+	<LI><A HREF="#SEE_ALSO">SEE ALSO</A>
+	<LI><A HREF="#ACKNOWLEDGEMENTS">ACKNOWLEDGEMENTS</A>
+	<LI><A HREF="#AUTHOR">AUTHOR</A>
+	<LI><A HREF="#COPYRIGHT">COPYRIGHT</A>
 </UL>
 -->
 <!-- INDEX END -->
 
 <P>
-<H1><A NAME="name">NAME</A></H1>
-<P>Net::LDAP::Filter - representation of LDAP filters</P>
+<H1><A NAME="NAME">NAME</A></H1>
 <P>
-<HR>
-<H1><A NAME="synopsis">SYNOPSIS</A></H1>
-<PRE>
-  use Net::LDAP::Filter;
-</PRE>
-<PRE>
+Net::LDAP::Filter - representation of LDAP filters
 
-  $filter = Net::LDAP::Filter-&gt;new( $filter_str );</PRE>
 <P>
 <HR>
-<H1><A NAME="description">DESCRIPTION</A></H1>
+<H1><A NAME="SYNOPSIS">SYNOPSIS</A></H1>
+<P>
+<PRE>  use Net::LDAP::Filter;
+  
+  $filter = Net::LDAP::Filter-&gt;new( $filter_str );
+</PRE>
 <P>
 <HR>
-<H1><A NAME="constructor">CONSTRUCTOR</A></H1>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+<HR>
+<H1><A NAME="CONSTRUCTOR">CONSTRUCTOR</A></H1>
 <DL>
-<DT><STRONG><A NAME="item_new">new ( FILTER )</A></STRONG><BR>
-<DD>
-Create a new object and parse FILTER.
-<P></P></DL>
+<DT><STRONG><A NAME="item_new">new ( FILTER )</A></STRONG><DD>
+<P>
+Create a new object and parse FILTER. 
+
+</DL>
 <P>
 <HR>
-<H1><A NAME="methods">METHODS</A></H1>
+<H1><A NAME="METHODS">METHODS</A></H1>
 <DL>
-<DT><STRONG><A NAME="item_parse">parse ( FILTER )</A></STRONG><BR>
-<DD>
+<DT><STRONG><A NAME="item_parse">parse ( FILTER )</A></STRONG><DD>
+<P>
 Parse FILTER. The next call to ber will return this filter encoded.
-<P></P>
-<DT><STRONG><A NAME="item_asn">asn</A></STRONG><BR>
-<DD>
-Return the data structure suitable for passing directly to <A HREF="../../Convert/ASN1.html">the Convert::ASN1 manpage</A>
+
+<DT><STRONG><A NAME="item_asn">asn</A></STRONG><DD>
+<P>
+Return the data structure suitable for passing directly to <A HREF="../../Convert/ASN1.html">Convert::ASN1</A>
 to encode a filter object.
-<P></P>
-<DT><STRONG><A NAME="item_as_string">as_string</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_as_string">as_string</A></STRONG><DD>
+<P>
 Return the filter in text form.
-<P></P>
-<DT><STRONG><A NAME="item_print">print ( [ FH ] )</A></STRONG><BR>
-<DD>
+
+<DT><STRONG><A NAME="item_print">print ( [ FH ] )</A></STRONG><DD>
+<P>
 Print the text representation of the filter to FH, or the currently
 selected output handle if FH is not given.
-<P></P></DL>
+
+</DL>
 <P>
 <HR>
-<H1><A NAME="filter syntax">FILTER SYNTAX</A></H1>
-<P>Below is the syntax for a filter given in
-RFC-2254 <A HREF="http://info.internet.isi.edu/in-notes/rfc/files/rfc2254.txt">http://info.internet.isi.edu/in-notes/rfc/files/rfc2254.txt</A></P>
-<PRE>
- filter       = &quot;(&quot; filtercomp &quot;)&quot;
+<H1><A NAME="FILTER_SYNTAX">FILTER SYNTAX</A></H1>
+<P>
+Below is the syntax for a filter given in RFC-2254 <A
+HREF="http://info.internet.isi.edu/in-notes/rfc/files/rfc2254.txt">http://info.internet.isi.edu/in-notes/rfc/files/rfc2254.txt</A>
+
+
+<P>
+<PRE> filter       = &quot;(&quot; filtercomp &quot;)&quot;
  filtercomp   = and / or / not / item
  and          = &quot;&amp;&quot; filterlist
  or           = &quot;|&quot; filterlist
@@ -100,39 +105,59 @@ RFC-2254 <A HREF="http://info.internet.isi.edu/in-notes/rfc/files/rfc2254.txt">h
  attr         = AttributeDescription from Section 4.1.5 of RFC-2251
  matchingrule = MatchingRuleId from Section 4.1.9 of RFC-2251
  value        = AttributeValue from Section 4.1.6 of RFC-2251
-</PRE>
-<PRE>
-
+ 
+ 
  Special Character encodings
  ---------------------------
     *               \2a, \*
     (               \28, \(
     )               \29, \)
     \               \5c, \\
-    NUL             \00</PRE>
+    NUL             \00
+</PRE>
 <P>
 <HR>
-<H1><A NAME="see also">SEE ALSO</A></H1>
-<P><A HREF="../../Net/LDAP.html">Net::LDAP</A>,
-<A HREF="../../Net/LDAP/RFC.html">Other online documentation</A></P>
+<H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
+<P>
+<A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A>,
+<A HREF="../../Other online documentation|Net/LDAP/RFC.html">Other online documentation|Net::LDAP::RFC</A>
+
+
+
 <P>
 <HR>
-<H1><A NAME="acknowledgements">ACKNOWLEDGEMENTS</A></H1>
-<P>This document is based on a document originally written by Russell Fulton
-&lt;<A HREF="mailto:r.fulton@auckland.ac.nz">r.fulton@auckland.ac.nz</A>&gt;.</P>
+<H1><A NAME="ACKNOWLEDGEMENTS">ACKNOWLEDGEMENTS</A></H1>
+<P>
+This document is based on a document originally written by Russell Fulton
+&lt;<A
+HREF="mailto:r.fulton@auckland.ac.nz">r.fulton@auckland.ac.nz</A>&gt;
+
 <P>
 <HR>
-<H1><A NAME="author">AUTHOR</A></H1>
-<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;</P>
-<P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-&lt;<A HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;.</P>
+<H1><A NAME="AUTHOR">AUTHOR</A></H1>
+<P>
+Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;
+
+<P>
+Please report any bugs, or post any suggestions, to the perl-ldap mailing
+list &lt;<A
+HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;
+
+
 <P>
 <HR>
-<H1><A NAME="copyright">COPYRIGHT</A></H1>
-<P>Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
+<H1><A NAME="COPYRIGHT">COPYRIGHT</A></H1>
+<P>
+Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
-terms as Perl itself.</P>
-<hr><P><EM>$Id$</EM></P>
+terms as Perl itself.
+
+<hr>
+
+<P>
+<EM>$Id: Filter.pod,v 1.2 2000/05/09 16:09:49 gbarr Exp $</EM>
+
+
 
 </BODY>
 

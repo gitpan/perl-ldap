@@ -342,6 +342,6 @@ terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: //depot/ldap-asn/lib/Net/LDAP/Constant.pod#3 $>
+I<$Id: Constant.pod,v 1.2 2000/05/09 16:09:49 gbarr Exp $>
 
 =cut
