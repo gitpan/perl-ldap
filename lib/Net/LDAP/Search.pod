@@ -28,15 +28,15 @@ all methods defined in L<Net::LDAP::Message>.
 Returns a reference to a HASH, where the keys are the DN's of the results
 and the values are HASH references. These second level HASH's hold the
 attributes such that the keys are the attribute names, in lowercase, and
-the values are references to and ARRAY holding the values
+the values are references to and ARRAY holding the values.
 
-This method will block until the whole search request has finished
+This method will block until the whole search request has finished.
 
 =item count
 
 Returns the number of entries returned by the server.
 
-This method will block until the whole search request has finished
+This method will block until the whole search request has finished.
 
 =item entry ( INDEX )
 
@@ -49,17 +49,17 @@ entries.
 
 =item entries
 
-Retunr an array of L<Net::LDAP::Entry> objects hat were returned from the
+Return an array of L<Net::LDAP::Entry> objects hat were returned from the
 server.
 
-This method will block until the whole search request has finished
+This method will block until the whole search request has finished.
 
 =item pop_entry
 
 Pop an entry from the internal list of L<Net::LDAP::Entry> objects for this
-search. If there are not more entries then undef is returned
+search. If there are not more entries then undef is returned.
 
-This call will block, if the list is empty, until ther server returns
+This call will block, if the list is empty, until the server returns
 another entry.
 
 =item references
@@ -70,14 +70,14 @@ of L<Net::LDAP::Reference> objects.
 =item sorted ( [ ATTR ] )
 
 Return a list of L<Net::LDAP::Entry> objects, sorted by ATTR. If ATTR is
-not given then the entries will be sorted by thier DN
+not given then the entries will be sorted by their DN.
 
 =item shift_entry
 
 Shift an entry from the internal list of L<Net::LDAP::Entry> objects for this
-search. If there are not more entries then undef is returned
+search. If there are not more entries then undef is returned.
 
-This call will block, if the list is empty, until ther server returns
+This call will block, if the list is empty, until the server returns
 another entry.
 
 =back
@@ -87,10 +87,10 @@ another entry.
 L<Net::LDAP>, L<Net::LDAP::Message>, L<Net::LDAP::Entry>,
 L<Net::LDAP::Reference>
 
-=head1 ACKNOWEDGEMENTS
+=head1 ACKNOWLEDGEMENTS
 
 This document is based on a document originally written by Russell Fulton
-E<lt>F<r.fulton@auckland.ac.nz>E<gt>
+E<lt>F<r.fulton@auckland.ac.nz>E<gt>.
 
 =head1 AUTHOR
 

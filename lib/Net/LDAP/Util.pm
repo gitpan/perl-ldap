@@ -23,7 +23,7 @@ require Exporter;
   ldap_error_name
   ldap_error_text
 );
-$VERSION = "0.01";
+$VERSION = "0.02";
 
 =item ldap_error_name ( NUM )
 
@@ -70,7 +70,7 @@ sub ldap_error_text {
         last if defined $text;
 	$text = "" if /^=item $name\b/;
       }
-      elsif(/^=(\S+)/) {
+      elsif(defined $text && /^=(\S+)/) {
         $indent = 1 if $1 eq "over";
         $indent = 0 if $1 eq "back";
 	$text .= " * " if $1 eq "item";
@@ -83,6 +83,7 @@ sub ldap_error_text {
       }
     }
     close(F);
+    $text =~ s/\n+\Z/\n/ if defined $text;
   }
   $text;
 }

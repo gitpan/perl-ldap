@@ -16,8 +16,10 @@ BEGIN {
   $TESTDB   = "$TEMPDIR/test-db";
   $CONF     = "$TEMPDIR/conf";
   $PASSWD   = 'secret';
-  $BASEDN   ="o=University of Michigan, c=US";
-  $MANAGERDN="cn=Manager, o=University of Michigan, c=US";
+  $BASEDN   = "o=University of Michigan, c=US";
+  $MANAGERDN= "cn=Manager, o=University of Michigan, c=US";
+  $JAJDN    = "cn=James A Jones 1, ou=Alumni Association, ou=People, o=University of Michigan, c=US";
+  $BABSDN   = "cn=Barbara Jensen, ou=Information Technology Division, ou=People, o=University of Michigan, c=US";
   $PORT     = 9009;
   @LDAPD    = ($SLAPD, '-f',$CONF,'-p',$PORT,qw(-d 1));
 
@@ -85,6 +87,39 @@ sub server_version {
   my $ldap = shift or return;
   my $dse = $ldap->root_dse or return 2;
   ( sort { $b <=> $a } $dse->get('version'))[0] || 2;
+}
+
+sub compare_ldif {
+  my($test,$mesg,$test_num,@sort) = @_;
+
+  if ($mesg->code) {
+    print "not ok",$test_num++,"\n";
+    print "not ok",$test_num++,"\n";
+    print "not ok",$test_num++,"\n";
+    return 3;
+  }
+  print "ok ",$test_num++,"\n";
+
+  my $ldif = Net::LDAP::LDIF->new("$TEMPDIR/${test}-out.ldif","w");
+  unless ($ldif) {
+    print "not ok",$test_num++,"\n";
+    print "not ok",$test_num++,"\n";
+    return 3;
+  }
+  print "ok ",$test_num++,"\n";
+
+  foreach $entry ($mesg->sorted(@sort)) {
+    foreach $attr ($entry->attributes) {
+      $entry->delete($attr) if $attr =~ /^(modifiersname|modifytimestamp|creatorsname|createtimestamp)$/;
+    }
+    $ldif->write($entry);
+  }
+
+  $ldif->done; # close the file;
+
+  compare("$TEMPDIR/${test}-out.ldif","data/${test}-cmp.ldif") && print "not ";
+  print "ok ",$test_num++,"\n";
+  3;
 }
 
 1;

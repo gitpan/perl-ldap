@@ -1,6 +1,33 @@
-Change 265 on 1999/03/18 by <gbarr@pobox.com> (Graham Barr)
+Change 301 on 1999/04/18 by <gbarr@pobox.com> (Graham Barr)
 
-	Release 0.10
+	Documentation typo fixes
+
+Change 300 on 1999/04/18 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP
+	- Fix bug where search would not return results. This was due
+	  to an EOF directly after the search completed.
+
+Change 299 on 1999/04/18 by <gbarr@pobox.com> (Graham Barr)
+
+	Add more tests
+
+Change 298 on 1999/04/18 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Search
+	- sorted() was calling non-existant method entry->attribute(),
+	  fix to be ->get()
+	
+	Net::LDAP::Util
+	- ldap_error_text was terminating premature if =item * was found
+	  before the real text
+	
+	Net::LDAP::Filter
+	- fix typo introduced in Change #286
+	- print now accepts an optional filehandle
+	
+	Net::LDAP::Filter, Net::LDAP::BER
+	- Added support for extensible matching
 
 Change 260 on 1999/03/16 by <gbarr@pobox.com> (Graham Barr)
 

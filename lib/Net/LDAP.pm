@@ -20,7 +20,7 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 			   LDAP_LOCAL_ERROR
 			);
 
-$VERSION = "0.10";
+$VERSION = "0.11";
 
 $LDAP_VERSION = 2;      # default LDAP protocol version
 
@@ -580,7 +580,7 @@ sub sync {
   my $err = LDAP_SUCCESS;
   $mid = $mid->mesg_id if ref($mid);
   while (defined($mid) ? exists $table->{$mid} : %$table) {
-    last if $err = $ldap->_recvresp;
+    last if $err = $ldap->_recvresp($mid);
   }
 
   $err;
@@ -609,8 +609,8 @@ sub _sendmesg {
     $ldap->{'net_ldap_mesg'}->{$mid} = $mesg;
 
     unless ($ldap->async) {
-      $ldap->sync($mid) and
-        return undef;
+      my $err = $ldap->sync($mid);
+      $mesg->set_error($err,$@) if $err;
     }
   }
   $mesg;
@@ -619,11 +619,14 @@ sub _sendmesg {
 sub _recvresp {
   my $ldap = shift;
   my $what = shift;
+  my $sock = $ldap->socket;
+  my $sel = IO::Select->new($sock);
+  my $ready;
 
-  do {
+  for( $ready = 1 ; $ready ; $ready = $sel->can_read(0)) {
     my $ber = Net::LDAP::BER->new();
 
-    $ber->read($ldap->socket) or
+    $ber->read($sock) or
       return LDAP_OPERATIONS_ERROR;
 
     if ($ldap->debug & 2) {
@@ -648,7 +651,7 @@ sub _recvresp {
       return $mesg->code;
 
     last if defined $what && $what == $mid;
-  } while (IO::Select->new($ldap->socket)->can_read(0));
+  }
 
   # FIXME: in CLDAP here we need to check if any message has timed out
   # and if so do we resend it or what

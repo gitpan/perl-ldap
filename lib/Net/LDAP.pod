@@ -44,11 +44,11 @@ Net::LDAP -- Lightweight Directory Access Protocol
 
 B<Net::LDAP> is a collection of modules that implements a LDAP services API
 for Perl programs. The module may be used to search directories or
-perform maintanence functions such as add, deleting or modifiy entries in
+perform maintenance functions such as add, deleting or modify entries in
 an LDAP directory.
 
 This document assumes that the reader has some knowledge of the LDAP
-protocol
+protocol.
 
 =head1 CONSTRUCTOR
 
@@ -63,7 +63,7 @@ OPTIONS is a list of key-value pairs, valid options are :-
 
 =item port
 
-Port to connect to on the remote server
+Port to connect to on the remote server.
 
 =item timeout
 
@@ -73,10 +73,10 @@ Timeout passed to C<IO::Socket> when connecting the remote server.
 =item debug
 
 If passed a non-zero value then debug data will be sent to C<STDERR>. The
-bits of this value are
+bits of this value are :-
 
- 1   Show outgoing packets
- 2   Show incoming packets
+ 1   Show outgoing packets.
+ 2   Show incoming packets.
 
 =item async
 
@@ -108,7 +108,7 @@ you to examine the status of request.
 =item abandon ( ID [, OPTIONS ] )
 
 Request server to abandon a request. The id to abandon may be passed as the
-first prameter or as part of the options list. The C<ID> may be a number
+first parameter or as part of the options list. The C<ID> may be a number
 or a object which is a sub-class of C<Net::LDAP::Message>, returned from
 a previous method call.
 
@@ -116,7 +116,7 @@ a previous method call.
 
 =item id
 
-This option is here for B<compatability only>, and may be removed in future.
+This option is here for B<compatibility only>, and may be removed in future.
 Previous releases did not take the C<ID> argument which replaces this option.
 
 =item control
@@ -145,7 +145,7 @@ L<Net::LDAP::Entry> object or a string.
 
 =item dn
 
-This option is here for B<compatability only>, and may be removed in future.
+This option is here for B<compatibility only>, and may be removed in future.
 Previous releases did not take the C<DN> argument which replaces this option.
 
 =item attrs
@@ -168,7 +168,7 @@ See L<CALLBACKS|/CALLBACKS> below
 
 B<Example>
 
-  # $entry is an objtect of class Net::LDAP::Entry
+  # $entry is an object of class Net::LDAP::Entry
   $mesg = $ldap->add( $entry );
   
   $mesg = $ldap->add( $DN,
@@ -189,7 +189,7 @@ by calling bind without any arguments.
 
 =item dn
 
-This option is here for B<compatability only>, and may be removed in future.
+This option is here for B<compatibility only>, and may be removed in future.
 Previous releases did not take the C<DN> argument which replaces this option.
 
 =item control
@@ -203,31 +203,31 @@ See L<CALLBACKS|/CALLBACKS> below
 =back
 
 Only one of the following should be given, if none are given then C<noauth>
-is assumed
+is assumed.
 
 =over 4
 
 =item noauth
 
 Bind without any password, the value passed with this option is ignored. This
-is the default if no password option is given
+is the default if no password option is given.
 
 =item password
 
-Bind with the given password
+Bind with the given password.
 
 =item kerberos41
 
-Bind using Kerberos V4.1 I<not supported>
+Bind using Kerberos V4.1 I<not supported>.
 
 =item kerberos42
 
-Bind using Kerberos V4.2 I<not supported>
+Bind using Kerberos V4.2 I<not supported>.
 
 =item sasl
 
 Bind using a SASL mechanism. The argument given should be a sub-class
-of L<Authen::SASL>
+of L<Authen::SASL>.
 
 =back
 
@@ -245,30 +245,30 @@ B<Example>
 
 Perform a comparison on the server.  C<DN> is the DN which the comparison is
 to be performed. C<DN> May be a string or a L<Net::LDAP::Entry>
-object
+object.
 
 =over 4
 
 =item dn
 
-This option is here for B<compatability only>, and may be removed in future.
+This option is here for B<compatibility only>, and may be removed in future.
 Previous releases did not take the C<DN> argument which replaces this option.
 
 =item attr
 
-The name of the attribute to compare
+The name of the attribute to compare.
 
 =item value
 
-The value to compare with
+The value to compare with.
 
 =item control
 
-See L<CONTROLS|/CONTROLS> below
+See L<CONTROLS|/CONTROLS> below.
 
 =item callback
 
-See L<CALLBACKS|/CALLBACKS> below
+See L<CALLBACKS|/CALLBACKS> below.
 
 =back
 
@@ -282,22 +282,22 @@ B<Example>
 =item delete ( DN [, OPTIONS ] )
 
 Delete C<DN> from the server. C<DN> May be a string or a L<Net::LDAP::Entry>
-object
+object.
 
 =over 4
 
 =item dn
 
-This option is here for B<compatability only>, and may be removed in future.
+This option is here for B<compatibility only>, and may be removed in future.
 Previous releases did not take the C<DN> argument which replaces this option.
 
 =item control
 
-See L<CONTROLS|/CONTROLS> below
+See L<CONTROLS|/CONTROLS> below.
 
 =item callback
 
-See L<CALLBACKS|/CALLBACKS> below
+See L<CALLBACKS|/CALLBACKS> below.
 
 =back
 
@@ -308,34 +308,34 @@ B<Example>
 =item moddn ( DN, OPTIONS )
 
 Modify the DN for C<DN> on the server. C<DN> May be a string or a
-L<Net::LDAP::Entry> object
+L<Net::LDAP::Entry> object.
 
 =over 4
 
 =item dn
 
-This option is here for B<compatability only>, and may be removed in future.
+This option is here for B<compatibility only>, and may be removed in future.
 Previous releases did not take the C<DN> argument which replaces this option.
 
 =item newrdn
 
-This value should be a new RDN to assign to <DN>
+This value should be a new RDN to assign to C<DN>.
 
 =item deleteoldrdn
 
-This value should be I<true> if the existing RDN is to be deleted
+This value should be I<true> if the existing RDN is to be deleted.
 
 =item newsuperior
 
-If given this value should be the DN of the new superior for C<DN>
+If given this value should be the DN of the new superior for C<DN>.
 
 =item control
 
-See L<CONTROLS|/CONTROLS> below
+See L<CONTROLS|/CONTROLS> below.
 
 =item callback
 
-See L<CALLBACKS|/CALLBACKS> below
+See L<CALLBACKS|/CALLBACKS> below.
 
 =back
 
@@ -346,19 +346,19 @@ B<Example>
 =item modify ( DN, OPTIONS )
 
 Modify the contents of C<DN> on the server. C<DN> May be a string or a
-L<Net::LDAP::Entry> object
+L<Net::LDAP::Entry> object.
 
 =over 4
 
 =item dn
 
-This option is here for B<compatability only>, and may be removed in future.
+This option is here for B<compatibility only>, and may be removed in future.
 Previous releases did not take the C<DN> argument which replaces this option.
 
 =item add
 
 The C<add> option should be a reference to a HASH. The values of the
-HASH are the attibutes to add, and the values may be a string or a reference
+HASH are the attributes to add, and the values may be a string or a reference
 to a list of values.
 
 =item delete
@@ -371,7 +371,7 @@ the all instances of the attribute will be deleted.
 =item replace
 
 The <replace> option takes a argument in the same form as C<add>, but will
-cause any existing attibutes with the same name to be replaced. If the
+cause any existing attributes with the same name to be replaced. If the
 value for any attribute in the HASH is a reference to an empty ARRAY
 the all instances of the attribute will be deleted.
 
@@ -393,11 +393,11 @@ be performed.
 
 =item control
 
-See L<CONTROLS|/CONTROLS> below
+See L<CONTROLS|/CONTROLS> below.
 
 =item callback
 
-See L<CALLBACKS|/CALLBACKS> below
+See L<CALLBACKS|/CALLBACKS> below.
 
 =back
 
@@ -422,39 +422,39 @@ B<Example>
 
 =item search ( OPTIONS )
 
-The search method will return an object of class L<Net::LDAP::Search>
+The search method will return an object of class L<Net::LDAP::Search>.
 
 =over 4
 
 =item base
 
-The base DN to start the search
+The base DN to start the search.
 
 =item scope
 
 The scope for the search. This can be one of C<base>, C<one> or C<sub> or
 it can be the numeric value for each of these 0,1,2 respectively. The default
-is C<sub>
+is C<sub>.
 
 =item deref
 
 What to do when a reference is found. This value can be one of C<never>,
 C<search>, C<find> or C<always>. Or it can be the numeric value fro each
-of these. The default is C<find>
+of these. The default is C<find>.
 
 =item sizelimit
 
 Set the size limit for the response. zero means no limit. The default is
-no limit
+no limit.
 
 =item timelimit
 
 Set the time limit for the response. zero means no limit. The default is
-no limit
+no limit.
 
 =item typesonly
 
-If I<true> then only the attribute type will be returned. Default is I<false>
+If I<true> then only the attribute type will be returned. Default is I<false>.
 
 =item filter
 
@@ -468,11 +468,11 @@ specified then all attributes will be returned.
 
 =item control
 
-See L<CONTROLS|/CONTROLS> below
+See L<CONTROLS|/CONTROLS> below.
 
 =item callback
 
-See L<CALLBACKS|/CALLBACKS> below
+See L<CALLBACKS|/CALLBACKS> below.
 
 =back
 
@@ -498,7 +498,7 @@ B<Example>
 
 =back
 
-The following methods are for convienence
+The following methods are for convenience.
 
 =over 4
 
@@ -514,11 +514,11 @@ unchanged and will be returned.
 
 =item sync ( [ MESG ] )
 
-Calling this method will syncronize the client with the server. It will
+Calling this method will synchronize the client with the server. It will
 not return until all requests have been completed, or id C<MESG> is given
 it will return when C<MESG> has been completed.
 
-Returns an error code defined in L<Net::LDAP::Constant>
+Returns an error code defined in L<Net::LDAP::Constant>.
 
 =item version
 
@@ -545,7 +545,7 @@ being requested.
 =item critical
 
 C<critical> is optional and should be a boolean value, if it is not specified
-then it is assumed to be I<false>
+then it is assumed to be I<false>.
 
 =item value
 
@@ -575,8 +575,8 @@ L<Net::LDAP::Reference> object as the second argument.
 
 =head1 LDAP ERROR CODES
 
-B<Net::LDAP> also exports constants for the error codes that can be recieved
-from the server, see L<Net::LDAP::Constant>
+B<Net::LDAP> also exports constants for the error codes that can be received
+from the server, see L<Net::LDAP::Constant>.
 
 =head1 SEE ALSO
 
@@ -589,43 +589,43 @@ L<Net::LDAP::Reference>,
 L<Net::LDAP::Search>,
 L<URI::URL::ldap>,
 
-The LDAP protocol is defined in the following RFC'a
+The LDAP protocol is defined in the following RFC's
 
 =over 4
 
 =item L<RFC-2251|http://info.internet.isi.edu/in-notes/rfc/files/rfc2251.txt>
 
-Lightweight Directory Access Protocol (v3)
+Lightweight Directory Access Protocol (v3).
 
 =item L<RFC-2252|http://info.internet.isi.edu/in-notes/rfc/files/rfc2252.txt>
 
-Attribute Syntax Definitions
+Attribute Syntax Definitions.
 
 =item L<RFC-2253|http://info.internet.isi.edu/in-notes/rfc/files/rfc2253.txt>
 
-UTF-8 String Representation of Distinguished Names
+UTF-8 String Representation of Distinguished Names.
 
 =item L<RFC-2254|http://info.internet.isi.edu/in-notes/rfc/files/rfc2254.txt>
 
-The String Representation of LDAP Search Filters
+The String Representation of LDAP Search Filters.
 
 =item L<RFC-2255|http://info.internet.isi.edu/in-notes/rfc/files/rfc2255.txt>
 
-The LDAP URL Format
+The LDAP URL Format.
 
 =item L<RFC-2256|http://info.internet.isi.edu/in-notes/rfc/files/rfc2256.txt>
 
-A Summary of the X.500(96) User Schema for use with LDAPv3
+A Summary of the X.500(96) User Schema for use with LDAPv3.
 
 =back
 
 The homepage for the perl-ldap modules can be found at 
-L<http://www.connect.net/gbarr/perl-ldap/>
+L<http://www.pobox.com/~gbarr/perl-ldap/>.
 
-=head1 ACKNOWEDGEMENTS
+=head1 ACKNOWLEDGEMENTS
 
 This document is based on a document originally written by Russell Fulton
-E<lt>F<r.fulton@auckland.ac.nz>E<gt>
+E<lt>F<r.fulton@auckland.ac.nz>E<gt>.
 
 Chris Ridd @isode.com for the many hours spent testing and contribution
 of the ldap* command line utilities.
@@ -635,11 +635,11 @@ of the ldap* command line utilities.
 Graham Barr F<L<E<lt>gbarr@pobox.comE<gt>|mailto:gbarr@pobox.com>>
 
 Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-F<L<E<lt>perl-ldap@mail.med.cornell.eduE<gt>|mailto:perl-ldap@mail.med.cornell.edu>>
+F<L<E<lt>perl-ldap@mail.med.cornell.eduE<gt>|mailto:perl-ldap@mail.med.cornell.edu>>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997-8 Graham Barr. All rights reserved. This program is
+Copyright (c) 1997-1999 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
 

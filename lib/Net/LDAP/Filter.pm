@@ -1,4 +1,4 @@
-# Copyright (c) 1998 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# Copyright (c) 1998-1999 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
@@ -10,7 +10,7 @@ use vars qw($VERSION);
 
 no strict 'subs';
 
-$VERSION = "0.03";
+$VERSION = "0.07";
 
 sub new {
   my $self = shift;
@@ -34,10 +34,11 @@ my %filter_lookup = qw(
   ~=  FILTER_APPROX
   >=  FILTER_GE
   <=  FILTER_LE
+  :=  FILTER_EXTENSIBLE
 );
 
 my %infix_lookup = qw(
-    &       FILTER_AND
+  &   FILTER_AND
   and FILTER_AND
   AND FILTER_AND
   |   FILTER_OR
@@ -73,12 +74,23 @@ sub parse {
     elsif ($filter =~ s/^\)\s*//o) {
       $f = pop @st;
     }
-    elsif ($filter =~ s/^\(\s*([^\s\n=]+)=\*\)\s*//o) {
+    elsif ($filter =~ s/^\(\s*([-;\d\w]+)=\*\)\s*//o) {
       push(@$f, FILTER_PRESENT => $1);
     }
-    elsif ($filter =~ s/^\(\s*([^\s\n=]+)\s*(=|~=|>=|<=)\s*(([^()]|\\[()])+)\s*\)\s*//o) {
+    elsif ($filter =~ s/^\(\s*([-;.:\d\w]*[-;\d\w])\s*([:~<>]?=)\s*(([^()]|\\[()])*)\s*\)\s*//o) {
       my($attr,$op,$val) = ($1,$2,$3);
-      if ($op eq '=' && $val =~ /^(([^*]|\\\*)*)\*/o) {
+      if ($op eq ':=') {
+        return # bad filter
+	  unless $attr =~ /^([-;\d\w]*)(:dn)?(:([.\d]+))?/;
+	my($type,$dn,$rule) = ($1,$2,$4);
+        push(@$f, FILTER_EXTENSIBLE => [
+			OPTIONAL => [ EXTENSIBLE_RULE => $rule ],
+			OPTIONAL => [ EXTENSIBLE_TYPE => $type ],
+			EXTENSIBLE_VALUE => $val,
+			EXTENSIBLE_DN    => $dn
+		  ]);
+      }
+      elsif ($op eq '=' && $val =~ /^(([^*]|\\\*)*)\*/o) {
         my $n = [];
         my $seenstar = 0;
 
@@ -86,11 +98,16 @@ sub parse {
           my $t = $seenstar++
                 ? 'SUBSTR_ANY'
                 : 'SUBSTR_INITIAL';
-          push(@$n,$t,$1)
-            if length $1;
+	  if (length $1 ) {
+	    my $vv = $1;
+	    $vv =~ s/\\([\da-fA-F]{2})/chr(hex($1))/sge;
+            push(@$n,$t,$vv);
+	  }
         }
-        push(@$n,'SUBSTR_FINAL',$val)
-          if length $val;
+	if (length $val) {
+	  $val =~ s/\\([\da-fA-F]{2})/chr(hex($1))/sge;
+          push(@$n,'SUBSTR_FINAL',$val);
+	}
 
         push(@$f,
           FILTER_SUBSTRS => [
@@ -100,6 +117,7 @@ sub parse {
         );
       }
       else {
+	$val =~ s/\\([\da-fA-F]{2})/chr(hex($1))/sge;
         push(@$f,
           $filter_lookup{$op}, [
             STRING => $attr,
@@ -150,7 +168,7 @@ sub infix_parse {
         }
     }
     $cop = ${$st[-1]}[0] if @st;
-  } elsif ( $infix =~ s/^([^\s\n=]+)\s*(=|~=|>=|<=)\s*(['"]|[^() ]+)//o) {
+  } elsif ( $infix =~ s/^([-;.\w:]*[^-;\w])\s*([:~<>]?=)\s*(['"]|[^() ]+)//o) {
 
     ($at, $op, $val) = ($1, $2, $3);
             
@@ -169,11 +187,16 @@ sub infix_parse {
         my $t = $seenstar++
             ? 'SUBSTR_ANY'
             : 'SUBSTR_INITIAL';
-        push(@$n,$t,$1)
-            if length $1;
+        if (length $1) {
+	  my $vv = $1;
+	  $vv =~ s/\\([\da-fA-F]{2})/chr(hex($1))/sge;
+          push(@$n,$t,$vv);
+	}
       }
-      push(@$n,'SUBSTR_FINAL',$val)
-          if length $val;
+      if (length $val) {
+        $val =~ s/\\([\da-fA-F]{2})/chr(hex($1))/sge;
+        push(@$n,'SUBSTR_FINAL',$val)
+      }
 
       push(@$f, 
            FILTER_SUBSTRS => [
@@ -182,6 +205,7 @@ sub infix_parse {
                     ]
         );
       } else {
+	$val =~ s/\\([\da-fA-F]{2})/chr(hex($1))/sge;
         push(@$f, $filter_lookup{$op}, [
                     STRING => $at,
                     STRING => $val
@@ -343,32 +367,37 @@ sub cmpop {
 }
 
 sub print {  #for debugging ...
+  my $self = shift;
+  no strict 'refs'; # select may return a GLOB name
+  my $fh = @_ ? shift : select;
 
-    my $self = shift;
+  print $fh $self->as_string,"\n";
+}
 
-    _print(@$self);
-    print "\n";
+sub as_string {
+  my $self = shift;
+  _string(@$self);
 }
 
 my %prefix = qw(
     FILTER_AND    &
-    FILTER_OR    |
+    FILTER_OR     |
     FILTER_NOT    !
 );
 
-sub _print {    # prints things of the form (<op> (<list>) ... )
+sub _string {    # prints things of the form (<op> (<list>) ... )
   my @self = @_;
   my $i;
+  my $str = "";
 
   for ($i=0; $i <= $#self; $i+=2) {  # List of ( operator, list ... )
     if ($prefix{$self[$i]}) {  
-      print "( $prefix{$self[$i]}";
-      _print (@{$self[$i+1]});
-      print ")";
+      $str .= "( $prefix{$self[$i]}" . _string(@{$self[$i+1]}) . ")";
     } else {
-      _print_infix($self[$i], $self[$i+1]);
+      $str .= _string_infix($self[$i], $self[$i+1]);
     }
   }
+  $str;
 }
 
 my %infix = qw(
@@ -378,28 +407,42 @@ my %infix = qw(
     FILTER_LE        <=
 );
 
-sub _print_infix {    #  prints infix items of the form ( <attrib> <op> <val> )
+sub _string_infix {    #  prints infix items of the form ( <attrib> <op> <val> )
   my ( $tag, $items) = @_;
-    
+  my $str = "";
+
   if ($tag eq FILTER_SUBSTRS) {
-    print "( $items->[1] = ";
+    $str = "( $items->[1] = ";
     my $substrs = $items->[3];
     my $substr;
-    print '*' if $substrs->[0] ne SUBSTR_INITIAL;
+    $str .= '*' if $substrs->[0] ne SUBSTR_INITIAL;
     for( $substr=0; $substr < $#{$substrs}; $substr += 2) {
-      print "$substrs->[$substr+1]";
+      my $tmp = $substrs->[$substr+1];
+      $tmp =~ s/([\\\(\)\*\0])/sprintf("\\%02x",ord($1))/sge;
+      $str .= "$tmp";
       if ( $substrs->[$substr] ne SUBSTR_FINAL ) {
-        print '*' ;
+        $str .= '*' ;
       } else {
-        print ' '
+        $str .= ' '
       }
     }
-    print ")";
+    $str .= ")";
+  } elsif ($tag eq FILTER_EXTENSIBLE) {
+    my($rule,$type,$val,$dn) = ($items->[1][1],$items->[3][1],$items->[5],$items->[7]);
+    $val =~ s/([\\\(\)\*\0])/sprintf("\\%02x",ord($1))/sge;
+    $str .= "("
+            . ($type ? $type : "")
+	    . ($dn   ? ":dn" : "")
+	    . ($rule ? ":$rule" : "")
+	    . ":= $val)";
   } elsif ($tag eq FILTER_PRESENT) {
-    print "$items->[0]=* ";
+    $str .= "($items=*) ";
   }else {
-    print "($items->[1] $infix{$tag} $items->[3]) ";
+    my $tmp = $items->[3];
+    $tmp =~ s/([\\\(\)\*\0])/sprintf("\\%02x",ord($1))/sge;
+    $str .= "($items->[1] $infix{$tag} $tmp) ";
   }
+  $str;
 }
 
 1;

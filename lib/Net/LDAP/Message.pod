@@ -18,7 +18,7 @@ L<delete|Net::LDAP/delete( DN [, OPTIONS])>,
 L<modify|Net::LDAP/modify( DN [, OPTIONS])>,
 L<moddn|Net::LDAP/moddn( DN [, OPTIONS])>,
 L<search|Net::LDAP/search(OPTIONS)> and
-L<unbind|Net::LDAP/unbind>
+L<unbind|Net::LDAP/unbind>.
 
 The sub-class L<Net::LDAP::Search> returned by L<search|Net::LDAP/search(OPTIONS)> also
 defines many methods.
@@ -33,7 +33,7 @@ C<done>, will cause a wait until the request is completed.
 =item code
 
 The code value in the result message from the server. Normally for
-a sucess zero will be returned. L<Constants|Net::LDAP::Constant> for the result codes
+a success zero will be returned. L<Constants|Net::LDAP::Constant> for the result codes
 can be imported from the L<Net::LDAP> module.
 
 =item error
@@ -66,10 +66,10 @@ Returns a list of referrals from the result message.
 
 L<Net::LDAP>, L<Net::LDAP::Search>, L<Net::LDAP::Constants>
 
-=head1 ACKNOWEDGEMENTS
+=head1 ACKNOWLEDGEMENTS
 
 This document is based on a document originally written by Russell Fulton
-E<lt>F<r.fulton@auckland.ac.nz>E<gt>
+E<lt>F<r.fulton@auckland.ac.nz>E<gt>.
 
 =head1 AUTHOR
 
@@ -77,7 +77,7 @@ Graham Barr E<lt>F<gbarr@pobox.com>E<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997-8 Graham Barr. All rights reserved. This program is
+Copyright (c) 1997-1999 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
 

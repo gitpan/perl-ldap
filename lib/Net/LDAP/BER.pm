@@ -1,4 +1,4 @@
-# Copyright (c) 1998 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# Copyright (c) 1998-1999 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
@@ -10,7 +10,7 @@ use strict;
 use vars qw($VERSION @ISA);
 
 @ISA = qw(Convert::BER);
-$VERSION = "1.04";
+$VERSION = "1.05";
 
 Net::LDAP::BER->define(
 
@@ -59,10 +59,16 @@ Net::LDAP::BER->define(
   [ FILTER_LE	      => $SEQUENCE,    BER_CONTEXT     | BER_CONSTRUCTOR | 0x06 ],
   [ FILTER_PRESENT    => $STRING,      BER_CONTEXT			 | 0x07 ],
   [ FILTER_APPROX     => $SEQUENCE,    BER_CONTEXT     | BER_CONSTRUCTOR | 0x08 ],
+  [ FILTER_EXTENSIBLE => $SEQUENCE,    BER_CONTEXT     | BER_CONSTRUCTOR | 0x09 ],
 
   [ SUBSTR_INITIAL    => $STRING,      BER_CONTEXT			 | 0x00 ],
   [ SUBSTR_ANY	      => $STRING,      BER_CONTEXT			 | 0x01 ],
   [ SUBSTR_FINAL      => $STRING,      BER_CONTEXT			 | 0x02 ],
+
+  [ EXTENSIBLE_RULE   => $STRING,      BER_CONTEXT			 | 0x01 ],
+  [ EXTENSIBLE_TYPE   => $STRING,      BER_CONTEXT			 | 0x02 ],
+  [ EXTENSIBLE_VALUE  => $STRING,      BER_CONTEXT			 | 0x03 ],
+  [ EXTENSIBLE_DN     => $BOOLEAN,     BER_CONTEXT			 | 0x04 ],
 
   [ LDAP_CONTROLS     => $SEQUENCE_OF, BER_CONTEXT     | BER_CONSTRUCTOR | 0x00 ],
   [ LDAP_REFERRAL     => $SEQUENCE,    BER_CONTEXT     | BER_CONSTRUCTOR | 0x03 ],

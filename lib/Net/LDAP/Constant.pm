@@ -91,7 +91,7 @@ sub LDAP_DECODING_ERROR            () { 0x54 }
 sub LDAP_TIMEOUT                   () { 0x55 }
 sub LDAP_AUTH_UNKNOWN              () { 0x56 }
 sub LDAP_FILTER_ERROR              () { 0x57 }
-sub LDAP_USER_CANCELLED            () { 0x58 }
+sub LDAP_USER_CANCELED             () { 0x58 }
 sub LDAP_PARAM_ERROR               () { 0x59 }
 sub LDAP_NO_MEMORY                 () { 0x5a }
 

@@ -58,17 +58,17 @@ The server requires authentication be performed with a SASL mechanism
 
 =item LDAP_PARTIAL_RESULTS
 
-Returned to version 2 clients when a referral is returned. Te response
+Returned to version 2 clients when a referral is returned. The response
 will contain a list of URL's for other servers.
 
 =item LDAP_REFERRAL
 
-The server is refering the client to another server. The response will
+The server is referring the client to another server. The response will
 contain a list of URL's
 
 =item LDAP_ADMIN_LIMIT_EXCEEDED
 
-The server has exceed the maximum number of entries to search while agthering
+The server has exceed the maximum number of entries to search while gathering
 a list of search result candidates
 
 =item LDAP_UNAVAILABLE_CRITICAL_EXT
@@ -88,7 +88,7 @@ mechanism, to continue the authentication process
 
 =item LDAP_NO_SUCH_ATTRIBUTE
 
-Te request referenced an attribute that does not exist
+The request referenced an attribute that does not exist
 
 =item LDAP_UNDEFINED_TYPE
 
@@ -96,7 +96,7 @@ The request contains an undefined attribute type
 
 =item LDAP_INAPPROPRIATE_MATCHING
 
-An extensible matching rule in the given filter does not appl to the specified
+An extensible matching rule in the given filter does not apply to the specified
 attribute
 
 =item LDAP_CONSTRAINT_VIOLATION
@@ -110,8 +110,8 @@ This result can be returned as a consequence of
 
 The request was to add or modify a user password, and the password fails to
 meet the criteria the server is configured to check. This could be that the
-password is too short, or a reconizeable word (e.g. it matches one of the
-attributes in the users entry) or it matches a revious password used by
+password is too short, or a recognizable word (e.g. it matches one of the
+attributes in the users entry) or it matches a previous password used by
 the same user.
 
 =item *
@@ -127,7 +127,7 @@ The request attempted to add an attribute type or value that already exists
 =item LDAP_INVALID_SYNTAX
 
 Some part of the request contained an invalid syntax. It could be a search
-with an invalid filter or a request to modify the schema and teh given
+with an invalid filter or a request to modify the schema and the given
 schema has a bad syntax.
 
 =item LDAP_NO_SUCH_OBJECT
@@ -161,7 +161,7 @@ The wrong password was supplied or the SASL credentials could not be processed
 
 =item LDAP_INSUFFICIENT_ACCESS
 
-The client does not have sufficient access to perforn the requested
+The client does not have sufficient access to perform the requested
 operation
 
 =item LDAP_BUSY
@@ -170,7 +170,7 @@ The server is too busy to perform requested operation
 
 =item LDAP_UNAVAILABLE
 
-The server in unavaliable to perform the request, or the server is
+The server in unavailable to perform the request, or the server is
 shutting down
 
 =item LDAP_UNWILLING_TO_PERFORM
@@ -196,7 +196,7 @@ The requested operation is not allowed on an entry that has child entries
 
 =item LDAP_NOT_ALLOWED_ON_RDN
 
-The requested operation ill affect the RDN of teh entry
+The requested operation ill affect the RDN of the entry
 
 =item LDAP_ALREADY_EXISTS
 
@@ -232,12 +232,12 @@ The results of the request are to large
 
 =item LDAP_AFFECTS_MULTIPLE_DSAS
 
-The requested operation needs to be performed onm multiple servers were
-thie requested operation is not permitted
+The requested operation needs to be performed on multiple servers where
+the requested operation is not permitted
 
 =item LDAP_OTHER
 
-An onknown error has occured
+An unknown error has occurred
 
 =item LDAP_SERVER_DOWN
 
@@ -245,11 +245,11 @@ C<Net::LDAP> cannot establish a connection or the connection has been lost
 
 =item LDAP_LOCAL_ERROR
 
-An error occured in C<Net::LDAP>
+An error occurred in C<Net::LDAP>
 
 =item LDAP_ENCODING_ERROR
 
-C<Net::LDAP> encountered an error while encodeing the request packet that would
+C<Net::LDAP> encountered an error while encoding the request packet that would
 have been sent to the server
 
 =item LDAP_DECODING_ERROR
@@ -259,7 +259,7 @@ the server.
 
 =item LDAP_TIMEOUT
 
-C<Net::LDAP> timeout while waiting for a response fro the server
+C<Net::LDAP> timeout while waiting for a response from the server
 
 =item LDAP_AUTH_UNKNOWN
 
@@ -268,11 +268,11 @@ the server
 
 =item LDAP_FILTER_ERROR
 
-An error occured while encoding the given search filter.
+An error occurred while encoding the given search filter.
 
-=item LDAP_USER_CANCELLED
+=item LDAP_USER_CANCELED
 
-The user cancelled the operation
+The user canceled the operation
 
 =item LDAP_PARAM_ERROR
 

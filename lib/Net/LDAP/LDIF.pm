@@ -1,4 +1,4 @@
-# Copyright (c) 1998 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# Copyright (c) 1998-1999 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
@@ -72,7 +72,7 @@ sub _read_one {
   my $line;
   my $attr;
   foreach $line (@ldif) {
-    $line =~ s/^([;\w]+):\s*// && ($attr = $1) or next;
+    $line =~ s/^([-;\w]+):\s*// && ($attr = $1) or next;
     if($line =~ s/^:\s*//) {
       require MIME::Base64;
       $line = MIME::Base64::decode($line);

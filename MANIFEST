@@ -10,6 +10,14 @@ data/00-cmp2.ldif
 data/00-in.ldif
 data/50-cmp.ldif
 data/50-in.ldif
+data/51-in.ldif
+data/51a-cmp.ldif
+data/51b-cmp.ldif
+data/51c-cmp.ldif
+data/51d-cmp.ldif
+data/52-cmp.ldif
+data/52-in.ldif
+data/52-mod.ldif
 data/slapd-conf.in
 data/slapd.at.conf
 data/slapd.oc.conf
@@ -43,5 +51,8 @@ lib/URI/URL/ldap.pm
 lib/URI/ldap.pm
 t/00ldif-entry.t
 t/01url.t
+t/02filter.t
 t/50populate.t
+t/51search.t
+t/52modify.t
 t/common.pl

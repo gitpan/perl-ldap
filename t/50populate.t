@@ -31,20 +31,4 @@ foreach $e ($ldif->read_cmd) {
 
 $mesg = $ldap->search(base => $BASEDN, filter => 'objectclass=*');
 
-print "not " if $mesg->code;
-print "ok 42\n";
-
-print "not " unless $ldif = Net::LDAP::LDIF->new("$TEMPDIR/50-out.ldif","w");
-print "ok 43\n";
-
-foreach $entry ($mesg->sorted) {
-  foreach $attr ($entry->attributes) {
-    $entry->delete($attr) if $attr =~ /^(modifiersname|modifytimestamp|creatorsname|createtimestamp)$/;
-  }
-  $ldif->write($entry);
-}
-
-$ldif->done; # close the file;
-
-compare("$TEMPDIR/50-out.ldif","data/50-cmp.ldif") && print "not ";
-print "ok 44\n";
+compare_ldif("50",$mesg,$i);
