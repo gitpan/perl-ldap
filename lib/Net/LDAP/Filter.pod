@@ -1,0 +1,66 @@
+=head1 NAME
+
+Net::LDAP::Filter -- representation of LDAP filters
+
+=head1 SYNOPSIS
+
+  use Net::LDAP::Filter;
+  
+  $filter = Net::LDAP::Filter->new( $filter_str );
+  
+  $new_filter = $filter->not;
+
+=head1 DESCRIPTION
+
+=head1 CONSTRUCTOR
+
+=over 4
+
+=item new
+
+=item and
+
+=item or
+
+=item not
+
+=item more ....
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+=item parse
+
+=item infix_parse
+
+=item ber
+
+=item as_string
+
+Not implemented.
+
+=back
+
+=head1 SEE ALSO
+
+L<Net::LDAP>
+
+=head1 ACKNOWEDGEMENTS
+
+This document is based on a document originally written by Russell Fulton
+E<lt>F<r.fulton@auckland.ac.nz>E<gt>
+
+=head1 AUTHOR
+
+Graham Barr E<lt>F<gbarr@pobox.com>E<gt>
+
+=head1 COPYRIGHT
+
+Copyright (c) 1997-8 Graham Barr. All rights reserved. This program is
+free software; you can redistribute it and/or modify it under the same
+terms as Perl itself.
+
+=cut
