@@ -1,4 +1,4 @@
-#line 1 "inc/Extutils/AutoInstall.pm - /Users/gbarr/Library/Perl/Extutils/AutoInstall.pm"
+#line 1 "inc/ExtUtils/AutoInstall.pm - /Users/gbarr/Library/Perl/ExtUtils/AutoInstall.pm"
 # $File: //member/autrijus/ExtUtils-AutoInstall/lib/ExtUtils/AutoInstall.pm $ 
 # $Revision: #14 $ $Change: 10538 $ $DateTime: 2004/04/29 17:55:36 $ vim: expandtab shiftwidth=4
 

@@ -1,6 +1,6 @@
 name: perl-ldap
 module_name: Net::LDAP
-version: 0.3201
+version: 0.3202
 abstract: LDAP client library
 author: Graham Barr <gbarr@cpan.org>
 license: perl
