@@ -1,7 +1,7 @@
 package Net::LDAP::DSML;
 
 #
-# $Id: DSML.pm,v 1.17 2002/09/11 12:49:55 gbarr Exp $
+# $Id: DSML.pm,v 1.19 2003/05/07 10:53:42 chrisridd Exp $
 # 
 
 use strict;
@@ -11,7 +11,7 @@ use XML::SAX::Base;
 use Net::LDAP::Entry;
 
 @ISA = qw(XML::SAX::Base);
-$VERSION = "0.11";
+$VERSION = "0.12";
 
 # OO purists will hate this :)
 my %schema_typemap = qw(
@@ -836,6 +836,14 @@ easier for a human.
 
 =over 4
 
+=item start_dsml( )
+
+Start a DSML file.
+
+= item end_dsml( )
+
+End a DSML file.
+
 =item write_entry( ENTRY )
 
 Entry is a Net::LDAP::Entry object. The write method will parse
@@ -858,7 +866,7 @@ B<Example>
   my $schema = $ldap->schema();
   $dsml->write_schema($schema);
 
-=back 4
+=back
 
 =head1 AUTHOR
 
@@ -867,7 +875,7 @@ Graham Barr   gbarr@pobox.com
 =head1 SEE ALSO
 
 L<Net::LDAP>,
-L<XML::Parser>
+L<XML::SAX::Base>
 
 =head1 COPYRIGHT
 

@@ -31,7 +31,7 @@ Net::LDAP - Lightweight Directory Access Protocol
  
  $result = $ldap->add ( 'cn = Barbara Jensen, o=University of Michigan, c=us',
                attr => [ 'cn'   => ['Barbara Jensen', 'Barbs Jensen'],
-                	 'sn    => 'Jensen',
+                	 'sn'   => 'Jensen',
                 	 'mail' => 'b.jensen@umich.edu',
                 	 'objectclass' => ['top', 'person',
                                            'organizationalPerson',
@@ -40,6 +40,7 @@ Net::LDAP - Lightweight Directory Access Protocol
              );
  
  $result->code && warn "failed to add entry: ", $result->error ;
+ $ldap->unbind;  # take down session
 
 =head1 DESCRIPTION
 
@@ -58,17 +59,31 @@ protocol.
 =item new ( HOST [, OPTIONS ] )
 
 Creates a new B<Net::LDAP> object and opens a connection to the named host.
-OPTIONS is a list of key-value pairs, valid options are :-
 
-C<HOST> may also be a reference to an array of hosts to try. Each will
-be tried in order until a connection is made. Only when all have
-failed will the result of C<undef> be returned.
+C<HOST> may be a host name or an IP number. TCP port may be specified
+after the host name followed by a colon (such as localhost:10389). The
+default TCP port is 389.
+
+You can also specify a URI, such as 'ldaps://127.0.0.1:666' or
+'ldapi://%2fvar%2flib%2fldap_sock'. Note that '%2f's in the LDAPI
+socket path will be translated into '/'. This is to support LDAP query
+options like base, search etc. although the query part of the URI will
+be ignored in this context. If port was not specified in the URI, the
+default is either 389 or 636 for 'LDAP' and 'LDAPS' schemes
+respectively.
+
+C<HOST> may also be a reference to an array of hosts, host-port pairs
+or URIs to try. Each will be tried in order until a connection is
+made. Only when all have failed will the result of C<undef> be
+returned.
+
+OPTIONS is a list of key-value pairs, valid options are :-
 
 =over 4
 
 =item port
 
-Port to connect to on the remote server.
+Port to connect to on the remote server. May be overridden by C<HOST>.
 
 =item timeout
 
@@ -179,7 +194,7 @@ See L</CALLBACKS> below
 B<Example>
 
   $mesg = $ldap->search( @search_args );
-  
+
   $ldap->abandon( $mesg ); # This could be written as $mesg->abandon
 
 
@@ -217,7 +232,7 @@ B<Example>
 
   # $entry is an object of class Net::LDAP::Entry
   $mesg = $ldap->add( $entry );
-  
+
   $mesg = $ldap->add( $DN,
     attrs => [
       name  => 'Graham Barr',
@@ -283,9 +298,9 @@ of L<Authen::SASL>.
 B<Example>
 
   $ldap->bind; # Anonymous bind
-  
+
   $ldap->bind( $DN, password => $password);
-  
+
   # $sasl is an object of class Authen::SASL
   $ldap->bind( $DN, sasl => $sasl, version => 3);
 
@@ -419,7 +434,7 @@ the all instances of the attribute will be deleted.
 
 =item replace
 
-The <replace> option takes a argument in the same form as B<add>, but will
+The B<replace> option takes a argument in the same form as B<add>, but will
 cause any existing attributes with the same name to be replaced. If the
 value for any attribute in the HASH is a reference to an empty ARRAY
 the all instances of the attribute will be deleted.
@@ -471,8 +486,8 @@ B<Example>
 
 =item root_dse ( OPTIONS )
 
-The root_dse method retrieves information from the server's
-rootDSE entry.
+The root_dse method retrieves cached information from the server's
+rootDSE.
 
 =over 4
 
@@ -491,7 +506,7 @@ If not specified, then the following attributes will be requested
 
 =back
 
-The result is an object of class L<Net::LDAP::Search>.
+The result is an object of class L<Net::LDAP::RootDSE>.
 
 B<Example>
 
@@ -501,6 +516,11 @@ B<Example>
  # get supported LDAP versions
  $root->get_value('supportedLDAPVersion', asref => 1);
 
+As the root DSE may change in certain circumstances - for instance
+when you change the connection using start_tls - you should always use
+the root_dse method to return the most up-to-date copy of the root
+DSE.
+
 =item schema ( OPTIONS )
 
 Request that a schema search be performed.  This can be used to read 
@@ -508,7 +528,7 @@ schema information.
 
 The result is an object of class L<Net::LDAP::Schema>.
 Read this documentation for further information about methods that
-can be preformed with this object.
+can be performed with this object.
 
 =over 4
 
@@ -519,13 +539,15 @@ which the search for schema information will be conducted.  If
 no DN is supplied the base object entry will be determined from
 the rootDSE entry.
 
+=back
+
 B<Example>
 
  my $schema = $ldap->schema();
  # get objectClasses
- @ocs = $schema->objectclasses();
+ @ocs = $schema->all_objectclasses();
  # Get the attributes
- @atts = $schema->attributes();
+ @atts = $schema->all_attributes();
 
 =item search ( OPTIONS )
 
@@ -636,9 +658,14 @@ operational attributes may also be available for the asking:
 
   $ldap->search( ... , attrs => ['createtimestamp'] , ... );
 
-To retreive the default attributes and additional ones, use '*'.
+To retrieve the default attributes and additional ones, use '*'.
 
   $ldap->search( ... , attrs => ['*', 'createtimestamp'] , ... );
+
+To retrieve no attributes (the server only returns the DNs of matching
+entries), use '1.1':
+
+  $ldap->search( ... , attrs => ['1.1'] , ... );
 
 =item control
 
@@ -771,6 +798,10 @@ names, use OpenSSL like this in Unix:
 
 =back
 
+=item disconnect
+
+Disconnect from the server
+
 =back
 
 =over 4
@@ -791,8 +822,6 @@ format, different from RFC 1779 and RFC 2253) from the server's
 certificate, do this:
 
     print "Subject DN: " . $ldaps->certificate->subject_name . "\n";
-
-=back
 
 =item version
 
@@ -867,21 +896,20 @@ L<Net::LDAP::Search>,
 L<Net::LDAP::RFC>
 
 The homepage for the perl-ldap modules can be found at 
-http://www.pobox.com/~gbarr/perl-ldap/.
+http://perl-ldap.sourceforge.net/
 
 =head1 ACKNOWLEDGEMENTS
 
 This document is based on a document originally written by Russell Fulton
-<r.fulton@auckland.ac.nz>.
+E<lt>r.fulton@auckland.ac.nzE<gt>.
 
-Chris Ridd <chris.ridd@messagingdirect.com> for the many hours spent
+Chris Ridd E<lt>chris.ridd@isode.comE<gt> for the many hours spent
 testing and contribution of the ldap* command line utilities.
 
 =head1 MAILING LIST
 
 A discussion mailing list is hosted by sourceforge at
-<perl-ldap-dev@lists.sourceforge.net> Don't be put off by the -dev
-in the name, the list is open for all questions.
+E<lt>perl-ldap@perl.orgE<gt> No subscription is necessary!
 
 =head1 BUGS
 
@@ -893,16 +921,16 @@ list.
 
 =head1 AUTHOR
 
-Graham Barr <gbarr@pobox.com>
+Graham Barr E<lt>gbarr@pobox.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997-2002 Graham Barr. All rights reserved. This program is
+Copyright (c) 1997-2003 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: LDAP.pod,v 1.18 2003/01/27 14:19:39 gbarr Exp $>
+I<$Id: LDAP.pod,v 1.29 2003/05/09 18:19:54 chrisridd Exp $>
 
 =cut

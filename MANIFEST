@@ -52,7 +52,6 @@ lib/Net/LDAP.pod
 lib/Net/LDAP/ASN.pm
 lib/Net/LDAP/Bind.pm
 lib/Net/LDAP/Constant.pm
-lib/Net/LDAP/Constant.pod
 lib/Net/LDAP/Control.pm
 lib/Net/LDAP/Control/Paged.pm
 lib/Net/LDAP/Control/ProxyAuth.pm
@@ -76,12 +75,14 @@ lib/Net/LDAP/Message.pm
 lib/Net/LDAP/Message.pod
 lib/Net/LDAP/RFC.pod
 lib/Net/LDAP/Reference.pod
+lib/Net/LDAP/RootDSE.pm
 lib/Net/LDAP/Schema.pm
 lib/Net/LDAP/Schema.pod
 lib/Net/LDAP/Search.pm
 lib/Net/LDAP/Search.pod
 lib/Net/LDAP/Security.pod
 lib/Net/LDAP/Util.pm
+lib/Net/LDAPI.pm
 lib/Net/LDAPS.pm
 mkmanf
 t/00ldif-entry.t
@@ -93,6 +94,8 @@ t/52modify.t
 t/53schema.t
 t/54dse.t
 t/55ssl.t
+t/56ipc.t
+t/57url.t
 t/70sortctrl.t
 t/common.pl
 test.cfg

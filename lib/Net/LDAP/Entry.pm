@@ -9,7 +9,7 @@ use Net::LDAP::ASN qw(LDAPEntry);
 use Net::LDAP::Constant qw(LDAP_LOCAL_ERROR);
 use vars qw($VERSION);
 
-$VERSION = "0.17";
+$VERSION = "0.20";
 
 sub new {
   my $self = shift;
@@ -18,6 +18,29 @@ sub new {
   my $entry = bless { 'changetype' => 'add', changes => [] }, $type;
 
   $entry;
+}
+
+sub clone {
+  my $self  = shift;
+  my $clone = $self->new();
+
+  $clone->dn($self->dn());
+  foreach ($self->attributes()) {
+    $clone->add($_ => [$self->get_value($_)]);
+  }
+
+  $clone->{changetype} = $self->{changetype};
+  my @changes = @{$self->{changes}};
+  while (my($action, $cmd) = splice(@changes,0,2)) {
+    my @new_cmd;
+    my @cmd = @$cmd;
+    while (my($type, $val) = splice(@cmd,0,2)) {
+      push @new_cmd, $type, [ @$val ];
+    }
+    push @{$clone->{changes}}, $action, \@new_cmd;
+  }
+
+  $clone;
 }
 
 # Build attrs cache, created when needed
@@ -242,7 +265,7 @@ sub dump {
 
   my $asn = $self->{asn};
   print "-" x 72,"\n";
-  print "dn:",$asn->{objectName},"\n\n";
+  print "dn:",$asn->{objectName},"\n\n" if $asn->{objectName};
 
   my($attr,$val);
   my $l = 0;
@@ -287,7 +310,8 @@ sub asn {
 }
 
 sub changes {
-  @{shift->{'changes'}}
+  my $ref = shift->{'changes'};
+  $ref ? @$ref : ();
 }
 
 1;

@@ -33,6 +33,7 @@ the L<Net::LDAP> modules.
 
 use vars qw($VERSION);
 require Exporter;
+require Net::LDAP::Constant;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(
   ldap_error_name
@@ -41,7 +42,7 @@ require Exporter;
   canonical_dn
   ldap_explode_dn
 );
-$VERSION = "0.09";
+$VERSION = "0.10";
 
 =item ldap_error_name ( NUM )
 
@@ -51,24 +52,7 @@ is returned.
 
 =cut
 
-my @err2name;
-
-sub ldap_error_name {
-  my $code = 0+ shift;
-  require Net::LDAP::Constant;
-
-  unless (@err2name) {
-    local *FH;
-
-    if (open(FH,$INC{'Net/LDAP/Constant.pm'})) {
-      while(<FH>) {
-        ($err2name[hex($2)] = $1) if /^sub\s+(LDAP_\S+)\s+\(\)\s+\{\s+0x([0-9a-fA-f]{2})\s+\}/;
-      }
-      close(FH);
-    }
-  }
-  $err2name[$code] || sprintf("LDAP error code %d(0x%02X)",$code,$code);
-}
+# Defined in Constant.pm
 
 =item ldap_error_text ( NUM )
 
@@ -77,40 +61,7 @@ error code given is unknown then C<undef> is returned.
 
 =cut
 
-sub ldap_error_text {
-  my $name = ldap_error_name(shift);
-  my $text;
-  if($name =~ /^LDAP_/) {
-    my $pod = $INC{'Net/LDAP/Constant.pm'};
-    substr($pod,-3) = ".pod";
-    local *F;
-    open(F,$pod) or return;
-    local $/ = "";
-    local $_;
-    my $len = length($name);
-    my $indent = 0;
-    while(<F>) {
-      if(substr($_,0,11) eq "=item LDAP_") {
-        last if defined $text;
-	$text = "" if /^=item $name\b/;
-      }
-      elsif(defined $text && /^=(\S+)/) {
-        $indent = 1 if $1 eq "over";
-        $indent = 0 if $1 eq "back";
-	$text .= " * " if $1 eq "item";
-      }
-      elsif(defined $text) {
-        if($indent) {
-          s/\n(?=.)/\n   /sog;
-	}
-        $text .= $_;
-      }
-    }
-    close(F);
-    $text =~ s/\n+\Z/\n/ if defined $text;
-  }
-  $text;
-}
+# Defined in Constant.pm
 
 =item ldap_error_desc ( NUM )
 
@@ -246,9 +197,9 @@ of a name.
 
 =item *
 
-Escapes all RFC 2253 special characters (",", "+", """, "\", "<", ">",
-";", "#", "=", " "), slashes ("/"), and any other character where the
-ASCII code is <32 as \hexpair.
+Escapes all RFC 2253 special characters (",", "+", """, "\", "E<lt>",
+"E<gt>", ";", "#", "=", " "), slashes ("/"), and any other character
+where the ASCII code is E<lt> 32 as \hexpair.
 
 =item *
 
@@ -374,14 +325,14 @@ in the DN.
 For example, the DN 'OU=Sales+CN=J. Smith,DC=example,DC=net' is exploded to:
 [
   {
-    'OU' => 'Sales',
-    'CN' => 'J. Smith'
+    'OU' =E<gt> 'Sales',
+    'CN' =E<gt> 'J. Smith'
   },
   {
-    'DC' => 'example'
+    'DC' =E<gt> 'example'
   },
   {
-    'DC' => 'net'
+    'DC' =E<gt> 'net'
   }
 ]
 
@@ -392,13 +343,13 @@ values, ldap_explode_dn uses references to the actual values,
 e.g. '1.3.6.1.4.1.1466.0=#04024869,DC=example,DC=com' is exploded to:
 [
   {
-    '1.3.6.1.4.1.1466.0' => \"\004\002Hi"
+    '1.3.6.1.4.1.1466.0' =E<gt> \"\004\002Hi"
   },
   {
-    'DC' => 'example'
+    'DC' =E<gt> 'example'
   },
   {
-    'DC' => 'com'
+    'DC' =E<gt> 'com'
   }
 ];
 
@@ -408,8 +359,8 @@ It also performs the following operations on the given DN:
 
 =item *
 
-Unescape "\" followed by ",", "+", """, "\", "<", ">", ";", "#", "=",
-" ", or a hexpair and and strings beginning with "#".
+Unescape "\" followed by ",", "+", """, "\", "E<lt>", "E<gt>", ";",
+"#", "=", " ", or a hexpair and and strings beginning with "#".
 
 =item *
 
@@ -444,6 +395,8 @@ Do not change attribute type names.
 =item reverse
 
 If TRUE, the RDN sequence is reversed.
+
+=back
 
 =back
 
@@ -518,7 +471,7 @@ sub ldap_explode_dn($%) {
 
 =head1 AUTHOR
 
-Graham Barr <gbarr@pobox.com>
+Graham Barr E<lt>gbarr@pobox.comE<gt>
 
 =head1 COPYRIGHT
 
@@ -532,7 +485,7 @@ ldap_explode_dn and canonical_dn also
 
 =for html <hr>
 
-I<$Id: Util.pm,v 1.15 2002/06/03 15:26:46 gbarr Exp $>
+I<$Id: Util.pm,v 1.17 2003/05/08 09:27:41 gbarr Exp $>
 
 =cut
 

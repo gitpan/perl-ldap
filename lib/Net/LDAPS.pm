@@ -1,68 +1,17 @@
-# Copyright (c) 2000-2002 Chris Ridd <chris.ridd@messagingdirect.com> and
+# Copyright (c) 2000-2003 Chris Ridd <chris.ridd@isode.com> and
 # Graham Barr <gbarr@pobox.com>. All rights reserved.  This program is
 # free software; you can redistribute it and/or modify it under the
 # same terms as Perl itself.
 
 package Net::LDAPS;
 @Net::LDAPS::ISA = ( 'Net::LDAP' );
-$Net::LDAPS::VERSION = "0.04";
+$Net::LDAPS::VERSION = "0.05";
 
 use strict;
 use Net::LDAP;
-use IO::Socket::SSL;
 
-# Different OpenSSL verify modes.
-my %verify = qw(none 0 optional 1 require 3);
-
-sub _connect {
-  my ($ldap, $host, $arg) = @_;
-
-  $ldap->{'net_ldap_socket'} = IO::Socket::SSL->new(
-    PeerAddr 	    => $host,
-    PeerPort 	    => $arg->{'port'} || '636',
-    Proto    	    => 'tcp',
-    Timeout  	    => defined $arg->{'timeout'} ? $arg->{'timeout'} : 120,
-    SSL_context_init_args($arg)
-  );
-}
-
-sub SSL_context_init_args {
-  my $arg = shift;
-
-  my $verify = 0;
-  my ($clientcert,$clientkey,$passwdcb);
-
-  if (exists $arg->{'verify'}) {
-      my $v = lc $arg->{'verify'};
-      $verify = 0 + (exists $verify{$v} ? $verify{$v} : $verify);
-  }
-
-  if (exists $arg->{'clientcert'}) {
-      $clientcert = $arg->{'clientcert'};
-      if (exists $arg->{'clientkey'}) {
-	  $clientkey = $arg->{'clientkey'};
-      } else {
-	  require Carp;
-	  Carp::croak("Setting client public key but not client private key");
-      }
-  }
-
-  if (exists $arg->{'keydecrypt'}) {
-      $passwdcb = $arg->{'keydecrypt'};
-  }
-
-  (
-    SSL_cipher_list => defined $arg->{'ciphers'} ? $arg->{'ciphers'} : 'ALL',
-    SSL_ca_file     => exists  $arg->{'cafile'}  ? $arg->{'cafile'}  : '',
-    SSL_ca_path     => exists  $arg->{'capath'}  ? $arg->{'capath'}  : '',
-    SSL_key_file    => $clientcert ? $clientkey : undef,
-    SSL_passwd_cb   => $passwdcb,
-    SSL_use_cert    => $clientcert ? 1 : 0,
-    SSL_cert_file   => $clientcert,
-    SSL_verify_mode => $verify,
-    SSL_version     => defined $arg->{'sslversion'} ? $arg->{'sslversion'} :
-                       'sslv2/3',
-  );
+sub new {
+  shift->SUPER::new(@_, scheme => 'ldaps');
 }
 
 1;
@@ -95,7 +44,8 @@ LDAP protocol.
 Note that the use of LDAPS is not recommended, because it is not
 described by any IETF documents. Instead, you should consider using
 LDAPv3 with the TLS extension defined in RFC 2830. This will give you
-the same functionality as LDAPS, but using recognized standards. See
+the same functionality as LDAPS, but using recognized standards.
+Unfortunately servers may support LDAPS but not the TLS extension. See
 L<Net::LDAP/start_tls>.
 
 =head1 CONSTRUCTOR
@@ -136,16 +86,16 @@ don't encrypt!
 
 =item clientkey
 
-=item decryptkey
+=item keydecrypt
 
 If you want to use the client to offer a certificate to the server for
 SSL authentication (which is not the same as for the LDAP Bind
 operation) then set clientcert to the user's certificate file, and
-clientkey to the user's private key file. These files must be in PEM
-format.
+clientkey to the user's private key file. These files B<must> be in
+PEM format.
 
 If the private key is encrypted (highly recommended!) then set
-decryptkey to a reference to a subroutine that returns the decrypting
+keydecrypt to a reference to a subroutine that returns the decrypting
 key. For example:
 
  $ldaps = new Net::LDAPS('myhost.example.com',
@@ -153,7 +103,7 @@ key. For example:
                          verify => 'require',
                          clientcert => 'mycert.pem',
                          clientkey => 'mykey.pem',
-                         decryptkey => sub { 'secret'; },
+                         keydecrypt => sub { 'secret'; },
                          capath => '/usr/local/cacerts/');
 
 =item capath
@@ -163,7 +113,7 @@ key. For example:
 When verifying the server's certificate, either set capath to the
 pathname of the directory containing CA certificates, or set cafile to
 the filename containing the certificate of the CA who signed the
-server's certificate. These certificates must all be in PEM format.
+server's certificate. These certificates B<must> all be in PEM format.
 
 The directory in 'capath' must contain certificates named using the
 hash value of the certificates' subject names. To generate these
@@ -212,11 +162,11 @@ restrictions in the underlying Net::SSLeay code.
 
 =head1 AUTHOR
 
-Chris Ridd <chris.ridd@messagingdirect.com>
+Chris Ridd E<lt>chris.ridd@isode.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2000-2002, Chris Ridd and Graham Barr. All rights reserved. This
+Copyright (c) 2000-2003, Chris Ridd and Graham Barr. All rights reserved. This
 library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 

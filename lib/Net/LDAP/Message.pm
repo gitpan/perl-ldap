@@ -1,4 +1,4 @@
-# $Id: Message.pm,v 1.4 2000/09/12 09:17:09 gbarr Exp $
+# $Id: Message.pm,v 1.6 2003/05/06 16:46:02 gbarr Exp $
 # Copyright (c) 1997-2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
@@ -10,7 +10,7 @@ use Net::LDAP::ASN qw(LDAPRequest);
 use strict;
 use vars qw($VERSION);
 
-$VERSION = "1.05";
+$VERSION = "1.06";
 
 my $MsgID = 0;
 
@@ -83,14 +83,21 @@ sub server_error {
 
 sub error {
   my $self = shift;
-  $self->server_error
-    or require Net::LDAP::Util
-    and Net::LDAP::Util::ldap_error_desc( $self->code );
+  my $return;
+
+  unless ($return = $self->server_error) {
+    require Net::LDAP::Util and
+    $return = Net::LDAP::Util::ldap_error_desc( $self->code );
+  }
+
+  $return;
 }
 
 sub set_error {
   my $self = shift;
   ($self->{resultCode},$self->{errorMessage}) = ($_[0]+0, "$_[1]");
+  $self->{callback}->($self)
+    if (defined $self->{callback});
   $self;
 }
 

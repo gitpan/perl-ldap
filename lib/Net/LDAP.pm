@@ -20,9 +20,12 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 			   LDAP_LOCAL_ERROR
 			   LDAP_PARAM_ERROR
 			   LDAP_INAPPROPRIATE_AUTH
+			   LDAP_SERVER_DOWN
+			   LDAP_USER_CANCELED
+			   LDAP_EXTENSION_START_TLS
 			);
 
-$VERSION 	= "0.2701";
+$VERSION 	= "0.28";
 @ISA     	= qw(Net::LDAP::Extra);
 $LDAP_VERSION 	= 3;      # default LDAP protocol version
 
@@ -96,16 +99,20 @@ sub new {
   my $arg  = &_options;
   my $obj  = bless {}, $type;
 
-  foreach my $h (ref($host) ? @$host : ($host)) {
-    if ($obj->_connect($h, $arg)) {
-      $obj->{net_ldap_host} = $h;
+  foreach my $uri (ref($host) ? @$host : ($host)) {
+    my $scheme = $arg->{scheme} || 'ldap';
+    (my $h = $uri) =~ s,^(\w+)://,, and $scheme = $1;
+    my $meth = $obj->can("connect_$scheme") or next;
+    $h =~ s,/.*,,; # remove path part
+    $h =~ s/%([A-Fa-f0-9]{2})/chr(hex($1))/eg; # unescape
+    if (&$meth($obj, $h, $arg)) {
+      $obj->{net_ldap_uri} = $uri;
       last;
     }
   }
 
   return undef unless $obj->{net_ldap_socket};
 
-  $obj->{net_ldap_host}    = $host;
   $obj->{net_ldap_resp}    = {};
   $obj->{net_ldap_version} = $arg->{version} || $LDAP_VERSION;
   $obj->{net_ldap_async}   = $arg->{async} ? 1 : 0;
@@ -120,7 +127,7 @@ sub new {
   $obj;
 }
 
-sub _connect {
+sub connect_ldap {
   my ($ldap, $host, $arg) = @_;
 
   $ldap->{net_ldap_socket} = IO::Socket::INET->new(
@@ -131,7 +138,86 @@ sub _connect {
     Timeout    => defined $arg->{timeout}
 		 ? $arg->{timeout}
 		 : 120
+  ) or return undef;
+  
+  $ldap->{net_ldap_host} = $host;
+}
+
+
+# Different OpenSSL verify modes.
+my %ssl_verify = qw(none 0 optional 1 require 3);
+
+sub connect_ldaps {
+  my ($ldap, $host, $arg) = @_;
+  require IO::Socket::SSL;
+
+  $ldap->{'net_ldap_socket'} = IO::Socket::SSL->new(
+    PeerAddr 	    => $host,
+    PeerPort 	    => $arg->{'port'} || '636',
+    Proto    	    => 'tcp',
+    Timeout  	    => defined $arg->{'timeout'} ? $arg->{'timeout'} : 120,
+    _SSL_context_init_args($arg)
+  ) or return undef;
+
+  $ldap->{net_ldap_host} = $host;
+}
+
+sub _SSL_context_init_args {
+  my $arg = shift;
+
+  my $verify = 0;
+  my ($clientcert,$clientkey,$passwdcb);
+
+  if (exists $arg->{'verify'}) {
+      my $v = lc $arg->{'verify'};
+      $verify = 0 + (exists $ssl_verify{$v} ? $ssl_verify{$v} : $verify);
+  }
+
+  if (exists $arg->{'clientcert'}) {
+      $clientcert = $arg->{'clientcert'};
+      if (exists $arg->{'clientkey'}) {
+	  $clientkey = $arg->{'clientkey'};
+      } else {
+	  require Carp;
+	  Carp::croak("Setting client public key but not client private key");
+      }
+  }
+
+  if (exists $arg->{'keydecrypt'}) {
+      $passwdcb = $arg->{'keydecrypt'};
+  }
+
+  (
+    SSL_cipher_list => defined $arg->{'ciphers'} ? $arg->{'ciphers'} : 'ALL',
+    SSL_ca_file     => exists  $arg->{'cafile'}  ? $arg->{'cafile'}  : '',
+    SSL_ca_path     => exists  $arg->{'capath'}  ? $arg->{'capath'}  : '',
+    SSL_key_file    => $clientcert ? $clientkey : undef,
+    SSL_passwd_cb   => $passwdcb,
+    SSL_use_cert    => $clientcert ? 1 : 0,
+    SSL_cert_file   => $clientcert,
+    SSL_verify_mode => $verify,
+    SSL_version     => defined $arg->{'sslversion'} ? $arg->{'sslversion'} :
+                       'sslv2/3',
   );
+}
+
+sub connect_ldapi {
+  my ($ldap, $peer, $arg) = @_;
+
+  $peer = $ENV{LDAPI_SOCK} || "/var/lib/ldapi"
+    unless length $peer;
+
+  require IO::Socket::UNIX;
+
+  $ldap->{net_ldap_socket} = IO::Socket::UNIX->new(
+    Peer => $peer,
+    Timeout  => defined $arg->{timeout}
+		 ? $arg->{timeout}
+		 : 120
+  ) or return undef;
+
+  $ldap->{net_ldap_host} = 'localhost';
+  $ldap->{net_ldap_peer} = $peer;
 }
 
 sub message {
@@ -254,9 +340,12 @@ sub bind {
 
     my $initial = $sasl_conn->client_start;
 
+    return _error($ldap, $mesg, LDAP_LOCAL_ERROR, "$@")
+      unless defined($initial);
+
     $passwd = {
       mechanism   => $sasl_conn->mechanism,
-      credentials => $initial
+      credentials => (length($initial) ? $initial : undef)
     };
 
     # Save data, we will need it later
@@ -429,7 +518,7 @@ sub modify {
 	    operation => $opcode,
 	    modification => {
 	      type => $attr,
-	      vals => $val
+	      vals => ref($val) ? $val : [$val]
 	    }
 	  };
 	}
@@ -609,6 +698,11 @@ sub sync {
   $err;
 }
 
+sub disconnect {
+  my $self = shift;
+  _drop_conn($self, LDAP_USER_CANCELED, "Explicit disconnect");
+}
+
 sub _sendmesg {
   my $ldap = shift;
   my $mesg = shift;
@@ -625,7 +719,9 @@ sub _sendmesg {
       if $debug & 4;
   }
 
-  syswrite($ldap->socket, $mesg->pdu, length($mesg->pdu))
+  my $socket = $ldap->socket or return LDAP_SERVER_DOWN;
+
+  syswrite($socket, $mesg->pdu, length($mesg->pdu))
     or return _error($ldap, $mesg, LDAP_LOCAL_ERROR,"$!");
 
   # for CLDAP, here we need to recode when we were sent
@@ -652,14 +748,14 @@ sub _sendmesg {
 sub _recvresp {
   my $ldap = shift;
   my $what = shift;
-  my $sock = $ldap->socket;
+  my $sock = $ldap->socket or return LDAP_SERVER_DOWN;
   my $sel = IO::Select->new($sock);
   my $ready;
 
   for( $ready = 1 ; $ready ; $ready = $sel->can_read(0)) {
     my $pdu;
     asn_read($sock, $pdu)
-      or return LDAP_OPERATIONS_ERROR;
+      or return _drop_conn($ldap, LDAP_OPERATIONS_ERROR, "Communications Error");
 
     my $debug;
     if ($debug = $ldap->debug) {
@@ -676,13 +772,20 @@ sub _recvresp {
     my $result = $LDAPResponse->decode($pdu)
       or return LDAP_DECODING_ERROR;
 
-    my $mid = $result->{messageID};
+    my $mid  = $result->{messageID};
+    my $mesg = $ldap->{net_ldap_mesg}->{$mid};
 
-    my $mesg = $ldap->{net_ldap_mesg}->{$mid} or
-      do {
-	print STDERR "Unexpected PDU, ignored\n" if $debug & 10;
-	next;
-      };
+    unless ($mesg) {
+      if (my $ext = $result->{protocolOp}{extendedResp}) {
+	if (($ext->{responseName} || '') eq '1.3.6.1.4.1.1466.20036') {
+	  # notice of disconnection
+	  return _drop_conn($ldap, LDAP_SERVER_DOWN, "Notice of Disconnection");
+	}
+      }
+
+      print STDERR "Unexpected PDU, ignored\n" if $debug & 10;
+      next;
+    }
 
     $mesg->decode($result) or
       return $mesg->code;
@@ -695,6 +798,20 @@ sub _recvresp {
 
   return LDAP_SUCCESS;
 }
+
+sub _drop_conn {
+  my ($self, $err, $etxt) = @_;
+
+  delete $self->{net_ldap_socket};
+  if (my $msgs = delete $self->{net_ldap_mesg}) {
+    foreach my $mesg (values %$msgs) {
+      $mesg->set_error($err, $etxt);
+    }
+  }
+
+  $err;
+}
+
 
 sub _forgetmesg {
   my $ldap = shift;
@@ -757,6 +874,7 @@ sub schema {
     : Net::LDAP::Schema->new($mesg->entry);
 }
 
+
 sub root_dse {
   my $ldap = shift;
   my %arg  = @_;
@@ -769,6 +887,9 @@ sub root_dse {
 		  supportedSASLMechanisms
 		  supportedLDAPVersion
 		)];
+  my $root = $arg{attrs} && $ldap->{net_ldap_root_dse};
+
+  return $root if $root;
 
   my $mesg = $ldap->search(
     base   => '',
@@ -777,7 +898,13 @@ sub root_dse {
     attrs  => $attrs,
   );
 
-  $mesg->entry;
+  require Net::LDAP::RootDSE;
+  $root = $mesg->entry;
+  bless $root, 'Net::LDAP::RootDSE' if $root; # Naughty, but there you go :-)
+
+  $ldap->{net_ldap_root_dse} = $root unless $arg{attrs};
+
+  return $root;
 }
 
 sub start_tls {
@@ -785,6 +912,7 @@ sub start_tls {
   my $arg  = &_options;
   my $sock = $ldap->socket;
 
+  require IO::Socket::SSL;
   require Net::LDAP::Extension;
   my $mesg = $ldap->message('Net::LDAP::Extension' => $arg);
 
@@ -796,7 +924,7 @@ sub start_tls {
 
   $mesg->encode(
     extendedReq => {
-      requestName => "1.3.6.1.4.1.1466.20037",
+      requestName => LDAP_EXTENSION_START_TLS,
     }
   );
 
@@ -806,10 +934,11 @@ sub start_tls {
   return $mesg
     if $mesg->code;
 
-  require Net::LDAPS;
+  delete $ldap->{net_ldap_root_dse};
+
   $arg->{sslversion} = 'tlsv1' unless defined $arg->{sslversion};
-  IO::Socket::SSL::context_init( { Net::LDAPS::SSL_context_init_args($arg) } );
-  IO::Socket::SSL::socketToSSL($sock, {Net::LDAPS::SSL_context_init_args($arg)})
+  IO::Socket::SSL::context_init( { _SSL_context_init_args($arg) } );
+  IO::Socket::SSL::socketToSSL($sock, {_SSL_context_init_args($arg)})
     ? $mesg
     : _error($ldap, $mesg, LDAP_OPERATIONS_ERROR, $@);
 }

@@ -8,7 +8,7 @@ use vars qw(@ISA $VERSION);
 use Net::LDAP::Control;
 
 @ISA = qw(Net::LDAP::Control);
-$VERSION = "0.01";
+$VERSION = "0.03";
 
 use Net::LDAP::ASN qw(VirtualListViewResponse);
 use strict;
@@ -22,10 +22,10 @@ sub init {
   else {
     my $asn = $self->{asn} = {};
 
-    $asn->{targetPosition}        = $self->{target}  || 0;
-    $asn->{contentCount}          = $self->{content} || 0;
-    $asn->{virtualListViewResult} = $self->{result}  || 0;
-    $asn->{context}               = $self->{context} || undef;
+    $asn->{targetPosition}        = $self->{target}    || 0;
+    $asn->{contentCount}          = $self->{content}   || 0;
+    $asn->{virtualListViewResult} = $self->{result}    || 0;
+    $asn->{contextID}             = $self->{contextID} || undef;
   }
 
   $self;
@@ -63,9 +63,9 @@ sub context {
   my $self = shift;
   if (@_) {
     delete $self->{value};
-    return $self->{asn}{context} = shift;
+    return $self->{asn}{contextID} = shift;
   }
-  $self->{asn}{context};
+  $self->{asn}{contextID};
 }
 
 sub value {
@@ -174,15 +174,14 @@ a definition of each.
 =head1 SEE ALSO
 
 L<Net::LDAP>,
-L<Net::LDAP::Control>,
-http://info.internet.isi.edu/in-notes/rfc/files/rfc2696.txt
+L<Net::LDAP::Control>
 
 =head1 AUTHOR
 
-Graham Barr <gbarr@pobox.com>
+Graham Barr E<lt>gbarr@pobox.comE<gt>
 
 Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-<perl-ldap-dev@lists.sourceforge.net>
+E<lt>perl-ldap@perl.orgE<gt>
 
 =head1 COPYRIGHT
 
@@ -192,7 +191,7 @@ terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: VLVResponse.pm,v 1.4 2001/08/24 19:31:14 gbarr Exp $>
+I<$Id: VLVResponse.pm,v 1.6 2003/05/07 11:59:14 chrisridd Exp $>
 
 =cut
 
