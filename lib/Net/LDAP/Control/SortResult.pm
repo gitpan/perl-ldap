@@ -1,4 +1,4 @@
-# $Id: //depot/ldap/lib/Net/LDAP/Control/SortResult.pm#5 $
+# $Id: //depot/ldap/lib/Net/LDAP/Control/SortResult.pm#6 $
 # Copyright (c) 1999-2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
@@ -52,7 +52,7 @@ __END__
 
 =head1 NAME
 
-Net::LDAP::Control::SortResult - LDAPv3 sort result control object
+Net::LDAP::Control::SortResult - Server Side Sort (SSS) result control object
 
 =head1 SYNOPSIS
 
@@ -85,12 +85,15 @@ Net::LDAP::Control::SortResult - LDAPv3 sort result control object
 
 =head1 DESCRIPTION
 
-C<Net::LDAP::Control::SortResult> is a sub-class of L<Net::LDAP::Control|Net::LDAP::Control>.
-It provides a class for manipulating the LDAP sort request control C<1.2.840.113556.1.4.474>
+C<Net::LDAP::Control::SortResult> is a sub-class of
+L<Net::LDAP::Control|Net::LDAP::Control>.  It provides a class for
+manipulating the LDAP sort request control C<1.2.840.113556.1.4.474>
+as defined in RFC-2891
 
-A sort result control will be returned by the server in response to a search with a sort
-control. If a sort result control is not returned then the user may assume that the
-server does not support sorting and the results are not sorted.
+A sort result control will be returned by the server in response to
+a search with a Server Side Sort control. If a sort result control is
+not returned then the user may assume that the server does not support
+sorting and the results are not sorted.
 
 =head1 CONSTRUCTOR ARGUMENTS
 
@@ -152,7 +155,8 @@ a definition of each.
 
 L<Net::LDAP|Net::LDAP>,
 L<Net::LDAP::Control::Sort|Net::LDAP::Control::Sort>,
-L<Net::LDAP::Control|Net::LDAP::Control>
+L<Net::LDAP::Control|Net::LDAP::Control>,
+http://info.internet.isi.edu/in-notes/rfc/files/rfc2891.txt
 
 =head1 AUTHOR
 
@@ -169,6 +173,6 @@ terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: //depot/ldap/lib/Net/LDAP/Control/SortResult.pm#5 $>
+I<$Id: //depot/ldap/lib/Net/LDAP/Control/SortResult.pm#6 $>
 
 =cut

@@ -1,3 +1,94 @@
+Change 596 on 2000/09/12 by <gbarr@pobox.com> (Graham Barr)
+
+	FAQ updates from Clif Harden
+
+Change 595 on 2000/09/11 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::ASN
+	- Add missing context tags to sort control
+
+Change 594 on 2000/09/11 by <gbarr@pobox.com> (Graham Barr)
+
+	Examples.pod
+	- Patch from Clif Harden
+
+Change 593 on 2000/09/08 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Entry
+	- Document that the CLIENT is not optional to ->update and that
+	  ->update cannot be used to change the RDN.
+	- Handle the case when ->update is called an there are no changes
+	  to be made,
+
+Change 592 on 2000/09/08 by <gbarr@pobox.com> (Graham Barr)
+
+	New FAQ from Clif Harden
+
+Change 591 on 2000/09/08 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Entry
+	- revert ->get back to 0.19 semantics
+
+Change 590 on 2000/09/08 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP
+	- Fix ->modify to allow single values to be passed without []
+
+Change 570 on 2000/08/20 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Control::Sort
+	- Doc updates
+
+Change 569 on 2000/08/20 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Util
+	- Added ldap_error_desc() for short error descriptions
+	
+	Net::LDAP::Message
+	- Changed ->error() to use ldap_error_desc if the server did not return
+	  a message.
+	- Added ->server_error() to return the server error message or undef.
+
+Change 568 on 2000/08/16 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Schema
+	- Added parsing for matchingRules
+
+Change 567 on 2000/08/16 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP, Net::LDAP::Entry
+	- Fix syntax typo's
+
+Change 566 on 2000/08/16 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Entry
+	- added ->get_value() and depricated ->get()
+
+Change 565 on 2000/08/16 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Message
+	- Added is_error for use by the onerror code in Net::LDAP
+
+Change 564 on 2000/08/16 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP
+	- added `onerror' option to ->new
+
+Change 563 on 2000/08/15 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP
+	- Create all message objects via ->message. This will allow sub-classes
+	  to also sub-class the message objects.
+
+Change 562 on 2000/08/15 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Schema
+	- Improved performance
+
+Change 560 on 2000/08/03 by <gbarr@pobox.com> (Graham Barr)
+
+	Release 0.20
+
 Change 559 on 2000/08/03 by <gbarr@pobox.com> (Graham Barr)
 
 	Update ldapsearch.PL to use _scope (new in URI-1.08)

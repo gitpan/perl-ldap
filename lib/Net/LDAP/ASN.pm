@@ -1,4 +1,4 @@
-# $Id: //depot/ldap/lib/Net/LDAP/ASN.pm#5 $
+# $Id: //depot/ldap/lib/Net/LDAP/ASN.pm#6 $
 
 package Net::LDAP::ASN;
 
@@ -322,8 +322,8 @@ $asn->prepare(<<LDAP_ASN) or die $asn->error;
     SortRequestDummy ::= SEQUENCE {
 	order SEQUENCE OF SEQUENCE {
 	    type         OCTET STRING,
-	    orderingRule OCTET STRING OPTIONAL,
-	    reverseOrder BOOLEAN OPTIONAL } }
+	    orderingRule [0] OCTET STRING OPTIONAL,
+	    reverseOrder [1] BOOLEAN OPTIONAL } }
 
     SortRequest ::= COMPONENTS OF SortRequestDummy
 

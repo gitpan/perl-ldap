@@ -6,9 +6,10 @@ package Net::LDAP::Entry;
 
 use strict;
 use Net::LDAP::ASN qw(LDAPEntry);
+use Net::LDAP::Constant qw(LDAP_LOCAL_ERROR);
 use vars qw($VERSION);
 
-$VERSION = "0.10";
+$VERSION = "0.12";
 
 sub new {
   my $self = shift;
@@ -49,21 +50,28 @@ sub dn {
   @_ ? ($self->{asn}{objectName} = shift) : $self->{asn}{objectName};
 }
 
-
-sub carp {
-  require Carp;
-  goto &Carp::carp;
-}
-
-
-
 sub get_attribute {
-  carp("->get_attribute depricated, use ->get") if $^W;
-  goto &get;
+  require Carp;
+  Carp::carp("->get_attribute depricated, use ->get_value") if $^W;
+  shift->get_value(@_, asref => !wantarray);
 }
-
 
 sub get {
+  require Carp;
+  Carp::carp("->get depricated, use ->get_value") if $^W;
+  shift->get_value(@_, asref => !wantarray);
+}
+
+
+sub exists {
+  my $self = shift;
+  my $type = lc(shift);
+  my $attrs = $self->{attrs} ||= _build_attrs($self);
+
+  exists $attrs->{$type};
+}
+
+sub get_value {
   my $self = shift;
   my $type = lc(shift);
   my %opt  = @_;
@@ -74,13 +82,15 @@ sub get {
               } @{$self->{asn}{attributes}};
     return %ret ? \%ret : undef;
   }
-  else {
-    foreach my $attr (@{$self->{asn}{attributes}}) {
-      return $attr->{vals} if $type eq lc $attr->{type};
-    }
-  }
 
-  return;
+  my $attrs = $self->{attrs} ||= _build_attrs($self);
+  my $attr  = $attrs->{$type} or return;
+
+  return $opt{asref}
+	  ? $attr
+	  : wantarray
+	    ? @{$attr}
+	    : $attr->[0];
 }
 
 
@@ -200,8 +210,13 @@ sub update {
   elsif ($self->{'changetype'} eq 'delete') {
     $mesg = $ldap->delete($self, 'callback' => $cb);
   }
-  else {
+  elsif (defined $self->{'changes'}) {
     $mesg = $ldap->modify($self, 'changes' => $self->{'changes'}, 'callback' => $cb);
+  }
+  else {
+    require Net::LDAP::Message;
+    $mesg = Net::LDAP::Message->new( {} );
+    $mesg->set_error(LDAP_LOCAL_ERROR,"No attributes to update");
   }
 
   return $mesg;

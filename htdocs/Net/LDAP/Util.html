@@ -29,7 +29,10 @@
 <HR>
 <H1><A NAME="synopsis">SYNOPSIS</A></H1>
 <PRE>
-  use Net::LDAP::Util qw(ldap_error_text ldap_error_name);</PRE>
+  use Net::LDAP::Util qw(ldap_error_text
+                         ldap_error_name
+                         ldap_error_desc
+                        );</PRE>
 <PRE>
   $mesg = $ldap-&gt;search( .... );</PRE>
 <PRE>
@@ -53,6 +56,10 @@ is returned.
 <DD>
 Returns the text from the POD description for the given error. If the
 error code given is unknown then <CODE>undef</CODE> is returned.
+<P></P>
+<DT><STRONG><A NAME="item_ldap_error_desc">ldap_error_desc ( NUM )</A></STRONG><BR>
+<DD>
+Returns a short text description of the error.
 <P></P></DL>
 <P>
 <HR>

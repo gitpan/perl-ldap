@@ -165,7 +165,7 @@ B<What is not covered in these examples at this time:>
            foreach $attr ( sort $entr->attributes ){
 		#skip binary we can't handle
                 next if ( $attr =~ /;binary$/ );
-                print "  $attr : ",$entr->get($attr),"\n";
+                print "  $attr : ",$entr->get_value($attr),"\n";
                 }
 
 
@@ -492,6 +492,12 @@ information about returned attributes.
   foreach ( @attributes)
   {
         print "attributeType\n";
+
+        #
+        # Get and display the oid number of the objectclass.
+        #
+        $oid = $schema->name2oid( "$_" );
+
         #
         # Get the various items associated with
         # this attribute.

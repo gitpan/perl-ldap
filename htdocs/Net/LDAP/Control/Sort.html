@@ -1,6 +1,6 @@
 <HTML>
 <HEAD>
-<TITLE>Net::LDAP::Control::Sort - LDAPv3 sort control object</TITLE>
+<TITLE>Net::LDAP::Control::Sort - Server Side Sort control object</TITLE>
 <LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
 </HEAD>
 
@@ -26,7 +26,7 @@
 
 <P>
 <H1><A NAME="name">NAME</A></H1>
-<P>Net::LDAP::Control::Sort - LDAPv3 sort control object</P>
+<P>Net::LDAP::Control::Sort - Server Side Sort (SSS) control object</P>
 <P>
 <HR>
 <H1><A NAME="synopsis">SYNOPSIS</A></H1>
@@ -46,10 +46,13 @@
 <P>
 <HR>
 <H1><A NAME="description">DESCRIPTION</A></H1>
-<P><CODE>Net::LDAP::Control::Sort</CODE> is a sub-class of <A HREF="../../../Net/LDAP/Control.html">Net::LDAP::Control</A>.
-It provides a class for manipulating the LDAP sort request control <CODE>1.2.840.113556.1.4.473</CODE></P>
-<P>If the server supports sorting, then the response from a search operation will
-include a sort result control. This control is handled by <A HREF="../../../Net/LDAP/Control/SortResult.html">the Net::LDAP::Control::SortResult manpage</A>.</P>
+<P><CODE>Net::LDAP::Control::Sort</CODE> is a sub-class of
+<A HREF="../../../Net/LDAP/Control.html">Net::LDAP::Control</A>.  It provides a class
+for manipulating the LDAP Server Side Sort (SSS) request control
+<CODE>1.2.840.113556.1.4.473</CODE> as defined in RFC-2891</P>
+<P>If the server supports sorting, then the response from a search
+operation will include a sort result control. This control is handled
+by <A HREF="../../../Net/LDAP/Control/SortResult.html">Net::LDAP::Control::SortResult</A>.</P>
 <P>
 <HR>
 <H1><A NAME="constructor arguments">CONSTRUCTOR ARGUMENTS</A></H1>
@@ -86,7 +89,8 @@ and set a new value for the attribute if called with an argument.</P>
 <H1><A NAME="see also">SEE ALSO</A></H1>
 <P><A HREF="../../../Net/LDAP.html">Net::LDAP</A>,
 <A HREF="../../../Net/LDAP/Control/SortResult.html">Net::LDAP::Control::SortResult</A>,
-<A HREF="../../../Net/LDAP/Control.html">Net::LDAP::Control</A></P>
+<A HREF="../../../Net/LDAP/Control.html">Net::LDAP::Control</A>,
+<A HREF="http://info.internet.isi.edu/in-notes/rfc/files/rfc2891.txt">http://info.internet.isi.edu/in-notes/rfc/files/rfc2891.txt</A></P>
 <P>
 <HR>
 <H1><A NAME="author">AUTHOR</A></H1>
@@ -99,7 +103,7 @@ and set a new value for the attribute if called with an argument.</P>
 <P>Copyright (c) 1999-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.</P>
-<hr><P><EM>$Id: //depot/ldap/lib/Net/LDAP/Control/Sort.pm#6 $</EM></P>
+<hr><P><EM>$Id: //depot/ldap/lib/Net/LDAP/Control/Sort.pm#7 $</EM></P>
 
 </BODY>
 

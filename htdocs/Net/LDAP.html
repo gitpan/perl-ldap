@@ -122,7 +122,33 @@ bits of this value are :-
 <DT><STRONG><A NAME="item_async">async</A></STRONG><BR>
 <DD>
 Perform all operations asynchronously if passed a <EM>true</EM> value.
+<P></P>
+<DT><STRONG><A NAME="item_onerror">onerror</A></STRONG><BR>
+<DD>
+If set then Net::LDAP will check all responses for errors on all methods
+if the object is in synchronous mode. If an error is detected then the
+specified action will be taken. Valid values and their actions are.
+<DL>
+<DT><STRONG><A NAME="item_die">die</A></STRONG><BR>
+<DD>
+Net::LDAP will croak with an appropriate message.
+<P></P>
+<DT><STRONG><A NAME="item_warn">warn</A></STRONG><BR>
+<DD>
+Net::LDAP will warn with an appropriate message.
+<P></P>
+<DT><STRONG><A NAME="item_undef">undef</A></STRONG><BR>
+<DD>
+Net::LDAP will warn with an appropriate message if <CODE>-w</CODE> is in effect.
+The method that was called will return <A HREF="#item_undef"><CODE>undef</CODE></A>
+<P></P>
+<DT><STRONG><A NAME="item_CODEREF">CODEREF</A></STRONG><BR>
+<DD>
+The given coderef will be called in a scalar context with a single argument, the result
+message. The value returned will be the return value for the method
+that was called.
 <P></P></DL>
+</DL>
 <P>Example</P>
 <PRE>
   $ldap = Net::LDAP-&gt;new('remote.host', async =&gt; 1);</PRE>

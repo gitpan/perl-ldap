@@ -191,7 +191,7 @@ own implementation.</P>
            foreach $attr ( sort $entr-&gt;attributes ){
                 #skip binary we can't handle
                 next if ( $attr =~ /;binary$/ );
-                print &quot;  $attr : &quot;,$entr-&gt;get($attr),&quot;\n&quot;;
+                print &quot;  $attr : &quot;,$entr-&gt;get_value($attr),&quot;\n&quot;;
                 }</PRE>
 <PRE>
             #print &quot;@attrs\n&quot;;
@@ -487,7 +487,13 @@ information about returned attributes.</P>
 <PRE>
   foreach ( @attributes)
   {
-        print &quot;attributeType\n&quot;;
+        print &quot;attributeType\n&quot;;</PRE>
+<PRE>
+        #
+        # Get and display the oid number of the objectclass.
+        #
+        $oid = $schema-&gt;name2oid( &quot;$_&quot; );</PRE>
+<PRE>
         #
         # Get the various items associated with
         # this attribute.

@@ -36,34 +36,46 @@ The code value in the result message from the server. Normally for
 a success zero will be returned. L<Constants|Net::LDAP::Constant> for the result codes
 can be imported from the L<Net::LDAP|Net::LDAP> module.
 
-=item error
+=item control [ OID ]
 
-The error message in the result message from the server.
-
-=item mesg_id
-
-The message id of the request message sent to the server.
-
-=item done
-
-Returns I<true> if the request has been completed.
+Return a list of controls returned from the server. If OID is given
+then only controls with type equal to OID will be returned.
 
 =item dn
 
 The DN in the result message from the server.
 
-=item sync
+=item done
 
-Wait for the server to complete the request.
+Returns I<true> if the request has been completed.
+
+=item error
+
+The error message in the result message from the server. If the server did
+not include an error message, then the result of 
+L<ldap_error_desc|Net::LDAP::Util/ldap_error_desc> with the
+error code from the result message.
+
+=item is_error
+
+Returns I<true> if the result code is considered to be an error for the operation.
+
+=item mesg_id
+
+The message id of the request message sent to the server.
 
 =item referrals
 
 Returns a list of referrals from the result message.
 
-=item control [ OID ]
+=item server_error
 
-Return a list of controls returned from the server. If OID is given
-then only controls with type equal to OID will be returned.
+The error message returned by the server, or undef if the server did not provide
+a message.
+
+=item sync
+
+Wait for the server to complete the request.
 
 =back
 
@@ -71,7 +83,8 @@ then only controls with type equal to OID will be returned.
 
 L<Net::LDAP|Net::LDAP>,
 L<Net::LDAP::Search|Net::LDAP::Search>,
-L<Net::LDAP::Constant|Net::LDAP::Constant>
+L<Net::LDAP::Constant|Net::LDAP::Constant>,
+L<Net::LDAP::Util|Net::LDAP::Util>
 
 =head1 ACKNOWLEDGEMENTS
 
@@ -93,6 +106,6 @@ terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: //depot/ldap/lib/Net/LDAP/Message.pod#11 $>
+I<$Id: //depot/ldap/lib/Net/LDAP/Message.pod#13 $>
 
 =cut

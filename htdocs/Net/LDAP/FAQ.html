@@ -14,19 +14,36 @@
 	<LI><A HREF="#name">NAME</A></LI>
 	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
 	<LI><A HREF="#description">DESCRIPTION</A></LI>
-	<LI><A HREF="#general">General</A></LI>
+	<LI><A HREF="#general">GENERAL</A></LI>
 	<UL>
 
 		<LI><A HREF="#what is perlldap ">What is perl-ldap ?</A></LI>
 		<LI><A HREF="#why another perl ldap implementation ">Why another perl LDAP implementation ?</A></LI>
 		<LI><A HREF="#where can i get it ">Where can I get it ?</A></LI>
+		<LI><A HREF="#is there a web page for perlldap ">Is there a web page for perl-ldap ?</A></LI>
 		<LI><A HREF="#is there a mailing list ">Is there a mailing list ?</A></LI>
 		<LI><A HREF="#is the mailing list archived ">Is the mailing list archived ?</A></LI>
 		<LI><A HREF="#is there any online documentation ">Is there any online documentation ?</A></LI>
 		<LI><A HREF="#is there a public cvs repository ">Is there a public CVS repository ?</A></LI>
+		<LI><A HREF="#can i get perlldap from the public cvs repository">Can I get perl-ldap from the public CVS repository?</A></LI>
+		<LI><A HREF="#what is cvs.">What is CVS.</A></LI>
 	</UL>
 
-	<LI><A HREF="#installation">Installation</A></LI>
+	<LI><A HREF="#ldap and directory terminology.">LDAP AND DIRECTORY TERMINOLOGY.</A></LI>
+	<UL>
+
+		<LI><A HREF="#what is a directory.">What is a directory.</A></LI>
+		<LI><A HREF="#what is ldap.">What is LDAP.</A></LI>
+		<LI><A HREF="#what is a ldap directory.">What is a LDAP Directory.</A></LI>
+		<LI><A HREF="#what is an entry.">What is an Entry.</A></LI>
+		<LI><A HREF="#what is a distinguished name.">What is a Distinguished Name.</A></LI>
+		<LI><A HREF="#what is a relative distinguished name.">What is a Relative Distinguished Name.</A></LI>
+		<LI><A HREF="#what is a naming rdn.">What is a Naming RDN.</A></LI>
+		<LI><A HREF="#what is a search base.">What is a search base.</A></LI>
+		<LI><A HREF="#what is an attribute.">What is an attribute.</A></LI>
+	</UL>
+
+	<LI><A HREF="#perlldap installation">PERL-LDAP INSTALLATION</A></LI>
 	<UL>
 
 		<LI><A HREF="#how do i install perlldap ">How do I install perl-ldap ?</A></LI>
@@ -34,16 +51,68 @@
 		<LI><A HREF="#what other modules will i need ">What other modules will I need ?</A></LI>
 	</UL>
 
-	<LI><A HREF="#using net::ldap">Using Net::LDAP</A></LI>
+	<LI><A HREF="#using net::ldap">USING NET::LDAP</A></LI>
 	<UL>
 
 		<LI><A HREF="#how do i connect to my server ">How do I connect to my server ?</A></LI>
 		<LI><A HREF="#net::ldap>new sometimes returns undef, why ">Net::LDAP-&gt;new sometimes returns undef, why ?</A></LI>
 		<LI><A HREF="#how can i tell when the server returns an error, bind() always returns">How can I tell when the server returns an error, <CODE>bind()</CODE> always returns</A></LI>
 		<LI><A HREF="#i did a search on my directory using the 'search' method. where did">I did a search on my directory using the 'search' method. Where did</A></LI>
+		<LI><A HREF="#how do i limit the scope of a directory search.">How do I limit the scope of a directory search.</A></LI>
 	</UL>
 
-	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#using net::ldaps">USING NET::LDAPS</A></LI>
+	<UL>
+
+		<LI><A HREF="#using a potentially encrypted (ssl) network connection, how do i connect to my server">Using a potentially encrypted (SSL) network connection, how do I connect to my server?</A></LI>
+	</UL>
+
+	<LI><A HREF="#using ldap groups.">USING LDAP GROUPS.</A></LI>
+	<UL>
+
+		<LI><A HREF="#what are ldap groups.">What are LDAP groups.</A></LI>
+		<LI><A HREF="#how do you format a filter to search for entries whose 'member'">How do you format a filter to search for entries whose 'member'</A></LI>
+	</UL>
+
+	<LI><A HREF="#using dsml.">USING DSML.</A></LI>
+	<UL>
+
+		<LI><A HREF="#how can i access dsml features from perlldap.">How can I access DSML features from PERL-LDAP.</A></LI>
+	</UL>
+
+	<LI><A HREF="#using controls and virtual lists.">USING CONTROLS AND VIRTUAL LISTS.</A></LI>
+	<UL>
+
+		<LI><A HREF="#how do i access the control features.">How do I access the Control features.</A></LI>
+		<LI><A HREF="#how do i access the virtual list features.">How do I access the Virtual List features.</A></LI>
+	</UL>
+
+	<LI><A HREF="#general questions.">GENERAL QUESTIONS.</A></LI>
+	<UL>
+
+		<LI><A HREF="#are there any other code examples.">Are there any other code examples.</A></LI>
+		<LI><A HREF="#can i contribute perl scripts that use perlldap">Can I contribute perl scripts that use perl-ldap</A></LI>
+		<LI><A HREF="#is possible to get a complete entry, dn and attributes">Is possible to get a complete entry, dn and attributes </A></LI>
+		<LI><A HREF="#how do i put a jpeg photo into a entry in the directory.">How do I put a jpeg photo into a entry in the directory.</A></LI>
+		<LI><A HREF="#how do i add a jpeg photo into a entry in the directory">How do I add a jpeg photo into a entry in the directory</A></LI>
+		<LI><A HREF="#how do i avoid file type and data type missmatching when loading">How do I avoid file type and data type miss-matching when loading</A></LI>
+		<LI><A HREF="#how do i create a microsoft exchange user.">How do I create a Microsoft Exchange user.</A></LI>
+	</UL>
+
+	<LI><A HREF="#using x.509 certificates.">Using X.509 certificates.</A></LI>
+	<UL>
+
+		<LI><A HREF="#how do i store x.509 certificates in the directory">How do I store X.509 certificates in the directory?</A></LI>
+	</UL>
+
+	<LI><A HREF="#additional directory and ldap resources.">ADDITIONAL DIRECTORY AND LDAP RESOURCES.</A></LI>
+	<UL>
+
+		<LI><A HREF="#url(s).">URL(s).</A></LI>
+		<LI><A HREF="#book(s)"><CODE>BOOK(s)</CODE></A></LI>
+	</UL>
+
+	<LI><A HREF="#author(s)"><CODE>AUTHOR(s)</CODE></A></LI>
 	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
 </UL>
 <!-- INDEX END -->
@@ -61,10 +130,10 @@
 <HR>
 <H1><A NAME="description">DESCRIPTION</A></H1>
 <P>This document serves to answer the most frequently asked questions on both the
-perl-ldap Mailing List and personally to me.</P>
+perl-ldap Mailing List and those sent to Graham Barr.</P>
 <P>
 <HR>
-<H1><A NAME="general">General</A></H1>
+<H1><A NAME="general">GENERAL</A></H1>
 <P>
 <H2><A NAME="what is perlldap ">What is perl-ldap ?</A></H2>
 <P>perl-ldap is the distribution name. The perl-ldap distribution contains
@@ -77,32 +146,189 @@ runs perl-ldap will run. This is not true for other implementations
 which require a C compiler.</P>
 <P>
 <H2><A NAME="where can i get it ">Where can I get it ?</A></H2>
-<P>perl-ldap is available from CPAN. You will find it in the
+<P>Perl-ldap is available from CPAN. You will find it in the
 authors/id/GBARR directory. Alternatively you can download
-the latest version from <A HREF="http://www.cpan.org/search?dist=perl-ldap">http://www.cpan.org/search?dist=perl-ldap</A></P>
+the latest version from 
+ <A HREF="http://www.cpan.org/search?dist=perl-ldap">http://www.cpan.org/search?dist=perl-ldap</A></P>
+<P>
+<H2><A NAME="is there a web page for perlldap ">Is there a web page for perl-ldap ?</A></H2>
+<P>Yes there is at <A HREF="http://perl-ldap.sourceforge.net/">http://perl-ldap.sourceforge.net/</A></P>
 <P>
 <H2><A NAME="is there a mailing list ">Is there a mailing list ?</A></H2>
-<P>Yes there is at &lt;<A HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;</P>
+<P>Yes there is at <A HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A></P>
 <P>You can subscribe to this list at
-<A HREF="http://lists.sourceforge.net/mailman/listinfo/perl-ldap-dev">http://lists.sourceforge.net/mailman/listinfo/perl-ldap-dev</A></P>
+ <A HREF="http://lists.sourceforge.net/mailman/listinfo/perl-ldap-dev">http://lists.sourceforge.net/mailman/listinfo/perl-ldap-dev</A></P>
 <P>
 <H2><A NAME="is the mailing list archived ">Is the mailing list archived ?</A></H2>
 <P>Archives of messages since we switched to using sourceforge can be
 found at</P>
-<P><A HREF="http://www.geocrawler.com/lists/3/SourceForge/3482/0/">http://www.geocrawler.com/lists/3/SourceForge/3482/0/</A></P>
+<PRE>
+ <A HREF="http://www.geocrawler.com/lists/3/SourceForge/3482/0/">http://www.geocrawler.com/lists/3/SourceForge/3482/0/</A></PRE>
+<P>Please be aware that the geocrawler system munges
+code that is in the email messages.  In particular, 
+apostrophes (') are turned into back ticks (`) and 
+newlines escapes (\n) are removed (and probably other 
+escapes as well).</P>
 <P>There is also an archive of the perl-ldap mailing list at
 <A HREF="http://www.xray.mpe.mpg.de/mailing-lists/perl-ldap/">http://www.xray.mpe.mpg.de/mailing-lists/perl-ldap/</A>
-which also has messages from before the move to sourceforge.</P>
+which also has messages from before the move to sourceforge.
+The xray archive does not munge email messages.</P>
 <P>
 <H2><A NAME="is there any online documentation ">Is there any online documentation ?</A></H2>
-<P>Yes. perl-ldap has a web page at <A HREF="http://www.pobox.com/~gbarr/perl-ldap/">http://www.pobox.com/~gbarr/perl-ldap/</A>
+<P>Yes. perl-ldap has online documentation at 
+ <A HREF="http://perl-ldap.sourceforge.net/">http://perl-ldap.sourceforge.net/</A> 
 which will have the latest documentation available.</P>
 <P>
 <H2><A NAME="is there a public cvs repository ">Is there a public CVS repository ?</A></H2>
-<P>No, not right now. But there may be in the future.</P>
+<P>Yes, it is located at sourceforge.net</P>
+<P>
+<H2><A NAME="can i get perlldap from the public cvs repository">Can I get perl-ldap from the public CVS repository?</A></H2>
+<P>Yes, any one can pull perl-ldap from the public CVS repository
+on sourceforge.net.</P>
+<P>There are several ways this can be done.</P>
+<P>Web;</P>
+<P>You can download it from SourceForge by following the release link:</P>
+<P>The 2 lines in the following example should be put together as 
+one continuous line.  Example;</P>
+<PRE>
+ <A HREF="http://download.sourceforge.net/perl-ldap/perl-ldap-0.20.tar.gz">http://download.sourceforge.net/perl-ldap/perl-ldap-0.20.tar.gz</A></PRE>
+<P>CVS;</P>
+<P>You can download latest version of perl-ldap from SourceForge by 
+executing a anonymous CVS ``get'' command.  When the password is 
+requested press the enter key.</P>
+<P>The 2 lines in the following example should be put together as 
+one continuous line.  Example;</P>
+<PRE>
+ cvs -d:pserver:anonymous@cvs.perl-ldap.sourceforge.net:/cvsroot/perl-ldap</PRE>
+<P>Web page;</P>
+<P>Most of the time there is a URL link on the perl-ldap 
+home page on sourceforge that points to the latest released
+version of perl-ldap.  Due to the fact that humans must
+update the web page to point to a new release it sometimes does
+not get updated as quickly as it should.</P>
+<P>
+<H2><A NAME="what is cvs.">What is CVS.</A></H2>
+<P>``CVS'' is an acronym for the ``Concurrent Versions System''.
+CVS is a ``Source Control'' or ``Revision Control'' tool
+designed to keep track of source changes made by groups of
+developers working on the same files, allowing them to
+stay in sync with each other as each individual chooses.</P>
 <P>
 <HR>
-<H1><A NAME="installation">Installation</A></H1>
+<H1><A NAME="ldap and directory terminology.">LDAP AND DIRECTORY TERMINOLOGY.</A></H1>
+<P>In order to help the user understand the perl-ldap module better
+some key LDAP terminology is defined here.</P>
+<P>
+<H2><A NAME="what is a directory.">What is a directory.</A></H2>
+<P>A directory is a special purpose database that usually contains 
+typed information such as text strings, binary data, or X.509 
+certificates.</P>
+<P>
+<H2><A NAME="what is ldap.">What is LDAP.</A></H2>
+<P>LDAP stands for Lightweight Directory Access Protocol.
+The word <EM>Protocol</EM> is the key word in the definition given in
+the preceding sentence, LDAP is <EM>NOT</EM> hardware or software.
+It is a protocol that defines how a client and server will
+communicate with one another.</P>
+<P>The Lightweight Directory Access Protocol is defined in a 
+series of Requests For Comments, better known as RFC(s).
+The RFCs can be found on the Internet.  A very good
+source for all of the LDAP RFCs can be found in the
+OpenLDAP, <A HREF="http://www.OpenLDAP.org/">http://www.OpenLDAP.org/</A> , software bundle that can 
+be downloaded free of charge from the Internet.  Some of the 
+more important RFC numbers are RFC 1777 for LDAPv2 and RFC 2251 
+for LDAPv3.</P>
+<P>
+<H2><A NAME="what is a ldap directory.">What is a LDAP Directory.</A></H2>
+<P>In the strictest terms of the definition there is no such
+thing as a LDAP directory.  To be practical about this 
+situation every day directory professionals refer to their 
+directory as `` a LDAP directory'' because it is easy to
+say and it does convey the type of protocol used to 
+communicate with their directory.  Using this definition
+a LDAP directory is a directory whose server software
+conforms to the Lightweight Directory Access Protocol when 
+communicating with a client.</P>
+<P>
+<H2><A NAME="what is an entry.">What is an Entry.</A></H2>
+<P>The traditional directory definition of a directory object 
+is called an Entry. Entries are composed of attributes
+that contain the information to be recorded about an object.</P>
+<P>Another non-traditional definition of a directory object 
+is called a record.  Some directory professionals prefer
+to use this definition because of the confusion that sometimes
+results when using the term Entry.</P>
+<P>
+<H2><A NAME="what is a distinguished name.">What is a Distinguished Name.</A></H2>
+<P>Every entry in a directory, whether it is X.500 or LDAP, has
+a Distinguished Name, or DN.  It is a unique Entry identifier
+through out the complete directory.  No two Entries can have the
+same DN within the same directory.</P>
+<P>Example of a DN:</P>
+<PRE>
+ cn=Road Runner, ou=bird, dc=carton, dc=com
+ ou=bird, dc=carton, dc=com
+ dc=carton, dc=com
+ dc=com</PRE>
+<P>
+<H2><A NAME="what is a relative distinguished name.">What is a Relative Distinguished Name.</A></H2>
+<P>Every Entry in a directory, whether it is X.500 or LDAP, has
+a Distinguished Name which is made up of a sequence of Relative 
+Distinguished Names, or RDNs.  The sequences of RDNs are separated
+by commas (,) or semi-colons (;).  There can be more than one 
+identical RDN in a directory, but they must be in different 
+bases, or branches, of the directory.</P>
+<P>Example of a DN:</P>
+<PRE>
+ cn=Road Runner,ou=bird,dc=carton,dc=com</PRE>
+<PRE>
+ RDNs of the proceeding DN: 
+ RDN =&gt; cn=Road Runner
+ RDN =&gt; ou=bird
+ RDN =&gt; dc=carton
+ RDN =&gt; dc=com</PRE>
+<P>The RDNs are delimited by a comma.</P>
+<P>
+<H2><A NAME="what is a naming rdn.">What is a Naming RDN.</A></H2>
+<P>Example of a DN:</P>
+<PRE>
+ cn=Road Runner,ou=bird,dc=carton,dc=com</PRE>
+<PRE>
+ Naming RDN of the proceeding DN:</PRE>
+<PRE>
+ cn=Road Runner</PRE>
+<P>Most of the time when directory professionals refer
+to the RDN of an entry, this is the RDN that they
+are referring to.</P>
+<P>
+<H2><A NAME="what is a search base.">What is a search base.</A></H2>
+<P>A search base is a Distinguished Name that is the 
+starting point of search queries.</P>
+<P>Example of a DN:</P>
+<PRE>
+ cn=Road Runner,ou=bird,dc=carton,dc=com</PRE>
+<P>Possible search <CODE>base(s)</CODE> for the proceeding DN:</P>
+<PRE>
+ Base =&gt; cn=Road Runner,ou=bird,dc=carton,dc=com  
+ Base =&gt; ou=bird,dc=carton,dc=com  
+ Base =&gt; dc=carton,dc=com  
+ Base =&gt; dc=com</PRE>
+<P>Setting the search base to the lowest possible branch of
+the directory will speed up searches considerably.</P>
+<P>
+<H2><A NAME="what is an attribute.">What is an attribute.</A></H2>
+<P>The <CODE>entry(s)</CODE> in a directory are composed of attributes that contain
+information about the object.  Each attribute has a type
+and can contain one or more values.  The attribute type is 
+associated with a syntax that defines what kind of information 
+can be stored in the attributes values and controls how 
+directory operations on the attribute behave.  What attributes
+are required and allowed in a entry is controlled by content
+rules that are defined on a per-server basis or by a special
+attribute in each entry called an objectClass.</P>
+<P>
+<HR>
+<H1><A NAME="perlldap installation">PERL-LDAP INSTALLATION</A></H1>
 <P>
 <H2><A NAME="how do i install perlldap ">How do I install perl-ldap ?</A></H2>
 <P>To install the modules that are in the perl-ldap distribution follow the
@@ -138,7 +364,7 @@ installed. Near the bottom you will find something like</P>
     .</PRE>
 <P>This is a list of directories that perl searches when it is looking for
 a module. The directory you need is the site_perl directory, but without
-the syatem architecture name, in this case it is
+the system architecture name, in this case it is
 <CODE>/usr/local/perl/perl5.005/lib/site_perl/5.005</CODE>. The files required
 can then be installed with</P>
 <PRE>
@@ -158,7 +384,7 @@ optional (ie required to use certain features)</P>
 <DD>
 This module is required for perl-ldap to work.
 <P>You can obtain the latest release from
-<A HREF="http://search.cpan.org/search?module=Convert::ASN1">http://search.cpan.org/search?module=Convert::ASN1</A></P>
+  <A HREF="http://search.cpan.org/search?module=Convert::ASN1">http://search.cpan.org/search?module=Convert::ASN1</A></P>
 <P></P>
 <DT><STRONG><A NAME="item_Digest%3A%3AMD5">Digest::MD5</A></STRONG><BR>
 <DD>
@@ -166,7 +392,7 @@ This module is optional. It also requires a C compiler when installing.
 You only need to install Digest::MD5 if you want to use the SASL
 authentication method.
 <P>You can obtain the latest release from
-<A HREF="http://search.cpan.org/search?module=Digest::MD5">http://search.cpan.org/search?module=Digest::MD5</A></P>
+  <A HREF="http://search.cpan.org/search?module=Digest::MD5">http://search.cpan.org/search?module=Digest::MD5</A></P>
 <P></P>
 <DT><STRONG><A NAME="item_URI%3A%3Aldap">URI::ldap</A></STRONG><BR>
 <DD>
@@ -174,11 +400,29 @@ This module is optional. You only need to install URI::ldap if you are
 going to need to parse ldap referrals. <A HREF="../../Net/LDAP.html">Net::LDAP</A> does not do this
 automatically yet, so this module is not used by perl-ldap.
 <P>You can obtain the latest release from
-<A HREF="http://search.cpan.org/search?module=URI::ldap">http://search.cpan.org/search?module=URI::ldap</A></P>
+  <A HREF="http://search.cpan.org/search?module=URI::ldap">http://search.cpan.org/search?module=URI::ldap</A></P>
+<P></P>
+<DT><STRONG><A NAME="item_OpenSSL_and_IO%3A%3ASocket%3A%3ASSL_for_Net%3A%3AL">OpenSSL and IO::Socket::SSL for Net::LDAPS</A></STRONG><BR>
+<DD>
+If you want to use Net::LDAP::LDAPS you will need this module
+and the OpenSSL software package.
+<P>You can obtain the latest release of IO::Socket::SSL from
+  <A HREF="http://search.cpan.org/search?module=IO::Socket::SSL">http://search.cpan.org/search?module=IO::Socket::SSL</A></P>
+<P>You can obtain the latest release of OpenSSL from
+  <A HREF="http://www.openssl.org/">http://www.openssl.org/</A></P>
+<P>If you are using a Linux system, many of the distributions
+have RPM packages that you can install.  Use your favorite
+web search engine to find the package that you need.</P>
+<P></P>
+<DT><STRONG><A NAME="item_XML%3A%3AParser">XML::Parser</A></STRONG><BR>
+<DD>
+If you want to use Net::LDAP::DSML you will need this module.
+<P>You can obtain the latest release from
+  <A HREF="http://search.cpan.org/search?module=XML::Parser">http://search.cpan.org/search?module=XML::Parser</A></P>
 <P></P></DL>
 <P>
 <HR>
-<H1><A NAME="using net::ldap">Using Net::LDAP</A></H1>
+<H1><A NAME="using net::ldap">USING NET::LDAP</A></H1>
 <P>
 <H2><A NAME="how do i connect to my server ">How do I connect to my server ?</A></H2>
 <P>The connection to the server is created when you create a new Net::LDAP
@@ -236,7 +480,8 @@ shift each entry in turn. For example</P>
 <PRE>
   # as an array</PRE>
 <PRE>
-  my $max = $mesg-&gt;count;  # How many entries were returned from the search</PRE>
+  # How many entries were returned from the search
+  my $max = $mesg-&gt;count;</PRE>
 <PRE>
   for( my $index = 0 ; $index &lt; $max ; $index++) {
     my $entry = $mesg-&gt;entry($index);
@@ -261,41 +506,414 @@ you can obtain information about the entry.</P>
   @attrs = $entry-&gt;attributes;</PRE>
 <P>And to get the list of values for a given attribute</P>
 <PRE>
-  $values = $entry-&gt;get( 'sn' );</PRE>
-<P>Notice that the assignment is to a scalar. This is because <CODE>get</CODE> will return
-a reference to a list, even if there is only one value for that attribute,
-and <CODE>undef</CODE> if the attribute does not exist. One thing to remember is that
-attribute names are case insensitive, so 'sn', 'Sn', 'sN' and 'SN' are all
-the same.</P>
+  @values = $entry-&gt;get( 'sn' );</PRE>
+<P>And to get the first of the values for a given attribute</P>
+<PRE>
+  $values = $entry-&gt;get( 'cn' );</PRE>
+<P>One thing to remember is that attribute names are case 
+insensitive, so 'sn', 'Sn', 'sN' and 'SN' are all the same.</P>
 <P>So, if you want to print all the values for the attribute <CODE>'ou'</CODE> then this
 is as simple as</P>
 <PRE>
-  if( my $values = $entry-&gt;get( 'ou' )) {
-    foreach (@$values) {
+  foreach ($entry-&gt;get_value( 'ou' )) {
       print $_,&quot;\n&quot;;
-    }
-  }</PRE>
+    }</PRE>
 <P>Now if you just want to print all the values for all the attributes you
 can do</P>
 <PRE>
   foreach my $attr ($entry-&gt;attributes) {
-    foreach my $value ($entry-&gt;get($attr)) {
+    foreach my $value ($entry-&gt;get_value($attr)) {
       print $attr, &quot;: &quot;, $value, &quot;\n&quot;;
     }
   }</PRE>
 <P>
+<H2><A NAME="how do i limit the scope of a directory search.">How do I limit the scope of a directory search.</A></H2>
+<P>You limit the scope of a directory search by setting the
+scope parameter of search request. 
+Consider the following:</P>
+<PRE>
+ use Net::LDAP;</PRE>
+<PRE>
+ $ldap = Net::LDAP-&gt;new('ldap.acme.com') or die &quot;$@&quot;;
+ $mesg = $ldap-&gt;search(
+                       base   =&gt; &quot;o=acme.com&quot;,
+                       scope  =&gt; 'sub',
+                       filter =&gt; &quot;uid=jsmith&quot;,
+                      );</PRE>
+<P>Values for the scope parameter are as follows.</P>
+<PRE>
+ base  Search only the base object.
+</PRE>
+<PRE>
+
+ one   Search the entries immediately below the base
+       object.</PRE>
+<PRE>
+
+ sub   Search the whole tree below the base object.
+       This is the default.</PRE>
+<P>
 <HR>
-<H1><A NAME="author">AUTHOR</A></H1>
-<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;</P>
-<P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-&lt;<A HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;.</P>
+<H1><A NAME="using net::ldaps">USING NET::LDAPS</A></H1>
+<P>
+<H2><A NAME="using a potentially encrypted (ssl) network connection, how do i connect to my server">Using a potentially encrypted (SSL) network connection, how do I connect to my server?</A></H2>
+<P>This class is a subclass of Net::LDAP so all the normal
+Net::LDAP methods can be used with a Net::LDAPS object;
+see the documentation for Net::LDAP to find out how to
+query a directory server using the LDAP protocol.</P>
+<P>The connection to the server is created when you create a new Net::LDAPS
+object, e.g.</P>
+<PRE>
+  $ldaps = Net::LDAPS-&gt;new($server,
+                           port =&gt; '10000',
+                           verify =&gt; 'require',
+                           capath =&gt; '/usr/local/cacerts/',
+                           );</PRE>
+<P>There are additional options to the LDAPS new method and
+several additional methods are included in the LDAPS object class.</P>
+<P>For further information and code examples read the LDAPS
+module documentation;  perldoc Net::LDAPS</P>
+<P>
+<HR>
+<H1><A NAME="using ldap groups.">USING LDAP GROUPS.</A></H1>
+<P>
+<H2><A NAME="what are ldap groups.">What are LDAP groups.</A></H2>
+<P>LDAP groups are a collection of distinguished names (DN) that are
+listed in an attribute called member.  One <EM>important note</EM> to 
+remember is that a group can be a collection of groups.  This 
+does <EM>NOT</EM> imply that the subgroups will be flattened into one
+big group.</P>
+<P>Two scripts for working with groups are available in the contrib
+directory.  They are isMember.pl and printMembers.pl.</P>
+<P>
+<H2><A NAME="how do you format a filter to search for entries whose 'member' attribute has a particular value">How do you format a filter to search for entries whose 'member'
+attribute has a particular value?</A></H2>
+<P>Asking for (member=*) is OK - the directory uses the equality matching 
+rule which is defined for the member attribute.</P>
+<P>Asking for (member=c*) is not OK - there is no defined substring 
+matching rule for the member attribute. That's because the member 
+values are *not* strings, but distinguished names. There is no 
+substring matching rule for DNs, see RFC 2256 section 5.50.</P>
+<P>What you have to do is get the results of (member=*) and then select 
+the required results from the returned values. You need to do this 
+using knowledge of the string representation of DNs defined in RFC 
+2253, which is important because the same DN can have different string 
+representations. So you need to perform some canonicalization if you 
+want to be correct.</P>
+<P>
+<HR>
+<H1><A NAME="using dsml.">USING DSML.</A></H1>
+<P>
+<H2><A NAME="how can i access dsml features from perlldap.">How can I access DSML features from PERL-LDAP.</A></H2>
+<P>Directory Service Markup Language (DSML) is the XML
+standard for representing directory service information in
+XML.
+</P>
+<PRE>
+
+Support for DSML is include in PERL-LDAP starting with version
+.20.</PRE>
+<P>At the moment this module only reads and writes DSML entry
+entities. It cannot process any schema entities because
+schema entities are processed differently than elements.
+</P>
+<PRE>
+
+Eventually this module will be a full level 2 consumer and
+producer enabling you to give you full DSML conformance.</PRE>
+<PRE>
+
+The specification for DSML is at <A HREF="http://www.dsml.org">http://www.dsml.org</A></PRE>
+<P>For further information and code examples read the DSML
+module documentation;  perldoc Net::LDAP::DSML</P>
+<P>
+<HR>
+<H1><A NAME="using controls and virtual lists.">USING CONTROLS AND VIRTUAL LISTS.</A></H1>
+<P>
+<H2><A NAME="how do i access the control features.">How do I access the Control features.</A></H2>
+<P>Support for LDAP version 3 Control objects is included in 
+perl-ldap starting with version .20.</P>
+<P>For further information and code examples read the Control
+module documentation;  perldoc Net::LDAP::Control</P>
+<P>
+<H2><A NAME="how do i access the virtual list features.">How do I access the Virtual List features.</A></H2>
+<P>Support for Virtual Lists is included in perl-ldap starting 
+with version .20.</P>
+<P>For further information and code examples read the Control
+module documentation;  perldoc Net::LDAP::Control</P>
+<P>
+<HR>
+<H1><A NAME="general questions.">GENERAL QUESTIONS.</A></H1>
+<P>
+<H2><A NAME="are there any other code examples.">Are there any other code examples.</A></H2>
+<P>Yes, there is an Examples pod file.  To view the pod
+do the following command;  perldoc Net::LDAP::Examples</P>
+<P>There is user contributed software in the contrib directory
+that is supplied with the PERL-LDAP distribution.  This is an
+excellent source of information on how to use the PERL-LDAP module.</P>
+<P>
+<H2><A NAME="can i contribute perl scripts that use perlldap to the contrib section">Can I contribute perl scripts that use perl-ldap
+to the contrib section?</A></H2>
+<P>Any one can submit a perl script that uses perl-ldap for inclusion
+in the contrib section.  Graham Barr will determine if the script
+will be included and will do the initial check in of the script
+to the CVS system on sourceforge.  Graham will make you the 
+owner/developer of the script.</P>
+<P>There are a couple of requirements for consideration.</P>
+<P>You must supply a one line description of your script to be included
+in the contrib readme file.</P>
+<P>Inside the script will be the pod documentation for the script.
+No auxiliary documentation will be allowed.  For examples of how
+to do this see the tklkup or schema scripts currently in the contrib
+section.</P>
+<P>If Graham decides to include your script in the contrib section, you
+must register with sourceforge before your scripts will be put into
+the contrib CVS system.</P>
+<P>
+<H2><A NAME="is possible to get a complete entry, dn and attributes without specifying the attributes name">Is possible to get a complete entry, dn and attributes 
+without specifying the attributes name?</A></H2>
+<P>Yes, just specify you want a list of no attributes back. The RFC says 
+that this tells the server to return all readable attributes back 
+(there may be access controls to prevent some from being returned.)</P>
+<P>So in the search method, just set (for LDAPv2):</P>
+<PRE>
+                attrs =&gt; [ ]</PRE>
+<P>If you are using LDAPv3, you can specify an attribute called ``*'' 
+instead, which lets you ask for additional (eg operational) attributes 
+in the same search.</P>
+<PRE>
+                attrs =&gt; [ &quot;*&quot; ]</PRE>
+<P>
+<H2><A NAME="how do i put a jpeg photo into a entry in the directory.">How do I put a jpeg photo into a entry in the directory.</A></H2>
+<P>Follow the following code example, replacing the (...) with
+whatever is relevant to your setup.</P>
+<PRE>
+  use Net::LDAP;
+  use Net::LDAP::Util qw(ldap_error_text);
+  use CGI;
+</PRE>
+<PRE>
+
+  local $/ = undef;
+  my $jpeg = &lt;$filename&gt;;</PRE>
+<PRE>
+  my $ldap = new Net::LDAP(...);
+  my $res = $ldap-&gt;bind(...);
+     $res = $ldap-&gt;modify(...,
+                   add =&gt; [ 'jpegPhoto' =&gt; [ $jpeg ] ]);
+     $res = $ldap-&gt;unbind();</PRE>
+<P>
+<H2><A NAME="how do i add a jpeg photo into a entry in the directory via html forms.">How do I add a jpeg photo into a entry in the directory
+via html -forms.</A></H2>
+<P>Follow the following code example, replacing the (...) with
+whatever is relevant to your setup.</P>
+<PRE>
+  use Net::LDAP;
+  use Net::LDAP::Util qw(ldap_error_text);
+  use CGI;</PRE>
+<PRE>
+  my $q = new CGI;</PRE>
+<PRE>
+  print $q-&gt;header;
+  print $q-&gt;start_html(-title =&gt; 'Change JPEG photo');</PRE>
+<PRE>
+  if ($q-&gt;param('Update')) {
+          my $filename = $q-&gt;param('jpeg');
+          local $/ = undef;
+          my $jpeg = &lt;$filename&gt;;</PRE>
+<PRE>
+          my $ldap = new Net::LDAP(...);
+          my $res = $ldap-&gt;bind(...);
+          $res = $ldap-&gt;modify(...,
+                          add =&gt; [ 'jpegPhoto' =&gt; [ $jpeg ] ]);
+          $res = $ldap-&gt;unbind();
+  } else {
+          print $q-&gt;start_multipart_form();
+          print $q-&gt;filefield(-name =&gt; 'jpeg', -size =&gt; 50);
+          print $q-&gt;submit('Update');
+          print $q-&gt;end_form();
+  }</PRE>
+<PRE>
+  print $q-&gt;end_html();</PRE>
+<P>
+<H2><A NAME="how do i avoid file type and data type missmatching when loading data from a win32 system.">How do I avoid file type and data type miss-matching when loading
+data from a Win32 system.</A></H2>
+<P>When loading a binary attribute with data read from a file on a Win32
+system, it has been noted that you should set ``binmode'' on the file
+before reading the file contents into the data array.</P>
+<P>Another possible solution to this problem is to convert the 
+binary data into a base64 encoded string and then store the encoded string
+in the file.  Then when reading the file, decode the base64 encoded 
+string back to binary and then use perl ldap to store the data
+in the directory.</P>
+<P>
+<H2><A NAME="how do i create a microsoft exchange user.">How do I create a Microsoft Exchange user.</A></H2>
+<P>This is a solution provide by a perl-ldap user.</P>
+<P>This code works with ActiveState Perl running on WinNT 4. Please note that
+this requires the Win32::Perms module, and needs valid NT account info to
+replace the placeholders.</P>
+<PRE>
+  use Net::LDAP qw(:all);
+  use Net::LDAP::Util;
+  use Win32::Perms;</PRE>
+<PRE>
+  #Constants taken from ADSI Type Library
+  $ADS_RIGHT_EXCH_ADD_CHILD = 1;
+  $ADS_RIGHT_EXCH_DELETE = 0x10000;
+  $ADS_RIGHT_EXCH_DS_REPLICATION = 64;
+  $ADS_RIGHT_EXCH_DS_SEARCH = 256;
+  $ADS_RIGHT_EXCH_MAIL_ADMIN_AS = 32;
+  $ADS_RIGHT_EXCH_MAIL_RECEIVE_AS = 16;
+  $ADS_RIGHT_EXCH_MAIL_SEND_AS = 8;
+  $ADS_RIGHT_EXCH_MODIFY_ADMIN_ATT = 4;
+  $ADS_RIGHT_EXCH_MODIFY_SEC_ATT = 128;
+  $ADS_RIGHT_EXCH_MODIFY_USER_ATT = 2;</PRE>
+<PRE>
+  $EXCH_USER_RIGHTS = $ADS_RIGHT_EXCH_MAIL_RECEIVE_AS |
+  $ADS_RIGHT_EXCH_MAIL_SEND_AS |
+  $ADS_RIGHT_EXCH_MODIFY_USER_ATT;</PRE>
+<PRE>
+  $exch = new Net::LDAP('server', debug =&gt;0) || die $@;</PRE>
+<PRE>
+  $exch-&gt;bind( 'cn=admin_user,cn=nt_domain,cn=admin', version =&gt;3,
+  password=&gt;'password');</PRE>
+<PRE>
+  $myObj = Win32::Perms-&gt;new();
+  $Result = $myObj-&gt;Owner('nt_domain\user_name');
+  $myObj-&gt;Group('nt_domain\Everyone');
+  $myObj-&gt;Allow('nt_domain\user_name',
+  $EXCH_USER_RIGHTS,OBJECT_INHERIT_ACE);
+  $BinarySD = $myObj-&gt;GetSD(SD_RELATIVE);
+  $TextSD = uc(unpack( &quot;H*&quot;, $BinarySD ));
+  Win32::Perms::ResolveSid('nt_domain\user_name', $sid);
+  $mysid = uc(unpack(&quot;H*&quot;,$sid));</PRE>
+<PRE>
+  $result = $exch-&gt;add ( dn   =&gt;
+                'cn=user_name,cn=container,ou=site,o=organisation',
+                attr =&gt; [ 'objectClass' =&gt; ['organizationalPerson'],
+                          'cn'   =&gt; 'directory_name',
+                          'uid' =&gt; 'mail_nickname',
+                          'mail' =&gt; 'smtp_address',
+                        'assoc-nt-account' =&gt; [ $mysid ],
+                        'nt-security-descriptor' =&gt; [ $TextSD ],
+                        'mailPreferenceOption'  =&gt; 0
+                        ]
+              );</PRE>
+<PRE>
+  print ldap_error_name($result-&gt;code);</PRE>
+<P>
+<HR>
+<H1><A NAME="using x.509 certificates.">Using X.509 certificates.</A></H1>
+<P>
+<H2><A NAME="how do i store x.509 certificates in the directory">How do I store X.509 certificates in the directory?</A></H2>
+<P>The first problem here is that there are many different formats to hold
+certificates in, for example PEM, DER, PKCS#7 and PKCS#12. The directory
+*only* uses the DER format (more correctly, it only uses the BER format)
+which is a binary format.</P>
+<P>Your first job is to ensure that your certificates are therefore in DER/BER
+format. You could use OpenSSL to convert from PEM like this:</P>
+<PRE>
+        openssl x509 -inform PEM -in cert.pem -outform DER -out cert.der</PRE>
+<P>Consult the OpenSSL documentation to find out how to perform other
+conversions.</P>
+<P>To add a certificate to the directory, just slurp in the DER/BER
+certificate into a scalar variable, and add it to the entry's
+userCertificate attribute. How you do that will depend on which version of
+LDAP you are using.</P>
+<P>To slurp in the certificate try something like this:</P>
+<PRE>
+        my $cert;
+        {
+                local $/ = undef; # Slurp mode
+                open CERT, &quot;cert.der&quot; or die;
+                $cert = &lt;CERT&gt;;
+                close CERT;
+        }
+        # The certificate is now in $cert</PRE>
+<P>For LDAPv2, because most directory vendors ignore the string representation
+of certificates defined in RFC 1778, you should add this value to the
+directory like this:</P>
+<PRE>
+        $res = $ldap-&gt;modify(&quot;cn=My User, o=My Company,c=XY&quot;,
+                        add =&gt; [
+                                'userCertificate' =&gt; [ $cert ]
+                        ]);
+        die &quot;Modify failed (&quot; . ldap_error_name($res-&gt;code) . &quot;)\n&quot;
+                if $res-&gt;code;</PRE>
+<P>For LDAPv3, you must do this instead:</P>
+<PRE>
+        $res = $ldap-&gt;modify(&quot;cn=My User, o=My Company, c=XY&quot;,
+                        add =&gt; [
+                                'userCertificate;binary' =&gt; [ $cert ]
+                        ]);
+        die &quot;Modify failed (&quot; . ldap_error_name($res-&gt;code) . &quot;)\n&quot;
+                if $res-&gt;code;</PRE>
+<P>Of course, the entry you are trying to add the certificate to must use
+object classes that permit the userCertificate attribute, otherwise the
+modify will fail with an object class violation error. The inetOrgPerson
+structural object class permits userCertificates, as does the
+strongAuthenticationUser auxiliary object class. Others might also.</P>
+<P>
+<HR>
+<H1><A NAME="additional directory and ldap resources.">ADDITIONAL DIRECTORY AND LDAP RESOURCES.</A></H1>
+<P>
+<H2><A NAME="url(s).">URL(s).</A></H2>
+<P>Deploying LDAP                                  
+<A HREF="http://bostonlight.com/ldap/">http://bostonlight.com/ldap/</A></P>
+<P>Directory Services Mark Language (DSML)
+<A HREF="http://www.dsml.org/">http://www.dsml.org/</A></P>
+<P>Jeff Hodges's Kings Mountain LDAP 
+<A HREF="http://www.kingsmountain.com/ldapRoadmap.shtml">http://www.kingsmountain.com/ldapRoadmap.shtml</A></P>
+<P>Mark Wahl's LDAP World at Innosoft.
+<A HREF="http://www.innosoft.com/ldapworld/">http://www.innosoft.com/ldapworld/</A></P>
+<P>Open Source LDAP Directory Server.
+<A HREF="http://www.openldap.org/">http://www.openldap.org/</A></P>
+<P>CriticalPath
+<A HREF="http://www.cp.net/">http://www.cp.net/</A></P>
+<P>Innosoft                                  
+<A HREF="http://www.innosoft.com">http://www.innosoft.com</A></P>
+<P>IPlanet - Netscape and SUN Alliance
+<A HREF="http://www.iplanet.com/">http://www.iplanet.com/</A></P>
+<P>MessagingDirect                                  
+<A HREF="http://www.messagingdirect.com/">http://www.messagingdirect.com/</A></P>
+<P>Netscape Directory Developers Area
+<A HREF="http://developer.netscape.com/directory/">http://developer.netscape.com/directory/</A></P>
+<P>Nexor's X.500 and Internet Directories
+<A HREF="http://www.nexor.com/info/directory.htm/">http://www.nexor.com/info/directory.htm/</A></P>
+<P>SUN JAVA JNDI (Java Naming and Directory Interface)
+<A HREF="http://www.java.sun.com/jndi/">http://www.java.sun.com/jndi/</A></P>
+<P>
+<H2><A NAME="book(s)"><CODE>BOOK(s)</CODE></A></H2>
+<P>Developing LDAP and ADSI Clients for <CODE>Microsoft(R)</CODE> Exchange.
+By Sven B. Schreiber.  ISBN:  0201657775</P>
+<P>Implementing LDAP.
+By Mark Wilcox.  ISBN:  1861002211</P>
+<P>LDAP : Programming Directory-Enabled Applications With 
+Lightweight Directory Access Protocol. 
+By Tim Howes, Mark Smith.  ISBN:  1578700000</P>
+<P>LDAP Programming with Java. 
+By Rob Weltman, Tony Dahbura.  ISBN:  0201657589</P>
+<P>Understanding and Deploying Ldap Directory Services.
+By Tim Howes, Mark Smith, Gordon Good, Timothy A. Howe
+ISBN:  1578700701</P>
+<P>
+<HR>
+<H1><A NAME="author(s)"><CODE>AUTHOR(s)</CODE></A></H1>
+<P>Any good FAQ is made up of many authors, everyone that contributes
+information to the perl-ldap mail list is a potential author.</P>
+<P>An attempt to maintain this FAQ is being done by Clif Harden 
+ &lt;<A HREF="mailto:charden@texoma.net">charden@texoma.net</A>&gt;.</P>
+<P>The original author of this FAQ was Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;</P>
+<P>Please report any bugs, or post any suggestions, to the 
+perl-ldap mailing list 
+ &lt;<A HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;.</P>
 <P>
 <HR>
 <H1><A NAME="copyright">COPYRIGHT</A></H1>
 <P>Copyright (c) 1999-2000 Graham Barr. All rights reserved. This document is
 distributed, and may be redistributed, under the same terms as Perl itself.</P>
-<hr><P><EM>$Id$</EM></P>
-
+<hr>
+=cut
 </BODY>
 
 </HTML>

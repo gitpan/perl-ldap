@@ -60,41 +60,54 @@ The code value in the result message from the server. Normally for
 a success zero will be returned. <A HREF="../../Net/LDAP/Constant.html">Constants</A> for the result codes
 can be imported from the <A HREF="../../Net/LDAP.html">Net::LDAP</A> module.
 <P></P>
-<DT><STRONG><A NAME="item_error">error</A></STRONG><BR>
+<DT><STRONG><A NAME="item_control_%5B_OID_%5D">control [ OID ]</A></STRONG><BR>
 <DD>
-The error message in the result message from the server.
-<P></P>
-<DT><STRONG><A NAME="item_mesg_id">mesg_id</A></STRONG><BR>
-<DD>
-The message id of the request message sent to the server.
-<P></P>
-<DT><STRONG><A NAME="item_done">done</A></STRONG><BR>
-<DD>
-Returns <EM>true</EM> if the request has been completed.
+Return a list of controls returned from the server. If OID is given
+then only controls with type equal to OID will be returned.
 <P></P>
 <DT><STRONG><A NAME="item_dn">dn</A></STRONG><BR>
 <DD>
 The DN in the result message from the server.
 <P></P>
-<DT><STRONG><A NAME="item_sync">sync</A></STRONG><BR>
+<DT><STRONG><A NAME="item_done">done</A></STRONG><BR>
 <DD>
-Wait for the server to complete the request.
+Returns <EM>true</EM> if the request has been completed.
+<P></P>
+<DT><STRONG><A NAME="item_error">error</A></STRONG><BR>
+<DD>
+The error message in the result message from the server. If the server did
+not include an error message, then the result of 
+<A HREF="../../Net/LDAP/Util.html#ldap_error_desc">ldap_error_desc</A> with the
+error code from the result message.
+<P></P>
+<DT><STRONG><A NAME="item_is_error">is_error</A></STRONG><BR>
+<DD>
+Returns <EM>true</EM> if the result code is considered to be an error for the operation.
+<P></P>
+<DT><STRONG><A NAME="item_mesg_id">mesg_id</A></STRONG><BR>
+<DD>
+The message id of the request message sent to the server.
 <P></P>
 <DT><STRONG><A NAME="item_referrals">referrals</A></STRONG><BR>
 <DD>
 Returns a list of referrals from the result message.
 <P></P>
-<DT><STRONG><A NAME="item_control_%5B_OID_%5D">control [ OID ]</A></STRONG><BR>
+<DT><STRONG><A NAME="item_server_error">server_error</A></STRONG><BR>
 <DD>
-Return a list of controls returned from the server. If OID is given
-then only controls with type equal to OID will be returned.
+The error message returned by the server, or undef if the server did not provide
+a message.
+<P></P>
+<DT><STRONG><A NAME="item_sync">sync</A></STRONG><BR>
+<DD>
+Wait for the server to complete the request.
 <P></P></DL>
 <P>
 <HR>
 <H1><A NAME="see also">SEE ALSO</A></H1>
 <P><A HREF="../../Net/LDAP.html">Net::LDAP</A>,
 <A HREF="../../Net/LDAP/Search.html">Net::LDAP::Search</A>,
-<A HREF="../../Net/LDAP/Constant.html">Net::LDAP::Constant</A></P>
+<A HREF="../../Net/LDAP/Constant.html">Net::LDAP::Constant</A>,
+<A HREF="../../Net/LDAP/Util.html">Net::LDAP::Util</A></P>
 <P>
 <HR>
 <H1><A NAME="acknowledgements">ACKNOWLEDGEMENTS</A></H1>
@@ -112,7 +125,7 @@ then only controls with type equal to OID will be returned.
 <P>Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.</P>
-<hr><P><EM>$Id: //depot/ldap/lib/Net/LDAP/Message.pod#11 $</EM></P>
+<hr><P><EM>$Id: //depot/ldap/lib/Net/LDAP/Message.pod#13 $</EM></P>
 
 </BODY>
 

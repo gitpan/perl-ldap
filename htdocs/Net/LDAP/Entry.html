@@ -40,7 +40,7 @@
   for($i = 0 ; $i &lt; $max ; $i++) {
     my $entry = $mesg-&gt;entry($i);
     foreach my $attr ($entry-&gt;attributes) {
-      print join(&quot;\n &quot;,$attr, $entry-&gt;get($attr)),&quot;\n&quot;;
+      print join(&quot;\n &quot;,$attr, $entry-&gt;get_value($attr)),&quot;\n&quot;;
     }
   }</PRE>
 <PRE>
@@ -107,15 +107,44 @@ for the given attributes.
 appear on the directory server until the <A HREF="#item_update"><CODE>update</CODE></A> method
 is called.</P>
 <P></P>
-<DT><STRONG><A NAME="item_replace">replace ( ATTR =&gt; VALUE [, ATTR2 =&gt; VALUE2 ... ] )</A></STRONG><BR>
+<DT><STRONG><A NAME="item_attributes">attributes ( [ OPTIONS ] )</A></STRONG><BR>
 <DD>
-Similar to add, except that the values given will replace
-any values that already exist for the given attributes.
-<P><STRONG>NOTE</STRONG>: these changes are local to the client and will not
-appear on the directory server until the <A HREF="#item_update"><CODE>update</CODE></A> method
-is called.</P>
+Return a list of attributes that this entry has.
+<P>OPTIONS is a list of name/value pairs, valid options are :-</P>
+<DL>
+<DT><STRONG><A NAME="item_nooptions">nooptions</A></STRONG><BR>
+<DD>
+If TRUE, return a list of the attribute names excluding any options. For example for the entry
+<PRE>
+  name: Graham Barr
+  name;en-us: Bob
+  jpeg;binary: **binary data**</PRE>
+<P>the return list would be <CODE>( 'name', 'jpeg' )</CODE>.</P>
+<P></P></DL>
+<DT><STRONG><A NAME="item_changetype">changetype ( [ TYPE ] )</A></STRONG><BR>
+<DD>
+If called without arguments it returns the type of operation that would
+be performed when the update method is called. If called with an argument
+it will set the changetype to TYPE.
+<P>Possible values for TYPE are</P>
+<DL>
+<DT><STRONG>add</STRONG><BR>
+<DD>
+The update method will call the add method on the client object, which
+will result in the entry being added to the directory server.
 <P></P>
-<DT><STRONG><A NAME="item_delete">delete ( [ ATTR [, ATTR2 ... ]] )</A></STRONG><BR>
+<DT><STRONG><A NAME="item_delete">delete</A></STRONG><BR>
+<DD>
+The update method will call the delete method on the client object, which
+will result in the entry being removed from the directory server.
+<P></P>
+<DT><STRONG><A NAME="item_modify">modify</A></STRONG><BR>
+<DD>
+The update method will call the modify method on the client object, which
+will result in any changes that have been made locally being made to the
+entry on the directory server.
+<P></P></DL>
+<DT><STRONG>delete ( [ ATTR [, ATTR2 ... ]] )</STRONG><BR>
 <DD>
 Delete the given attributes from the entry. If no attributes
 are passed then the next call to update will cause the entry
@@ -133,39 +162,18 @@ for the entry and return the previous value.
 appear on the directory server until the <A HREF="#item_update"><CODE>update</CODE></A> method
 is called.</P>
 <P></P>
-<DT><STRONG><A NAME="item_update">update ( [ CLIENT ] )</A></STRONG><BR>
+<DT><STRONG><A NAME="item_exists">exists ( ATTR )</A></STRONG><BR>
 <DD>
-Update the directory server with any changes that have been made
-locally. This means any calls that have been made to add, replace
-or delete since the last call to changetype or update was made.
-<P>CLIENT should be a <CODE>Net::LDAP</CODE> object where the update
-should be sent to.</P>
-<P>CLIENT is only optional is the <STRONG>Net::LDAP::Entry</STRONG> object was created
-by a search on a directory server. In which case, if omitted, the
-update will be sent back to the same server.</P>
-<P>The result will be an object of type <A HREF="../../Net/LDAP/Message.html">Net::LDAP::Message</A> as returned
-by the add, modify or delete method called on CLIENT.</P>
+Returns TRUE if the entry has an attribute called ATTR.
 <P></P>
-<DT><STRONG><A NAME="item_attributes">attributes ( [ OPTIONS ] )</A></STRONG><BR>
+<DT><STRONG><A NAME="item_get_value">get_value ( ATTR [, OPTIONS ] )</A></STRONG><BR>
 <DD>
-Return a list of attributes that this entry has.
-<P>OPTIONS is a list of name/value pairs, valid options are :-</P>
-<DL>
-<DT><STRONG><A NAME="item_nooptions">nooptions</A></STRONG><BR>
-<DD>
-If TRUE, return a list of the attribute names excluding any options. For example for the entry
-<PRE>
-  name: Graham Barr
-  name;en-us: Bob
-  jpeg;binary: **binary data**</PRE>
-<P>the return list would be <CODE>( 'name', 'jpeg' )</CODE>.</P>
-<P></P></DL>
-<DT><STRONG><A NAME="item_get">get ( ATTR [, OPTIONS ] )</A></STRONG><BR>
-<DD>
-Get the values for the attribute ATTR. The result will be a reference
-to an array, if that attribute exists. If the attribute does not exist
-the <CODE>undef</CODE> will be returned.
-<P>OPTIONS is a list of name/value pairs, valid options are :-</P>
+Get the values for the attribute ATTR. In a list context returns all
+values for the given attribute, or the empty list if the attribute does
+not exist. In a scalar context returns the first value for the attribute
+or undef if the attribute does not exist.
+<P>The return value may be changed by OPTIONS, which is a list of name =&gt; value
+pairs, valid options are :-</P>
 <DL>
 <DT><STRONG><A NAME="item_alloptions">alloptions</A></STRONG><BR>
 <DD>
@@ -181,34 +189,36 @@ For example if an entry had
     ''       =&gt; [ 'Graham Barr' ],
     ';en-us' =&gt; [ 'Bob' ]
   }</PRE>
-<P></P></DL>
-<P><STRONG>NOTE</STRONG>: In the interest of performance the array references returned by <A HREF="#item_get"><CODE>get</CODE></A>
-are references to structures held inside the entry object. These values
-should <STRONG>not</STRONG> be modified directly.</P>
-<DT><STRONG><A NAME="item_changetype">changetype ( [ TYPE ] )</A></STRONG><BR>
-<DD>
-If called without arguments it returns the type of operation that would
-be performed when the update method is called. If called with an argument
-it will set the changetype to TYPE.
-<P>Possible values for TYPE are</P>
-<DL>
-<DT><STRONG>add</STRONG><BR>
-<DD>
-The update method will call the add method on the client object, which
-will result in the entry being added to the directory server.
 <P></P>
-<DT><STRONG>delete</STRONG><BR>
+<DT><STRONG><A NAME="item_asref">asref</A></STRONG><BR>
 <DD>
-The update method will call the delete method on the client object, which
-will result in the entry being removed from the directory server.
-<P></P>
-<DT><STRONG><A NAME="item_modify">modify</A></STRONG><BR>
-<DD>
-The update method will call the modify method on the client object, which
-will result in any changes that have been made locally being made to the
-entry on the directory server.
+If TRUE then the result will be a reference to an array containing all the
+values for the attribute, or undef if the attribute does not exist.
 <P></P></DL>
-</DL>
+<P><STRONG>NOTE</STRONG>: In the interest of performance the array references returned by <A HREF="#item_get_value"><CODE>get_value</CODE></A>
+are references to structures held inside the entry object. These values and
+thier contents should <STRONG>NOT</STRONG> be modified directly.</P>
+<DT><STRONG><A NAME="item_replace">replace ( ATTR =&gt; VALUE [, ATTR2 =&gt; VALUE2 ... ] )</A></STRONG><BR>
+<DD>
+Similar to add, except that the values given will replace
+any values that already exist for the given attributes.
+<P><STRONG>NOTE</STRONG>: these changes are local to the client and will not
+appear on the directory server until the <A HREF="#item_update"><CODE>update</CODE></A> method
+is called.</P>
+<P></P>
+<DT><STRONG><A NAME="item_update">update ( CLIENT )</A></STRONG><BR>
+<DD>
+Update the directory server with any changes that have been made locally
+to the attributes of this entry. This means any calls that have been
+made to add, replace or delete since the last call to changetype or
+update was made.
+<P>This method <STRONG>cannot</STRONG> be used to modify the DN of the entry on the server,
+for that see the <CODE>moddn</CODE> method in <A HREF="../../Net/LDAP.html">Net::LDAP</A>.</P>
+<P>CLIENT is a <CODE>Net::LDAP</CODE> object where the update will be sent to.</P>
+<P>The result will be an object of type
+<A HREF="../../Net/LDAP/Message.html">Net::LDAP::Message</A> as returned by the add, modify
+or delete method called on CLIENT.</P>
+<P></P></DL>
 <P>
 <HR>
 <H1><A NAME="see also">SEE ALSO</A></H1>

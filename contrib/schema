@@ -12,7 +12,7 @@
 # module.
 # Both modules are available from the CPAN.org system.
 #
-# $Id: schema,v 1.1 2000/07/27 14:39:17 gbarr Exp $
+# $Id: schema,v 1.2 2000/07/31 02:29:01 charden Exp $
 #
 # Purpose: This program is designed to retrieve schema data from a LDAP
 #          directory and display on the graphical user interface
@@ -21,6 +21,10 @@
 #
 # Revisions:
 # $Log: schema,v $
+# Revision 1.2  2000/07/31 02:29:01  charden
+# Changed the format of the SCHEMA DUMP TO FILE information text to
+# 2 lines.  This reduces the width of the GUI.
+#
 # Revision 1.1  2000/07/27 14:39:17  gbarr
 # Initial checkin
 #
@@ -529,9 +533,9 @@ $rbfilelabel = $mainWindow->LabFrame(-label => "SCHEMA DUMP TO FILE",
       -labelside => "acrosstop")
       ->pack( -fill => "both", -anchor => "w", -padx => 2, -pady => 2);
 
-$rbfile = $rbfilelabel -> Checkbutton(-text => "Write schema data to file, enter file name in text box below this line.",
+$rbfile = $rbfilelabel -> Checkbutton(-text => "Write schema data to file, enter file\nname in text box below this line.   ",
       -variable =>  \$sfile, -onvalue => 1, -offvalue => 0 )
-      -> pack(-anchor => w );
+      -> pack(-anchor => "w" );
 #
 # Create Text Entry list box.
 #
