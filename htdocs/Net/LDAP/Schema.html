@@ -46,7 +46,7 @@ Net::LDAP::Schema - Load and manipulate an LDAP v3 Schema
 <PRE> #
  # Load from LDIF
  #
- $schema = Net::LDAP-&gt;new;
+ $schema = Net::LDAP::Schema-&gt;new;
  $schema-&gt;parse( &quot;schema.ldif&quot; ) or die $schema-&gt;error;
 </PRE>
 <P>
@@ -167,6 +167,10 @@ item's data value. The item's value may be undefined.
 <P>
 Return value is an array or a value depending on calling context.
 
+<P>
+If the first argument is a name and there is more than one item in the
+schema with that name then undef, or the empty list, will be returned.
+
 <DT><STRONG><A NAME="item_items">items</A></STRONG><DD>
 <P>
 Given an argument which is the name or oid of a known object class or
@@ -177,7 +181,11 @@ The returned item name may have an undefined value.
 <PRE>  @items = $schema-&gt;items( $oid );
 </PRE>
 <P>
-Return value is an array or array reference depending on calling context.
+Return value is a list or array reference depending on calling context.
+
+<P>
+If the argument given is a name and there is more than one item in the
+schema with that name then undef, or the empty list, will be returned.
 
 <DT><STRONG><A NAME="item_matchingrules">matchingrules</A></STRONG><DD>
 <P>
@@ -221,10 +229,24 @@ the name of the attributes which are mandatory in the class
 <P>
 Return value is an array or array reference depending on calling context.
 
+<DT><STRONG><A NAME="item_name">name</A></STRONG><DD>
+<P>
+Given an argument which is the name or oid of an item, returns the items
+canonical name or undef if the name or oid is not known.
+
+<P>
+If the argument given is a name and there is more than one item in the
+schema with that name then undef will be returned.
+
 <DT><STRONG><A NAME="item_name2oid">name2oid</A></STRONG><DD>
 <P>
 Given the name of a schema item (object class, attribute or syntax) returns
 the assoicated OID or undef if it is not recognised.
+
+<P>
+It is possible that two objects, of different types, have the same name. In
+this case <A HREF="#item_name2oid">name2oid</A> will return a list of OIDs in an array context. In a scalar context it will
+return undef if there is more than one object with the given name.
 
 <DT><STRONG><A NAME="item_nameforms">nameforms</A></STRONG><DD>
 <P>
@@ -318,7 +340,7 @@ terms as Perl itself.
 <hr>
 
 <P>
-<EM>$Id: Schema.pod,v 1.7 2001/02/12 14:17:38 gbarr Exp $</EM>
+<EM>$Id: Schema.pod,v 1.9 2001/06/11 16:49:04 gbarr Exp $</EM>
 
 
 

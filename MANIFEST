@@ -15,6 +15,7 @@ contrib/dot.tklkup
 contrib/isMember.pl
 contrib/jpegDisplay.pl
 contrib/jpegLoad.pl
+contrib/ldifsort.pl
 contrib/printMembers.pl
 contrib/tklkup
 data/00-cmp2.ldif
@@ -29,10 +30,16 @@ data/51d-cmp.ldif
 data/52-cmp.ldif
 data/52-in.ldif
 data/52-mod.ldif
+data/cert.pem
+data/core.schema
+data/cosine.schema
+data/inetorgperson.schema
+data/key.pem
 data/schema.in
 data/slapd-conf.in
 data/slapd.at.conf
 data/slapd.oc.conf
+data/slapd2-conf.in
 htdocs/Authen/SASL.html
 htdocs/Bundle/Net/LDAP.html
 htdocs/Net/LDAP.html
@@ -60,6 +67,7 @@ htdocs/Net/LDAP/Util.html
 htdocs/Net/LDAPS.html
 htdocs/index.html
 htdocs/index.xml
+install-nomake
 lib/Authen/SASL.pm
 lib/Authen/SASL.pod
 lib/Authen/SASL/CRAM_MD5.pm
@@ -110,4 +118,8 @@ t/50populate.t
 t/51search.t
 t/52modify.t
 t/53schema.t
+t/54dse.t
+t/55ssl.t
+t/70sortctrl.t
 t/common.pl
+test.cfg

@@ -34,15 +34,18 @@ Net::LDAP::LDIF - LDIF reading and writing
 <PRE>  use Net::LDAP::LDIF;
 </PRE>
 <P>
-<PRE>  $ldif = Net::LDAP::LDIF-&gt;new( &quot;file.ldif&quot;, &quot;r&quot; );
-  while( $entry = $ldif-&gt;read() ) {
-          # Do things with $entry
+<PRE>  $ldif = Net::LDAP::LDIF-&gt;new( &quot;file.ldif&quot;, &quot;r&quot;, onerror =&gt; 'undef' );
+  while( not $ldif-&gt;eof() ) {
+     $entry = $ldif-&gt;read_entry();
+     if ( $ldif-&gt;error() ) {
+        print &quot;Error msg: &quot;,$ldif-&gt;error(),&quot;\n&quot;;
+        print &quot;Error lines:\n&quot;,$ldif-&gt;error_lines(),&quot;\n&quot;;
+     }
+     else {
+        # do stuff
+     }
   }
   $ldif-&gt;done();
-</PRE>
-<P>
-<PRE>  $ldif = Net::LDAP::LDIF-&gt;new( $fh, &quot;r&quot; );
-  @entries = $ldif-&gt;read();
 </PRE>
 <P>
 <HR>
@@ -76,10 +79,32 @@ OPTIONS is a list of key-value pairs. Valid options are:
 <DL>
 <DT><STRONG><A NAME="item_encode">encode</A></STRONG><DD>
 <P>
-some values in LDIF cannot be written verbatim and have to be encoded in
+Some values in LDIF cannot be written verbatim and have to be encoded in
 some way. This option lets you specify how. Valid encoding options are
 'none' (the default), 'canonical' (see
 <A HREF="../../Net/LDAP/Util.html#canonical_dn">canonical_dn</A>), or 'base64'.
+
+</DL>
+<DT><STRONG><A NAME="item_onerror">onerror</A></STRONG><DD>
+<P>
+If set then Net::LDAP::LDIF will check all responses for errors on all
+methods. If an error is detected then the specified action will be taken.
+Valid values and their actions are.
+
+<DL>
+<DT><STRONG><A NAME="item_die">die</A></STRONG><DD>
+<P>
+Net::LDAP::LDIF will croak with an appropriate message.
+
+<DT><STRONG><A NAME="item_warn">warn</A></STRONG><DD>
+<P>
+Net::LDAP::LDIF will warn with an appropriate message.
+
+<DT><STRONG><A NAME="item_undef">undef</A></STRONG><DD>
+<P>
+Net::LDAP::LDIF will warn with an appropriate message if <CODE>-w</CODE> is in effect. The method that was called will return <A HREF="#item_undef">undef</A>
+
+
 
 </DL>
 </DL>
@@ -87,17 +112,15 @@ some way. This option lets you specify how. Valid encoding options are
 <HR>
 <H1><A NAME="METHODS">METHODS</A></H1>
 <DL>
-<DT><STRONG><A NAME="item_read">read</A></STRONG><DD>
+<DT><STRONG><A NAME="item_read_entry">read_entry</A></STRONG><DD>
 <P>
-In a similar fashion to the perl &lt;$fh&gt; operator, read will read one
-entry or the entire file depending on whether it is called in a scalar or
-array context.
+Read one entry from the file and return it as a Net::LDAP::Entry object.
 
+<DT><STRONG><A NAME="item_eof">eof</A></STRONG><DD>
+<P>
+Returns true when the end of the file is reached.
 
-<DL>
-<DT><STRONG><A NAME="item_read_cmd">read_cmd</A></STRONG><DD>
-<DT><STRONG><A NAME="item_write">write ( ENTRIES )</A></STRONG><DD>
-<DT><STRONG><A NAME="item_write_cmd">write_cmd ( ENTRIES )</A></STRONG><DD>
+<DT><STRONG><A NAME="item_write_entry">write_entry ( ENTRIES )</A></STRONG><DD>
 <DT><STRONG><A NAME="item_done">done</A></STRONG><DD>
 <P>
 This method signals that the LDIF object is no longer needed. If a file was
@@ -105,11 +128,27 @@ opened automatically when the object was created it will be closed. This
 method is called automatically via DESTROY when the object goes out of
 scope.
 
+<DT><STRONG><A NAME="item_error">error</A></STRONG><DD>
 <P>
-<PRE>  $ldif-&gt;done();
-</PRE>
+Returns error message if error was found.
 
+<DT><STRONG><A NAME="item_error_lines">error_lines</A></STRONG><DD>
+<P>
+Returns lines that resulted in error.
 
+<DT><STRONG><A NAME="item_current_entry">current_entry</A></STRONG><DD>
+<P>
+Returns the current Net::LDAP::Entry object.
+
+<DT><STRONG><A NAME="item_current_lines">current_lines</A></STRONG><DD>
+<P>
+Returns the lines that generated the current Net::LDAP::Entry object.
+
+<DT><STRONG><A NAME="item_next_lines">next_lines</A></STRONG><DD>
+<P>
+Returns the lines that will generate the next Net::LDAP::Entry object.
+
+</DL>
 <P>
 <HR>
 <H1><A NAME="AUTHOR">AUTHOR</A></H1>
@@ -131,11 +170,6 @@ free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
 
 <hr>
-
-<P>
-<EM>$Id: LDIF.pod,v 1.3 2001/03/21 16:21:18 chrisridd Exp $</EM>
-
-
 
 </BODY>
 

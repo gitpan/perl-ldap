@@ -147,6 +147,12 @@ argument, the result message. The value returned will be the return value
 for the method that was called.
 
 </DL>
+<DT><STRONG><A NAME="item_version">version</A></STRONG><DD>
+<P>
+Set the protocol version being used (default is LDAPv2). This is useful if
+you want to avoid sending a bind operation and therefore have to use
+LDAPv3.
+
 </DL>
 <P>
 Example
@@ -710,11 +716,85 @@ not return until all requests have been completed, or id <STRONG>MESG</STRONG> i
 <P>
 Returns an error code defined in <A HREF="../Net/LDAP/Constant|Net/LDAP/Constant.html">Net::LDAP::Constant|Net::LDAP::Constant</A>.
 
-<DT><STRONG><A NAME="item_version">version</A></STRONG><DD>
+<DT><STRONG><A NAME="item_start_tls">start_tls ( [ OPTIONS ] )</A></STRONG><DD>
+<P>
+Calling this method will convert the connection to using Transport Layer
+Security (TLS), which potentially provides an encrypted connection. This is <EM>only</EM> possible if the connection is using LDAPv3. OPTIONS is a number of
+key-value pairs which describe how to configure the security of the
+connection:
+
+<DL>
+<DT><STRONG><A NAME="item_verify">verify</A></STRONG><DD>
+<P>
+How to verify the server's certificate, either 'none' (the server may
+provide a certificate but it will not be checked - this may mean you are be
+connected to the wrong server), 'optional' (verify if the server offers a
+certificate), or 'require' (the server must provide a certificate, and it
+must be valid.) If you set verify to optional or require, you must also set
+either cafile or capath. The most secure option is 'require'.
+
+<DT><STRONG><A NAME="item_ciphers">ciphers</A></STRONG><DD>
+<P>
+Specify which subset of cipher suites are permissible for this connection,
+using the standard OpenSSL string format. The default value for ciphers is
+'ALL', which permits all ciphers, even those that don't encrypt!
+
+<DT><STRONG><A NAME="item_clientcert">clientcert</A></STRONG><DD>
+<DT><STRONG><A NAME="item_clientkey">clientkey</A></STRONG><DD>
+<P>
+If you want to use the client to offer a certificate to the server for SSL
+authentication (which is not the same as for the LDAP Bind operation) then
+set clientcert to the user's certificate file, and clientkey to the user's
+private key file. These files must be in PEM format.
+
+<DT><STRONG><A NAME="item_capath">capath</A></STRONG><DD>
+<DT><STRONG><A NAME="item_cafile">cafile</A></STRONG><DD>
+<P>
+When verifying the server's certificate, either set capath to the pathname
+of the directory containing CA certificates, or set cafile to the filename
+containing the certificate of the CA who signed the server's certificate.
+These certificates must all be in PEM format.
+
+<P>
+The directory in 'capath' must contain certificates named using the hash
+value of themselves. To generate these names, use OpenSSL like this in
+Unix:
+
+<P>
+<PRE>    ln -s cacert.pem `openssl x509 -hash -noout &lt; cacert.pem`.0
+</PRE>
+<P>
+(assuming that the certificate of the CA is in cacert.pem.)
+
+</DL>
+</DL>
+<DL>
+<DT><STRONG><A NAME="item_cipher">cipher</A></STRONG><DD>
+<P>
+Returns the cipher mode being used by the connection, in the string format
+used by OpenSSL.
+
+<DT><STRONG><A NAME="item_certificate">certificate</A></STRONG><DD>
+<P>
+Returns an X509_Certificate object containing the server's certificate. See
+the IO::Socket::SSL documentation for information about this class.
+
+<P>
+For example, to get the subject name (in a peculiar OpenSSL-specific
+format, different from RFC 1779 and RFC 2253) from the server's
+certificate, do this:
+
+<P>
+<PRE>    print &quot;Subject DN: &quot; . $ldaps-&gt;certificate-&gt;subject_name . &quot;\n&quot;;
+</PRE>
+</DL>
+<DT><STRONG>version</STRONG><DD>
 <P>
 Returns the version of the LDAP protocol that is being used.
 
 </DL>
+<P>
+<HR>
 <H1><A NAME="CONTROLS">CONTROLS</A></H1>
 <P>
 Many of the methods described above accept a control option. This allows
@@ -744,6 +824,8 @@ If the control being requested requires a value then this element should
 hold the value for the server.
 
 </DL>
+<P>
+<HR>
 <H1><A NAME="CALLBACKS">CALLBACKS</A></H1>
 <P>
 Most of the above commands accept a callback option. This option should be
@@ -764,11 +846,15 @@ During a search the server may also send a list of references. When such a
 list is received then the subroutine will be called with a
 <A HREF="../Net/LDAP/Reference|Net/LDAP/Reference.html">Net::LDAP::Reference|Net::LDAP::Reference</A> object as the second argument.
 
+<P>
+<HR>
 <H1><A NAME="LDAP_ERROR_CODES">LDAP ERROR CODES</A></H1>
 <P>
 <STRONG>Net::LDAP</STRONG> also exports constants for the error codes that can be received from the
 server, see <A HREF="../Net/LDAP/Constant|Net/LDAP/Constant.html">Net::LDAP::Constant|Net::LDAP::Constant</A>.
 
+<P>
+<HR>
 <H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
 <P>
 <A HREF="../Net/LDAP/Constant|Net/LDAP/Constant.html">Net::LDAP::Constant|Net::LDAP::Constant</A>,
@@ -787,6 +873,8 @@ The homepage for the perl-ldap modules can be found at <A
 HREF="http://www.pobox.com/~gbarr/perl-ldap/.">http://www.pobox.com/~gbarr/perl-ldap/.</A>
 
 
+<P>
+<HR>
 <H1><A NAME="ACKNOWLEDGEMENTS">ACKNOWLEDGEMENTS</A></H1>
 <P>
 This document is based on a document originally written by Russell Fulton
@@ -797,6 +885,8 @@ HREF="mailto:r.fulton@auckland.ac.nz">r.fulton@auckland.ac.nz</A>&gt;
 Chris Ridd @isode.com for the many hours spent testing and contribution of
 the ldap* command line utilities.
 
+<P>
+<HR>
 <H1><A NAME="AUTHOR">AUTHOR</A></H1>
 <P>
 Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;
@@ -807,6 +897,8 @@ list &lt;<A
 HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;
 
 
+<P>
+<HR>
 <H1><A NAME="COPYRIGHT">COPYRIGHT</A></H1>
 <P>
 Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
@@ -816,11 +908,10 @@ terms as Perl itself.
 <hr>
 
 <P>
-<EM>$Id: LDAP.pod,v 1.8 2001/03/07 15:13:27 chrisridd Exp $</EM>
+<EM>$Id: LDAP.pod,v 1.10 2001/07/06 12:17:35 gbarr Exp $</EM>
 
 
 
-</DL>
 </BODY>
 
 </HTML>

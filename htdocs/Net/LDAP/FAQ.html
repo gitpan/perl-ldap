@@ -41,6 +41,7 @@
 		<LI><A HREF="#What_is_a_search_base_">What is a search base.</A>
 		<LI><A HREF="#What_is_an_attribute_">What is an attribute.</A>
 		<LI><A HREF="#What_is_the_difference_between_a">What is the difference between a LDAP server and a relational database</A>
+		<LI><A HREF="#What_is_the_difference_between_a">What is the difference between a ldap reference and a ldap referral?</A>
 	</UL>
 
 	<LI><A HREF="#PERL_LDAP_INSTALLATION">PERL-LDAP INSTALLATION</A>
@@ -57,8 +58,16 @@
 		<LI><A HREF="#How_do_I_connect_to_my_server_">How do I connect to my server ?</A>
 		<LI><A HREF="#Net_LDAP_new_sometimes_returns">Net::LDAP-&gt;new sometimes returns undef, why ?</A>
 		<LI><A HREF="#How_can_I_tell_when_the_server_r">How can I tell when the server returns an error, bind() always returns</A>
+		<LI><A HREF="#How_can_I_set_the_ldap_version_o">How can I set the ldap version of a connection to my ldap server?</A>
 		<LI><A HREF="#I_did_a_search_on_my_directory_u">I did a search on my directory using the 'search' method. Where did</A>
 		<LI><A HREF="#How_do_I_limit_the_scope_of_a_di">How do I limit the scope of a directory search.</A>
+	</UL>
+
+	<LI><A HREF="#GETTING_SEARCH_RESULTS">GETTING SEARCH RESULTS</A>
+	<UL>
+
+		<LI><A HREF="#USING_THE_INLINE_APPROACH">USING THE INLINE APPROACH</A>
+		<LI><A HREF="#USING_THE_CALLBACK_SUBROUTINE_AP">USING THE CALLBACK SUBROUTINE APPROACH</A>
 	</UL>
 
 	<LI><A HREF="#USING_NET_LDAPS">USING NET::LDAPS</A>
@@ -94,7 +103,10 @@
 		<LI><A HREF="#Can_I_contribute_perl_scripts_th">Can I contribute perl scripts that use perl-ldap</A>
 		<LI><A HREF="#Is_possible_to_get_a_complete_en">Is possible to get a complete entry, dn and attributes </A>
 		<LI><A HREF="#How_do_I_put_a_jpeg_photo_into_a">How do I put a jpeg photo into a entry in the directory.</A>
-		<LI><A HREF="#How_do_I_add_a_jpeg_photo_into_a">How do I add a jpeg photo into a entry in the directory</A>
+		<LI><A HREF="#How_do_I_add_a_jpeg_photo_into_a">How do I add a jpeg photo into a entry in the directory via html-forms.</A>
+		<LI><A HREF="#What_happens_when_you_delete_an_">What happens when you delete an attribute that does not exist.</A>
+		<LI><A HREF="#How_can_I_delete_a_referral_from">How can I delete a referral from an LDAP tree.</A>
+		<LI><A HREF="#How_do_I_add_an_ACI_ACL_entry_to">How do I add an ACI/ACL entry to a directory server with</A>
 		<LI><A HREF="#How_do_I_avoid_file_type_and_dat">How do I avoid file type and data type miss-matching when loading</A>
 		<LI><A HREF="#How_do_I_create_a_Microsoft_Exch">How do I create a Microsoft Exchange user.</A>
 	</UL>
@@ -137,6 +149,11 @@ This document serves to answer the most frequently asked questions on both
 the perl-ldap Mailing List and those sent to Graham Barr.
 
 <P>
+The latest version of this FAQ can be found at <A
+HREF="http://perl-ldap.sourceforge.net/FAQ.html">http://perl-ldap.sourceforge.net/FAQ.html</A>
+
+
+<P>
 <HR>
 <H1><A NAME="GENERAL">GENERAL</A></H1>
 <P>
@@ -163,6 +180,12 @@ Perl-ldap is available from CPAN. You will find it in the authors/id/GBARR
 directory. Alternatively you can download the latest version from <A
 HREF="http://www.cpan.org/search?dist=perl-ldap">http://www.cpan.org/search?dist=perl-ldap</A>
 
+
+<P>
+<STRONG>WARNING:</STRONG>  The perl-ldap module is stored on CPAN as a *.gz file. Netscape on Windows
+systems sometimes has a problem storing the module with the correct name,
+it will replace the *.tar.gz with *_tar.tar. To correct the problem, with
+the pointer on the link, do a right click and then select <STRONG>save link as</STRONG> to save the file with the correct file name.
 
 <P>
 <HR>
@@ -243,6 +266,12 @@ continuous line. Example;
 <PRE> <A HREF="http://download.sourceforge.net/perl-ldap/perl-ldap-0.20.tar.gz">http://download.sourceforge.net/perl-ldap/perl-ldap-0.20.tar.gz</A>
 </PRE>
 <P>
+<STRONG>WARNING:</STRONG>  The perl-ldap module is stored on CPAN as a *.gz file. Netscape on Windows
+systems sometimes has a problem storing the module with the correct name,
+it will replace the *.tar.gz with *_tar.tar. To correct the problem, with
+the pointer on the link, do a right click and then select <STRONG>save link as</STRONG> to save the file with the correct file name.
+
+<P>
 CVS;
 
 <P>
@@ -265,6 +294,12 @@ Most of the time there is a URL link on the perl-ldap home page on
 sourceforge that points to the latest released version of perl-ldap. Due to
 the fact that humans must update the web page to point to a new release it
 sometimes does not get updated as quickly as it should.
+
+<P>
+<STRONG>WARNING:</STRONG>  The perl-ldap module is stored on CPAN as a *.gz file. Netscape on Windows
+systems sometimes has a problem storing the module with the correct name,
+it will replace the *.tar.gz with *_tar.tar. To correct the problem, with
+the pointer on the link, do a right click and then select <STRONG>save link as</STRONG> to save the file with the correct file name.
 
 <P>
 <HR>
@@ -484,6 +519,18 @@ More information on this topic can be found on the following URLs;
 </PRE>
 <P>
 <HR>
+<H2><A NAME="What_is_the_difference_between_a">What is the difference between a ldap reference and a ldap referral?</A></H2>
+<P>
+A referral is returned when the <STRONG>entire</STRONG> operation must be resent to another server.
+
+<P>
+A continuation reference is returned when <STRONG>part</STRONG> of the operation must be resent to another server.
+
+<P>
+See RFC 2251 section 4.5.3 for more details.
+
+<P>
+<HR>
 <H1><A NAME="PERL_LDAP_INSTALLATION">PERL-LDAP INSTALLATION</A></H1>
 <P>
 <HR>
@@ -646,12 +693,27 @@ server, including the result code.
 So, for example, to determine the result of the bind operation.
 
 <P>
-<PRE>  $mesg = $ldap-&gt;bind( $dn, password =&gt; $passwd);
+<PRE>  $mesg = $ldap-&gt;bind( $dn, password =&gt; $passwd );
   
   if ( $mesg-&gt;code ) {
     # Handle error codes here
   }
 </PRE>
+<P>
+<HR>
+<H2><A NAME="How_can_I_set_the_ldap_version_o">How can I set the ldap version of a connection to my ldap server?</A></H2>
+<P>
+This is done by adding the version option when binding to the ldap server.
+
+<P>
+For example;
+
+<P>
+<PRE>  $mesg = $ldap-&gt;bind( $dn, password =&gt; $passwd, version =&gt; 3 );
+</PRE>
+<P>
+Valid version numbers are 2 and 3.
+
 <P>
 <HR>
 <H2><A NAME="I_did_a_search_on_my_directory_u">I did a search on my directory using the 'search' method. Where did
@@ -798,6 +860,162 @@ Values for the scope parameter are as follows.
  sub   Search the whole tree below the base object.
        This is the default.                                         
 </PRE>
+<P>
+<HR>
+<H1><A NAME="GETTING_SEARCH_RESULTS">GETTING SEARCH RESULTS</A></H1>
+<P>
+There are two ways of retrieving the results of a requested LDAP search;
+inline and by using a callback subroutine.
+
+<P>
+<HR>
+<H2><A NAME="USING_THE_INLINE_APPROACH">USING THE INLINE APPROACH</A></H2>
+<P>
+Using the inline approach involves requesting the data and then waiting for
+all of the data to be returned before the user starts processing the data.
+
+<P>
+Example: 
+
+<P>
+<PRE> use Net::LDAP;
+</PRE>
+<P>
+<PRE> $ldap = Net::LDAP-&gt;new('ldap.acme.com') or die &quot;$@&quot;;
+ $mesg = $ldap-&gt;search(
+                       base   =&gt; &quot;o=acme.com&quot;,
+                       scope  =&gt; 'sub',
+                       filter =&gt; &quot;sn=smith&quot;,
+                      );
+  #
+  # At this point the user can get the returned data as an array
+  # or as a stack.
+  # In this example we will use an array
+</PRE>
+<P>
+<PRE>  # How many entries were returned from the search
+  my $max = $mesg-&gt;count; 
+</PRE>
+<P>
+<PRE>  for( my $index = 0 ; $index &lt; $max ; $index++) 
+  {
+    my $entry = $mesg-&gt;entry($index);
+    my $dn = $entry-&gt;dn; # Obtain DN of this entry
+</PRE>
+<P>
+<PRE>    @attrs = $entry-&gt;attributes; # Obtain attributes for this entry.
+    foreach my $var (@attrs)
+    {
+     #get a list of values for a given attribute
+     $attr = $entry-&gt;get_value( $var, asref =&gt; 1 );
+     if ( defined($attr) )         
+     {          
+         foreach my $value ( @$attr )          
+         {           
+          print &quot;$var: $value\n&quot;;  # Print each value for the attribute.
+         }         
+     }                                                                       
+    }
+  }
+</PRE>
+<P>
+As you can see the example is straight forward, but there is one drawback
+to this approach. You must wait until all entries for the request search to
+be returned before you can process the data. If there several thousand
+entries that match the search filter this could take quite a long time
+period.
+
+<P>
+<HR>
+<H2><A NAME="USING_THE_CALLBACK_SUBROUTINE_AP">USING THE CALLBACK SUBROUTINE APPROACH</A></H2>
+<P>
+Using the callback approach involves requesting the data be sent to a
+callback subroutine as each entry arrives at the client.
+
+<P>
+A callback is just a subroutine that is passed two parameters when it is
+called, the mesg and entry objects.
+
+<P>
+Example: 
+
+<P>
+<PRE> use Net::LDAP;
+</PRE>
+<P>
+<PRE> $ldap = Net::LDAP-&gt;new('ldap.acme.com') or die &quot;$@&quot;;
+ $mesg = $ldap-&gt;search(
+                       base   =&gt; &quot;o=acme.com&quot;,
+                       scope  =&gt; 'sub',
+                       filter =&gt; &quot;sn=smith&quot;,
+                       callback =&gt; \&amp;callback,
+                      );
+ #
+ # At this point the user needs to check the status of the
+ # ldap search.
+ # 
+</PRE>
+<P>
+<PRE> if ( $mesg-&gt;code )
+ {
+    $errstr = $mesg-&gt;code;
+    print &quot;Error code:  $errstr\n&quot;;
+    $errstr = ldap_error_text($errstr);
+    print &quot;$errstr\n&quot;;
+ } 
+</PRE>
+<P>
+<PRE> sub callback
+ {
+ my ( $mesg, $entry) = @_;
+</PRE>
+<P>
+<PRE>   #
+   # First you must check to see if something was returned.
+   # Last execution of callback subroutine will have no
+   # defined entry and mesg object
+   #
+   if ( !defined($entry) )
+   {
+     print &quot;No records found matching filter $match.\n&quot;
+     if ($mesg-&gt;count == 0) ; # if mesg is not defined nothing will print.
+     return;
+   }
+</PRE>
+<P>
+<PRE>   my $dn = $entry-&gt;dn; # Obtain DN of this entry
+ 
+   @attrs = $entry-&gt;attributes; # Obtain attributes for this entry.
+   foreach my $var (@attrs)
+   {
+    #get a list of values for a given attribute
+    $attr = $entry-&gt;get_value( $var, asref =&gt; 1 );
+    if ( defined($attr) )         
+    {          
+      foreach my $value ( @$attr )          
+      {           
+        print &quot;$var: $value\n&quot;;  # Print each value for the attribute.
+      }         
+    }                                                                       
+   }
+   #
+   # For large search requests the following 2 lines of code
+   # may be very important, they will reduce the amount of memory 
+   # used by the search results.
+   #
+   # If the user is not worried about memory useage then the 2 lines
+   # of code can be omitted.
+   #
+   $mesg-&gt;pop_entry;
+ 
+ }  # End of callback subroutine
+</PRE>
+<P>
+As you can see the example is straight forward and it does not waste time
+waiting for all of the entries to be returned. However if the pop_entry
+method is not used the callback approach can allocate a lot of memory to
+the search request.
+
 <P>
 <HR>
 <H1><A NAME="USING_NET_LDAPS">USING NET::LDAPS</A></H1>
@@ -1000,8 +1218,7 @@ relevant to your setup.
 </PRE>
 <P>
 <HR>
-<H2><A NAME="How_do_I_add_a_jpeg_photo_into_a">How do I add a jpeg photo into a entry in the directory
-via html -forms.</A></H2>
+<H2><A NAME="How_do_I_add_a_jpeg_photo_into_a">How do I add a jpeg photo into a entry in the directory via html-forms.</A></H2>
 <P>
 Follow the following code example, replacing the (...) with whatever is
 relevant to your setup. 
@@ -1039,6 +1256,63 @@ relevant to your setup.
 </PRE>
 <P>
 <PRE>  print $q-&gt;end_html();
+</PRE>
+<P>
+<HR>
+<H2><A NAME="What_happens_when_you_delete_an_">What happens when you delete an attribute that does not exist.</A></H2>
+<P>
+It is an error to delete an attribute that doesn't exist. When you get the
+error back the server ignores the entire modify operation you sent it, so
+you need to make sure the error doesn't happen.
+
+<P>
+Another approach, if you are using LDAPv3 (note Net::LDAP does not use
+LDAPv3 by default) is to use a 'replace' with your attribute name and no
+values. In LDAPv3, this is defined to always work even if that attribute
+doesn't exist in the entry.
+
+<P>
+ie:
+
+<P>
+<PRE>  my $mesg = $ldap-&gt;modify( $entry, replace =&gt; { %qv_del_arry } );
+</PRE>
+<P>
+But make sure you are using LDAPv3, because that is defined to *not* work
+in LDAPv2. (A nice incompatibility between LDAPv2 and LDAPv3.)
+
+<P>
+<HR>
+<H2><A NAME="How_can_I_delete_a_referral_from">How can I delete a referral from an LDAP tree.</A></H2>
+<P>
+Since this is a proprietary feature, you will have to check your server's
+documentation. You might find that you need to use a control. If there is a
+control called something like managedsait, that's the one you should
+probably use. For proper operation you will need the oid number for
+managedsait; 2.16.840.1.113730.3.4.2 and do not specify a value for type.
+
+<P>
+The code required will look similar to the following code snippet.
+
+<P>
+<PRE>  $mesg =  $ldap-&gt;delete(&quot;ref=\&quot;ldap://acme/c=us,o=bricks\&quot;,o=clay&quot;,
+                  control =&gt; {type =&gt; &quot;2.16.840.1.113730.3.4.2&quot;} ); 
+</PRE>
+<P>
+<HR>
+<H2><A NAME="How_do_I_add_an_ACI_ACL_entry_to">How do I add an ACI/ACL entry to a directory server with
+Perl-LDAP.</A></H2>
+<P>
+The following code snippet works with a Netscape directory server and
+should work with any other LDAP directory server. You will need the specify
+the correct DN (-DN-) and correct <CODE>attribute(s)</CODE> (-nom attr-).
+
+<P>
+<PRE>  my $aci = '(target=&quot;ldap:///-DN-&quot;)(targetattr=&quot;-nom attr-&quot;)(version 3.0;
+              acl &quot;-nom acl-&quot;; deny(all) userdn = &quot;ldap:///self&quot;;)' ;
+</PRE>
+<P>
+<PRE>  $ldap-&gt;modify($dn_modif, add =&gt; {'aci' =&gt; $aci });
 </PRE>
 <P>
 <HR>
@@ -1255,6 +1529,9 @@ HREF="http://www.nexor.com/info/directory.htm/">http://www.nexor.com/info/direct
 
 
 <P>
+Novell's LDAPzone <A HREF="http://ldapzone.com/">http://ldapzone.com/</A>
+
+<P>
 SUN JAVA JNDI (Java Naming and Directory Interface) <A
 HREF="http://www.java.sun.com/jndi/">http://www.java.sun.com/jndi/</A>
 
@@ -1286,6 +1563,10 @@ Directory Access Protocol. By Tim Howes, Mark Smith. ISBN: 1578700000
 
 <P>
 LDAP Programming with Java. By Rob Weltman, Tony Dahbura. ISBN: 0201657589
+
+<P>
+Solaris and LDAP Naming Services. By Tom Bialaski, Michael Haines. ISBN:
+0-13-030678-9
 
 <P>
 Understanding and Deploying Ldap Directory Services. By Tim Howes, Mark

@@ -11,6 +11,9 @@ Net::LDAP::FAQ - Frequently Asked Questions about Net::LDAP
 This document serves to answer the most frequently asked questions on both the
 perl-ldap Mailing List and those sent to Graham Barr.
 
+The latest version of this FAQ can be found at 
+ http://perl-ldap.sourceforge.net/FAQ.html
+
 =head1 GENERAL
 
 =head2 What is perl-ldap ?
@@ -31,6 +34,13 @@ Perl-ldap is available from CPAN. You will find it in the
 authors/id/GBARR directory. Alternatively you can download
 the latest version from 
  http://www.cpan.org/search?dist=perl-ldap
+
+B<WARNING:>  The perl-ldap module is stored on CPAN as a *.gz file.
+Netscape on Windows systems sometimes has a problem storing the module
+with the correct name, it will replace the *.tar.gz with *_tar.tar.
+To correct the problem, with the pointer on the link, do a right click
+and then select B<save link as> to save the file with the correct file
+name.
 
 =head2 Is there a web page for perl-ldap ?
 
@@ -87,6 +97,13 @@ one continuous line.  Example;
 
  http://download.sourceforge.net/perl-ldap/perl-ldap-0.20.tar.gz
 
+B<WARNING:>  The perl-ldap module is stored on CPAN as a *.gz file.
+Netscape on Windows systems sometimes has a problem storing the module
+with the correct name, it will replace the *.tar.gz with *_tar.tar.
+To correct the problem, with the pointer on the link, do a right click
+and then select B<save link as> to save the file with the correct file
+name.
+
 CVS;
 
 You can download latest version of perl-ldap from SourceForge by 
@@ -105,6 +122,13 @@ home page on sourceforge that points to the latest released
 version of perl-ldap.  Due to the fact that humans must
 update the web page to point to a new release it sometimes does
 not get updated as quickly as it should.
+
+B<WARNING:>  The perl-ldap module is stored on CPAN as a *.gz file.
+Netscape on Windows systems sometimes has a problem storing the module
+with the correct name, it will replace the *.tar.gz with *_tar.tar.
+To correct the problem, with the pointer on the link, do a right click
+and then select B<save link as> to save the file with the correct file
+name.
 
 =head2 What is CVS.
 
@@ -285,6 +309,16 @@ More information on this topic can be found on the following URLs;
 
  http://www.messagingdirect.com/publications/IC-6055.html
 
+=head2 What is the difference between a ldap reference and a ldap referral?
+
+A referral is returned when the B<entire> operation must be resent to
+another server.
+
+A continuation reference is returned when B<part> of the operation must be
+resent to another server.
+
+See RFC 2251 section 4.5.3 for more details.
+
 =head1 PERL-LDAP INSTALLATION
 
 =head2 How do I install perl-ldap ?
@@ -415,11 +449,22 @@ from the server, including the result code.
 
 So, for example, to determine the result of the bind operation.
 
-  $mesg = $ldap->bind( $dn, password => $passwd);
+  $mesg = $ldap->bind( $dn, password => $passwd );
   
   if ( $mesg->code ) {
     # Handle error codes here
   }
+
+=head2 How can I set the ldap version of a connection to my ldap server?
+
+This is done by adding the version option when binding to the ldap
+server.
+
+For example;
+
+  $mesg = $ldap->bind( $dn, password => $passwd, version => 3 );
+
+Valid version numbers are 2 and 3.
 
 =head2 I did a search on my directory using the 'search' method. Where did
 the results go ?
@@ -436,8 +481,9 @@ Consider the following:
                       );
 
 $mesg is a search object container. It is a reference blessed into the
-L<Net::LDAP::Search|Net::LDAP::Search> package. By calling methods on this object
-you can obtain information about the result and also the individual entries.
+L<Net::LDAP::Search|Net::LDAP::Search> package. By calling methods on 
+this object you can obtain information about the result and also the 
+individual entries.
 
 The first thing to check is if the search was successful. This is done with
 with the method $mesg->code. This method will return the status code
@@ -533,6 +579,142 @@ Values for the scope parameter are as follows.
  
  sub   Search the whole tree below the base object.
        This is the default.                                         
+
+=head1 GETTING SEARCH RESULTS
+
+There are two ways of retrieving the results of a requested
+LDAP search; inline and by using a callback subroutine.
+
+=head2 USING THE INLINE APPROACH
+
+Using the inline approach involves requesting the data and
+then waiting for all of the data to be returned before the
+user starts processing the data.
+
+Example: 
+
+ use Net::LDAP;
+
+ $ldap = Net::LDAP->new('ldap.acme.com') or die "$@";
+ $mesg = $ldap->search(
+                       base   => "o=acme.com",
+                       scope  => 'sub',
+                       filter => "sn=smith",
+                      );
+  #
+  # At this point the user can get the returned data as an array
+  # or as a stack.
+  # In this example we will use an array
+
+  # How many entries were returned from the search
+  my $max = $mesg->count; 
+
+  for( my $index = 0 ; $index < $max ; $index++) 
+  {
+    my $entry = $mesg->entry($index);
+    my $dn = $entry->dn; # Obtain DN of this entry
+
+    @attrs = $entry->attributes; # Obtain attributes for this entry.
+    foreach my $var (@attrs)
+    {
+     #get a list of values for a given attribute
+     $attr = $entry->get_value( $var, asref => 1 );
+     if ( defined($attr) )         
+     {          
+         foreach my $value ( @$attr )          
+         {           
+          print "$var: $value\n";  # Print each value for the attribute.
+         }         
+     }                                                                       
+    }
+  }
+
+As you can see the example is straight forward, but there is one
+drawback to this approach.  You must wait until all entries for the
+request search to be returned before you can process the data.  If
+there several thousand entries that match the search filter this 
+could take quite a long time period.
+
+=head2 USING THE CALLBACK SUBROUTINE APPROACH
+
+Using the callback approach involves requesting the data be sent
+to a callback subroutine as each entry arrives at the client.
+
+A callback is just a subroutine that is passed two parameters when
+it is called, the mesg and entry objects.
+
+Example: 
+
+ use Net::LDAP;
+
+ $ldap = Net::LDAP->new('ldap.acme.com') or die "$@";
+ $mesg = $ldap->search(
+                       base   => "o=acme.com",
+                       scope  => 'sub',
+                       filter => "sn=smith",
+                       callback => \&callback,
+                      );
+ #
+ # At this point the user needs to check the status of the
+ # ldap search.
+ # 
+
+ if ( $mesg->code )
+ {
+    $errstr = $mesg->code;
+    print "Error code:  $errstr\n";
+    $errstr = ldap_error_text($errstr);
+    print "$errstr\n";
+ } 
+
+
+ sub callback
+ {
+ my ( $mesg, $entry) = @_;
+
+   #
+   # First you must check to see if something was returned.
+   # Last execution of callback subroutine will have no
+   # defined entry and mesg object
+   #
+   if ( !defined($entry) )
+   {
+     print "No records found matching filter $match.\n"
+     if ($mesg->count == 0) ; # if mesg is not defined nothing will print.
+     return;
+   }
+
+   my $dn = $entry->dn; # Obtain DN of this entry
+ 
+   @attrs = $entry->attributes; # Obtain attributes for this entry.
+   foreach my $var (@attrs)
+   {
+    #get a list of values for a given attribute
+    $attr = $entry->get_value( $var, asref => 1 );
+    if ( defined($attr) )         
+    {          
+      foreach my $value ( @$attr )          
+      {           
+        print "$var: $value\n";  # Print each value for the attribute.
+      }         
+    }                                                                       
+   }
+   #
+   # For large search requests the following 2 lines of code
+   # may be very important, they will reduce the amount of memory 
+   # used by the search results.
+   #
+   # If the user is not worried about memory useage then the 2 lines
+   # of code can be omitted.
+   #
+   $mesg->pop_entry;
+ 
+ }  # End of callback subroutine
+
+As you can see the example is straight forward and it does not waste
+time waiting for all of the entries to be returned.  However if the
+pop_entry method is not used the callback approach can allocate a 
+lot of memory to the search request.
 
 =head1 USING NET::LDAPS
 
@@ -701,8 +883,7 @@ whatever is relevant to your setup.
      $res = $ldap->unbind();
 
 
-=head2 How do I add a jpeg photo into a entry in the directory
-via html -forms.
+=head2 How do I add a jpeg photo into a entry in the directory via html-forms.
 
 Follow the following code example, replacing the (...) with
 whatever is relevant to your setup. 
@@ -735,6 +916,49 @@ whatever is relevant to your setup.
 
   print $q->end_html();
 
+=head2 What happens when you delete an attribute that does not exist.
+
+It is an error to delete an attribute that doesn't exist.  When you 
+get the error back the server ignores the entire modify operation
+you sent it, so you need to make sure the error doesn't happen.
+
+Another approach, if you are using LDAPv3 (note Net::LDAP does not use
+LDAPv3 by default) is to use a 'replace' with your attribute name and no
+values. In LDAPv3, this is defined to always work even if that attribute
+doesn't exist in the entry.
+
+ie:
+
+  my $mesg = $ldap->modify( $entry, replace => { %qv_del_arry } );
+
+But make sure you are using LDAPv3, because that is defined to *not* work
+in LDAPv2. (A nice incompatibility between LDAPv2 and LDAPv3.)
+
+=head2 How can I delete a referral from an LDAP tree.
+
+Since this is a proprietary feature, you will have to check your
+server's documentation. You might find that you need to use a control. If
+there is a control called something like managedsait, that's the one you
+should probably use.  For proper operation you will need the oid number
+for managedsait; 2.16.840.1.113730.3.4.2 and do not specify a value for
+type.
+
+The code required will look similar to the following code snippet.
+
+  $mesg =  $ldap->delete("ref=\"ldap://acme/c=us,o=bricks\",o=clay",
+                  control => {type => "2.16.840.1.113730.3.4.2"} ); 
+
+=head2 How do I add an ACI/ACL entry to a directory server with
+Perl-LDAP.
+
+The following code snippet works with a Netscape directory server and 
+should work with any other LDAP directory server.  You will need the
+specify the correct DN (-DN-) and correct attribute(s) (-nom attr-).
+
+  my $aci = '(target="ldap:///-DN-")(targetattr="-nom attr-")(version 3.0;
+              acl "-nom acl-"; deny(all) userdn = "ldap:///self";)' ;
+
+  $ldap->modify($dn_modif, add => {'aci' => $aci });
 
 =head2 How do I avoid file type and data type miss-matching when loading
 data from a Win32 system.
@@ -908,6 +1132,9 @@ http://developer.netscape.com/directory/
 Nexor's X.500 and Internet Directories
 http://www.nexor.com/info/directory.htm/
 
+Novell's LDAPzone
+http://ldapzone.com/
+
 SUN JAVA JNDI (Java Naming and Directory Interface)
 http://www.java.sun.com/jndi/
 
@@ -935,6 +1162,9 @@ By Tim Howes, Mark Smith.  ISBN:  1578700000
 LDAP Programming with Java. 
 By Rob Weltman, Tony Dahbura.  ISBN:  0201657589
 
+Solaris and LDAP Naming Services.
+By Tom Bialaski, Michael Haines. ISBN:  0-13-030678-9
+
 Understanding and Deploying Ldap Directory Services.
 By Tim Howes, Mark Smith, Gordon Good, Timothy A. Howe
 ISBN:  1578700701
@@ -961,5 +1191,4 @@ distributed, and may be redistributed, under the same terms as Perl itself.
 =for html <hr>
 
 =cut
-
 
