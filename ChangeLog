@@ -1,3 +1,30 @@
+2003-01-27 18:24  Graham Barr
+
+	* lib/Net/LDAP.pm:
+
+	Release 0.2701
+	
+2003-01-27 17:46  Clif Harden
+
+	* contrib/tklkup:
+
+	
+	Corrected default numbers for gui height and width.
+	Corrected error in gui height and width geometry initialization.
+	
+2003-01-27 17:43  Clif Harden
+
+	* contrib/dot.tklkup:
+
+	
+	Corrected default numbers for width and height.
+	
+2003-01-27 16:33  Graham Barr
+
+	* RELEASE_NOTES, lib/Net/LDAP.pm:
+
+	Release 0.27
+	
 2003-01-27 14:19  Graham Barr
 
 	* lib/Net/LDAP.pod:
