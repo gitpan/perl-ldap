@@ -222,6 +222,19 @@ For example:
 is not permitted by the directory, because jpegPhotos may only contain
 JPEG-formatted images.
 
+Most syntaxes used in LDAP however describe text strings rather than
+binary objects (like JPEGs or certificates.)
+
+In LDAPv3 most of these syntaxes support Unicode encoded using
+UTF-8. Because the Net::LDAP modules do not change the strings that
+you pass in as attribute values (they get sent to the LDAP server
+as-is) to use accented characters you simply need to encode your
+strings in UTF-8. There are modules on CPAN that will help you here.
+
+Note that LDAPv2 servers used something called T.61 instead of Unicode
+and UTF-8. Most servers do not implement T.61 correctly, and it is
+recommended that you use LDAPv3 instead.
+
 Attributes may also be searched.  The algorithms used to perform
 different kinds of searches are described by the attribute's 'matching
 rules'.  Some matching rules are case-sensitive and some are
@@ -988,7 +1001,7 @@ whatever is relevant to your setup.
   local $/ = undef;
   my $jpeg = <$filename>;
 
-  my $ldap = new Net::LDAP(...);
+  my $ldap = Net::LDAP->new(...);
   my $res = $ldap->bind(...);
      $res = $ldap->modify(...,
                    add => [ 'jpegPhoto' => [ $jpeg ] ]);
@@ -1014,7 +1027,7 @@ whatever is relevant to your setup.
           local $/ = undef;
           my $jpeg = <$filename>;
 
-          my $ldap = new Net::LDAP(...);
+          my $ldap = Net::LDAP->new(...);
           my $res = $ldap->bind(...);
           $res = $ldap->modify(...,
                           add => [ 'jpegPhoto' => [ $jpeg ] ]);
@@ -1093,7 +1106,7 @@ This code works with ActiveState Perl running on WinNT 4. Please note that
 this requires the Win32::Perms module, and needs valid NT account info to
 replace the placeholders. 
 
-  use Net::LDAP qw(:all);
+  use Net::LDAP;
   use Net::LDAP::Util;
   use Win32::Perms;
 
@@ -1113,7 +1126,7 @@ replace the placeholders.
   $ADS_RIGHT_EXCH_MAIL_SEND_AS |
   $ADS_RIGHT_EXCH_MODIFY_USER_ATT;
 
-  $exch = new Net::LDAP('server', debug =>0) || die $@;
+  $exch = Net::LDAP->new('server', debug =>0) || die $@;
 
   $exch->bind( 'cn=admin_user,cn=nt_domain,cn=admin', version =>3,
   password=>'password');

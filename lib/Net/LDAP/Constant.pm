@@ -4,7 +4,7 @@
 
 package Net::LDAP::Constant;
 
-$VERSION = "0.01";
+$VERSION = "0.02";
 
 use Carp;
 
@@ -15,7 +15,8 @@ sub import {
   my $callpkg = caller(0);
   _find(@_);
   my $oops;
-  foreach my $sym (@_) {
+  my $all = grep /:all/, @_;
+  foreach my $sym ($all ? keys %const : @_) {
     if (my $sub = $const{$sym}) {
       *{$callpkg . "::$sym"} = $sub;
     }
@@ -30,11 +31,12 @@ sub import {
 sub _find {
   if (my @need = grep { ! $const{$_} } @_) {
     my %need; @need{@need} = ();
+    my $all = exists $need{':all'};
     seek(DATA,0,0);
     local $/=''; # paragraph mode
     local $_;
     while(<DATA>) {
-      next unless /^=item\s+(LDAP_\S+)\s+\((.*)\)/ and exists $need{$1};
+      next unless /^=item\s+(LDAP_\S+)\s+\((.*)\)/ and ($all or exists $need{$1});
       my ($name, $value) = ($1,$2);
       delete $need{$name};
       $const{$name} = sub () { $value };
@@ -53,12 +55,12 @@ sub AUTOLOAD {
 }
 
 # These subs are really in Net::LDAP::Util, but need to access <DATA>
-# so its esier for them to be here.
+# so its easier for them to be here.
 
 my @err2name;
 
 sub Net::LDAP::Util::ldap_error_name {
-  my $code = 0 + shift;
+  my $code = 0 + (ref($_[0]) ? $_[0]->code : $_[0]);
 
   unless (@err2name) {
     seek(DATA,0,0);
@@ -76,7 +78,7 @@ sub Net::LDAP::Util::ldap_error_name {
 
 
 sub Net::LDAP::Util::ldap_error_text {
-  my $code = 0 + shift;
+  my $code = 0 + (ref($_[0]) ? $_[0]->code : $_[0]);
   my $text;
 
   seek(DATA,0,0);
@@ -500,6 +502,6 @@ terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: Constant.pm,v 1.7 2003/05/08 12:53:08 gbarr Exp $>
+I<$Id: Constant.pm,v 1.9 2003/06/02 15:13:10 gbarr Exp $>
 
 =cut
