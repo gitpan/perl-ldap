@@ -77,8 +77,10 @@ Timeout passed to L<IO::Socket|IO::Socket> when connecting the remote server.
 If passed a non-zero value then debug data will be sent to C<STDERR>. The
 bits of this value are :-
 
- 1   Show outgoing packets.
- 2   Show incoming packets.
+ 1   Show outgoing packets (using asn_hexdump).
+ 2   Show incoming packets (using asn_hexdump).
+ 4   Show outgoing packets (using asn_dump).
+ 8   Show incoming packets (using asn_dump).
 
 =item async
 
@@ -624,7 +626,7 @@ of the ldap* command line utilities.
 Graham Barr <gbarr@pobox.com>
 
 Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-<perl-ldap@mail.med.cornell.edu>
+<perl-ldap-dev@lists.sourceforge.net>
 
 =head1 COPYRIGHT
 

@@ -452,7 +452,7 @@ All rights to this document are hereby relinquished to Graham Barr.
 
 =for html <hr>
 
-I<$Id: //depot/ldap-asn/lib/Net/LDAP/Examples.pod#3 $>
+I<$Id$>
 
 =cut
 

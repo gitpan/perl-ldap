@@ -114,8 +114,10 @@ Timeout passed to <A HREF="../IO/Socket.html">IO::Socket</A> when connecting the
 If passed a non-zero value then debug data will be sent to <CODE>STDERR</CODE>. The
 bits of this value are :-
 <PRE>
- 1   Show outgoing packets.
- 2   Show incoming packets.</PRE>
+ 1   Show outgoing packets (using asn_hexdump).
+ 2   Show incoming packets (using asn_hexdump).
+ 4   Show outgoing packets (using asn_dump).
+ 8   Show incoming packets (using asn_dump).</PRE>
 <P></P>
 <DT><STRONG><A NAME="item_async">async</A></STRONG><BR>
 <DD>
@@ -599,7 +601,7 @@ of the ldap* command line utilities.</P>
 <H1><A NAME="author">AUTHOR</A></H1>
 <P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;</P>
 <P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-&lt;<A HREF="mailto:perl-ldap@mail.med.cornell.edu">perl-ldap@mail.med.cornell.edu</A>&gt;</P>
+&lt;<A HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;</P>
 <P>
 <HR>
 <H1><A NAME="copyright">COPYRIGHT</A></H1>

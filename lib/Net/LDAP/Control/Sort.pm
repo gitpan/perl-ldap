@@ -1,4 +1,4 @@
-# $Id: //depot/ldap/lib/Net/LDAP/Control/Sort.pm#2 $
+# $Id: //depot/ldap/lib/Net/LDAP/Control/Sort.pm#3 $
 # Copyright (c) 1999-2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
@@ -183,7 +183,7 @@ L<Net::LDAP::Control|Net::LDAP::Control>
 Graham Barr <gbarr@pobox.com>
 
 Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-<perl-ldap@mail.med.cornell.edu>
+<perl-ldap-dev@lists.sourceforge.net>
 
 =head1 COPYRIGHT
 
@@ -193,6 +193,6 @@ terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: //depot/ldap/lib/Net/LDAP/Control/Sort.pm#2 $>
+I<$Id: //depot/ldap/lib/Net/LDAP/Control/Sort.pm#3 $>
 
 =cut

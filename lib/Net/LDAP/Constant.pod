@@ -332,7 +332,7 @@ L<Net::LDAP::Message|Net::LDAP::Message>
 Graham Barr <gbarr@pobox.com>
 
 Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-<perl-ldap@mail.med.cornell.edu>
+<perl-ldap-dev@lists.sourceforge.net>
 
 =head1 COPYRIGHT
 

@@ -108,7 +108,7 @@ terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: //depot/ldap-asn/lib/Net/LDAP/Util.pm#3 $>
+I<$Id$>
 
 =cut
 

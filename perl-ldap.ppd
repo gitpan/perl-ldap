@@ -1,4 +1,4 @@
-<SOFTPKG NAME="perl-ldap" VERSION="0,16,0,0">
+<SOFTPKG NAME="perl-ldap" VERSION="0,17,0,0">
 	<TITLE>perl-ldap</TITLE>
 	<ABSTRACT>LDAP Client library</ABSTRACT>
 	<AUTHOR>Graham Barr &lt;gbarr@pobox.com&gt;</AUTHOR>

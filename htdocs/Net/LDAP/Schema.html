@@ -76,6 +76,11 @@ Returns a list of the names of all objectclasses in the schema.
   @ocs = $schema-&gt;objectclasses();</PRE>
 <P>Return value is an array or array reference depending on calling context.</P>
 <P></P>
+<DT><STRONG><A NAME="item_superclass">superclass</A></STRONG><BR>
+<DD>
+Given an argument which is the name or oid of a known objectclass, returns
+the list of names of the immediate superclasses.
+<P></P>
 <DT><STRONG><A NAME="item_syntaxes">syntaxes</A></STRONG><BR>
 <DD>
 Returns a list of the names of all objectclasses in the schema. (The name of
@@ -137,14 +142,14 @@ the appropriate type.
 <P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;
 John Berthels &lt;<A HREF="mailto:jjb@nexor.co.uk">jjb@nexor.co.uk</A>&gt;</P>
 <P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-&lt;<A HREF="mailto:perl-ldap@mail.med.cornell.edu">perl-ldap@mail.med.cornell.edu</A>&gt;.</P>
+&lt;<A HREF="mailto:perl-ldap-dev@lists.sourceforge.net">perl-ldap-dev@lists.sourceforge.net</A>&gt;.</P>
 <P>
 <HR>
 <H1><A NAME="copyright">COPYRIGHT</A></H1>
 <P>Copyright (c) 1998-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.</P>
-<hr><P><EM>$Id: //depot/ldap-asn/lib/Net/LDAP/Schema.pod#3 $</EM></P>
+<hr><P><EM>$Id$</EM></P>
 
 </BODY>
 

@@ -55,6 +55,11 @@ Returns a list of the names of all objectclasses in the schema.
 
 Return value is an array or array reference depending on calling context.
 
+=item superclass
+
+Given an argument which is the name or oid of a known objectclass, returns
+the list of names of the immediate superclasses.
+
 =item syntaxes
 
 Returns a list of the names of all objectclasses in the schema. (The name of
@@ -121,7 +126,7 @@ Graham Barr <gbarr@pobox.com>
 John Berthels <jjb@nexor.co.uk>
 
 Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-<perl-ldap@mail.med.cornell.edu>.
+<perl-ldap-dev@lists.sourceforge.net>.
 
 =head1 COPYRIGHT
 
@@ -131,6 +136,6 @@ terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: //depot/ldap-asn/lib/Net/LDAP/Schema.pod#3 $>
+I<$Id$>
 
 =cut
