@@ -1,4 +1,4 @@
-# Copyright (c) 1998-1999 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# Copyright (c) 1998-2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
@@ -7,7 +7,7 @@ package Net::LDAP::Schema;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = "0.02";
+$VERSION = "0.04";
 
 #
 # Get schema from the server (or read from LDIF) and parse it into 
@@ -30,9 +30,13 @@ sub new {
     require Net::LDAP::LDIF;
     my $ldif = Net::LDAP::LDIF->new( $arg, "r" );
     $entry = $ldif->read();
+    unless( $entry ) {
+      warn( "Cannot parse LDIF from file [$arg]" );
+      return undef;
+    }
   }
   else {
-    # XXX - Throw error?
+    warn( "Can't load schema" );
     return undef;
   }
   
@@ -103,7 +107,7 @@ sub objectclasses {
   return wantarray() ? @$res : $res;
 }
 
-# Return all syntaxes (or the syntax of a particular attribute)
+# Return all syntaxes
 
 sub syntaxes {
   my $self = shift;
@@ -138,25 +142,24 @@ sub syntax
 sub must
 {
   my $self = shift;
-  $self->must_or_may( "must", @_ );
+  $self->_must_or_may( "must", @_ );
 }
 
 sub may
 {
   my $self = shift;
-  $self->must_or_may( "may", @_ );
+  $self->_must_or_may( "may", @_ );
 }
 
 #
 # Return must or may attributes for this OC. [As array or array ref]
 # return empty array/undef on error
 #
-sub must_or_may
+sub _must_or_may
 {
   my $self = shift;
   my $must_or_may = shift;
   my @oc = shift;
-
   my %res = ();		# Use hash to get uniqueness
   
   #
@@ -195,12 +198,67 @@ sub name
 
 
 #
+# Return the value of an item, e.g. 'desc'. If item is array ref and we
+# are called from array context, return an array, else scalar
+#
+sub item
+{
+  my $self = shift;
+  my $arg = shift;
+  my $item_name = shift;	# May be undef. If so all are returned
+
+  my $oid = $self->name2oid( $arg );
+  goto ERROR unless $oid;
+
+  my $item_ref = $self->{oid}->{$oid};
+  goto ERROR unless $item_ref;
+
+  my $value = $item_ref->{$item_name};
+  goto ERROR unless $value;
+
+  if( ref $value eq "ARRAY" && wantarray() ) {
+    return @$value;
+  }
+  else {
+    return $value;
+  }
+
+ ERROR:
+  return wantarray() ? () : undef;
+}
+
+#
+# Return a list of items for a particular name or oid
+#
+# BUG:Dumps internal representation rather than real info. E.g. shows
+# the alias/name distinction we create and the 'type' field.
+#
+sub items
+{
+  my $self = shift;
+  my $arg = shift;
+
+  my $oid = $self->name2oid( $arg );
+  goto ERROR unless $oid;
+
+  my $item_ref = $self->{oid}->{$oid};
+  goto ERROR unless $item_ref;
+
+  my @items = keys %$item_ref;
+  return wantarray() ? @items : \@items;
+  
+ ERROR:
+  return wantarray() ? () : undef;
+}
+
+#
 # Given a name, alias or oid, return oid or undef. Undef if not known.
 #
 sub name2oid
 {
   my $self = shift;
   my $name = lc shift;
+  return undef unless $name;
   return $name if exists $self->{oid}->{$name};	# Already an oid
   my $oid = $self->{name}->{$name} || $self->{aliases}->{$name};
   return $oid;
@@ -214,6 +272,7 @@ sub oid2name
 {
   my $self = shift;
   my $oid = shift;
+  return undef unless $oid;
   return undef unless $self->{oid}->{$oid};
   return $self->{oid}->{$oid}->{name};
 }
@@ -236,7 +295,7 @@ sub is_objectclass
 sub is_syntax
 {
   my $self = shift;
-  return $self->_is_type( "oc", @_ );
+  return $self->_is_type( "syn", @_ );
 }
 
 # --------------------------------------------------
@@ -350,9 +409,9 @@ sub _parse_item
   if( $value =~ s/^\s*\(// ) {   	# Strip bracket as well as detecting
     $item_value = [];
     my $one_val;
-    while( ! ($value =~ s/^\s*\)//) ) {	# Until we hit end
+    while( ! ($value =~ s/^\s*\)// ) ) {       	# Until we hit end bracket
       ( $one_val, $value ) = _get_one_word( $value );
-      next if $one_val =~ /^\$$/;		# Drop dollars
+      next if $one_val eq "\$";			# Drop dollars
       push @$item_value, $one_val;
     }
   }
@@ -367,17 +426,41 @@ sub _parse_item
 }
 
 #
-# For some definition of 'word', get one from the front of the value.
-# Ignore leading whitespace and commas. Words may be quoted using single
-# or double quotes. For simplicity, we don't support escaping quotes.
+# 'Word' rules.
+#
+# - leading commas and w/s are discarded
+# - We need to allow a 'word' to be enclosed in single or double quotes.
+# - Such quotes may be used to embed w/s in the word
+# (mixed quotes are unlikely to work)
+# - Such quotes are stripped from the return value
+# - A word ends in whitespace or close bracket
+# [Note: RFC does not require this but MS Exchange does]
+# - an open or close parens is left in the value and dealt with by the caller
+# (yuck)
+#
+# Note: escaped quotes, escaped w/s and mixed quotes aren't supported.
+# Life is hard enough.
 #
 sub _get_one_word
 {
   my $value = shift;
-  my $word;
 
-  ( $word, $value ) = $value =~ /^\s*,?\s*["' ]?([^"' ]+)["' ]?\s*,?\s*(.*)$/;
+#  ( $word, $value ) = $value =~ /^\s*,?\s*["' ]?([^"' ]+)["' ]?\s*,?\s*(.*)$/;
+  my $word = "";	# Return value
+  my $token;		# Chunk at a time
+  my @quotes;
 
+  do {
+    ( $token, $value ) = $value =~ /^[\s,]*(["']?[^"'\s()]+["']?[,\s]*)(.*)$/;
+    die( "Failed to parse token from value [$value]" ) unless $token;
+    $word .= $token;
+    @quotes = $word =~ /(["'])/g; 		# broken emacs '"])/;
+  }
+  while( @quotes &1 );				# Until even num of quotes
+
+  # Clean up word & return
+  $word =~ s/^["'\s]*//;
+  $word =~ s/['"\s]*$//;
   return ( $word, $value );
 }
 
@@ -393,8 +476,16 @@ sub _parse_value
   my $oid;
   
   $value =~ s/^\s*\(\s*//;		# Be forgiving about leading bracket
-  ( $oid, $value ) = $value =~ /([0-9.]+)\s+(.*)$/;
   
+  #
+  # Netscape doesn't always use numeric OIDs. Bad Netscape.
+  #
+#  ( $oid, $value ) = $value =~ /([0-9.]+)\s+(.*)$/;
+  ( $oid, $value ) = _get_one_word( $value );
+  $oid = lc $oid;
+#  unless( $oid && $oid =~ /^[0-9.]+$/ ) {
+#    warn( "Non-numeric OID [$oid]" );
+#  }
   return undef unless $oid;
   $schema_entry->{oid} = $oid;
 
@@ -402,7 +493,10 @@ sub _parse_value
     my ( $item_name, $item_value );
     ( $item_name, $item_value, $value ) = _parse_item( $value );
     $value =~ s/^\s*\)\s*// if $value;	# Eat trailing bracket if it is there
-    next unless $item_name;
+    unless( $item_name ) {
+      warn( "Failed to parse item [$value]" );
+      next;
+    }
     $schema_entry->{$item_name} = $item_value;
   }
 
@@ -430,24 +524,32 @@ sub _parse_schema {
     my $attr = $type2attr{$type};
 
     my $vals = $entry->get($attr);
-    next unless $vals;
 
     my @names;
+    $schema->{$type} = \@names;		# Save reference to list of names
+
+    next unless $vals;			# Just leave empty ref if nothing
+
     foreach my $val (@$vals) {
       #
       # We assume that each value can be turned into an OID, a canonical
       # name and a 'schema_entry' which is a hash ref containing the items
       # present in the value.
       #
-#	  print "Parsing value [$val]\n";
       my $schema_entry = _parse_value( $val );
-      next unless $schema_entry;
+      unless( $schema_entry ) {
+	warn( "Unable to parse value [$val]" );
+	next;
+      }
       my $oid = $schema_entry->{oid};
 
       #
       # We digest the raw parsed schema - throw away if we cannot fix it up
       #
-      next unless _fixup_entry( $schema_entry, $type );
+      unless( _fixup_entry( $schema_entry, $type ) ) {
+	warn( "Something wrong with schema entry - can't fixup [$val]" );
+	next;
+      }
       $schema_entry->{type} = $type;			# Remember type
 
       #
@@ -459,15 +561,13 @@ sub _parse_schema {
       # 4 - a (lower-cased) alias -> OID map
       #
       $schema->{oid}->{$oid} = $schema_entry;
-      my $name = $schema_entry->{name};
-      push @names, $name;
-      $schema->{name}->{lc $name} = $oid;
-      foreach my $alias ( $schema_entry->{aliases} ) {
+      my $uc_name = $schema_entry->{name};
+      push @names, $uc_name;
+      $schema->{name}->{lc $uc_name} = $oid;
+      foreach my $alias ( @{$schema_entry->{aliases}} ) {
 	$schema->{aliases}->{lc $alias} = $oid;
       }
     }
-
-    $schema->{$type} = \@names;		# Save reference to list of names
   }
 
   #
@@ -496,7 +596,7 @@ sub _fixup_entry
   foreach my $item_type ( qw( name must may ) ) {
     my $item = $schema_entry->{$item_type};
     if( $item && !ref $item ) {
-      $schema_entry->{$item_type} = [ $item ]
+      $schema_entry->{$item_type} = [ $item ];
 	}
   }
 
@@ -533,7 +633,7 @@ sub _fixup_entry
   # Force a name if we don't have one
   #
   unless( exists $schema_entry->{name} ) {
-    $schema_entry->{name} = "$type:$schema_entry->{oid}";
+    $schema_entry->{name} = [ "$type:$schema_entry->{oid}" ];
   }
   #
   # Now make 'name' be the first listed name, demote the others to aliases

@@ -1,7 +1,7 @@
 BEGIN {
 
   # Set this to the path to where you have slapd
-  $SLAPD    = "../../openldap/ldap/servers/slapd/slapd";
+  $SLAPD    = $ENV{SLAPD_EXE} || "../../openldap/ldap/servers/slapd/slapd";
 
   # If your host cannot be contacted as localhost, change this
   $HOST     = 'localhost';

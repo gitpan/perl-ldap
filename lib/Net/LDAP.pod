@@ -465,8 +465,19 @@ object.
 
 =item attrs
 
-A reference to a list of attributes to be returned from the server. If not
-specified then all attributes will be returned.
+A reference to a list of attributes to be returned from the
+server. If not specified, then the server will return the
+attributes that are specified as accessible by default given
+your bind credentials.
+
+Certain additional attributes such as "createtimestamp" and
+other operational attributes may also be available for the asking:
+
+  $ldap->search( ... , attrs => ['createtimestamp'] , ... );
+
+To retreive the default attributes and additional ones, use '*'.
+
+  $ldap->search( ... , attrs => ['*', 'createtimestamp'] , ... );
 
 =item control
 
@@ -644,7 +655,7 @@ F<L<E<lt>perl-ldap@mail.med.cornell.eduE<gt>|mailto:perl-ldap@mail.med.cornell.e
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997-1999 Graham Barr. All rights reserved. This program is
+Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
 

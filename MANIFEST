@@ -30,10 +30,12 @@ data/51d-cmp.ldif
 data/52-cmp.ldif
 data/52-in.ldif
 data/52-mod.ldif
+data/schema.in
 data/slapd-conf.in
 data/slapd.at.conf
 data/slapd.oc.conf
 lib/Authen/SASL.pm
+lib/Authen/SASL.pod
 lib/Authen/SASL/CRAM_MD5.pm
 lib/LWP/Protocol/ldap.pm
 lib/Net/LDAP.pm
@@ -57,7 +59,7 @@ lib/Net/LDAP/Message.pm
 lib/Net/LDAP/Message.pod
 lib/Net/LDAP/Reference.pod
 lib/Net/LDAP/Schema.pm
-lib/Net/LDAP/Schema/oid7.pm
+lib/Net/LDAP/Schema.pod
 lib/Net/LDAP/Search.pm
 lib/Net/LDAP/Search.pod
 lib/Net/LDAP/Util.pm
@@ -67,4 +69,5 @@ t/02filter.t
 t/50populate.t
 t/51search.t
 t/52modify.t
+t/53schema.t
 t/common.pl

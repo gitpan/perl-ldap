@@ -1,4 +1,4 @@
-# Copyright (c) 1997-8 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# Copyright (c) 1999-2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
@@ -10,12 +10,12 @@ $VERSION = "0.01";
 
 my %Registry = (
   LDAP_CONTROL_SORTREQUEST, 'Net::LDAP::Control::sort',
+  LDAP_CONTROL_VLVREQUEST,  'Net::LDAP::Control::vlvrequest',
 
   #LDAP_CONTROL_MANAGEDSAIT      
   #LDAP_CONTROL_SORTRESPONSE     
   #LDAP_CONTROL_PERSISTENTSEARCH 
   #LDAP_CONTROL_ENTRYCHANGE      
-  #LDAP_CONTROL_VLVREQUEST       
   #LDAP_CONTROL_VLVRESPONSE      
   #
   #LDAP_CONTROL_PWEXPIRED        
@@ -38,7 +38,12 @@ sub new {
   my $oid = shift if @_ & 1;
   my %args = @_;
 
-  $args{'type'} ||= $oid || $Registry_r{$pkg};
+  $args{'type'} ||= $oid || $Registry_r{$pkg} || '';
+
+  unless ($args{'type'} =~ /^\d+(?:\.\d+)+$/) {
+    $args{'error'} = 'Invalid OID';
+    return bless \%args;
+  }
 
   if ($pkg eq __PACKAGE__ && exists $Registry{$args{'type'}}) {
     $pkg = $Registry{$args{'type'}};
@@ -48,32 +53,36 @@ sub new {
   my $obj = bless \%args, $pkg;
   
   $obj->init;
-
-  $obj;
 }
 
-sub init {}
+sub error { shift->{'error'} }
+sub valid { ! exists shift->{'error'} }
+
+sub init { shift }
 
 sub decode {
   my($class,$data) = @_;
-  my $self = bless {}, $class;
+  my %hash;
 
-  Net::LDAP::BER->new($data)->decode(
+  ( ref($data)
+    ? $data
+    : Net::LDAP::BER->new($data)
+  )->decode(
     SEQUENCE => [
-      STRING   => \($self->{'type'}),
+      STRING   => \($hash{'type'}),
       OPTIONAL => [
-        BOOLEAN  => \($self->{'critical'}),
+        BOOLEAN  => \($hash{'critical'}),
       ],
       OPTIONAL => [
-        STRING => sub { \($self->{'value'}) }
+        STRING => sub { \($hash{'value'}) }
       ],
     ]
   ) or return undef;
 
-  bless $self, $Resgistry{$self->{'type'}}
-    if (exists $Resgistry{$self->{'type'}});
+  $class = $Resgistry{$self->{'type'}}
+    if ($class eq __PACKAGE__ && exists $Resgistry{$self->{'type'}});
   
-  $self;
+  bless \%hash, $class;
 }
 
 sub type     { shift->{'type'} }

@@ -1,3 +1,53 @@
+Change 392 on 2000/03/21 by <gbarr@pobox.com> (Graham Barr)
+
+	Remove Net::LDAP::Schema::oid7 as it is not used
+
+Change 391 on 2000/03/21 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Schema update from John Berthels <jjb@berthels.uklinux.net>
+
+Change 390 on 2000/03/21 by <gbarr@pobox.com> (Graham Barr)
+
+	- Added Net::LDAP::Examples POD from Russell Biggs F<rgb@ticnet.com>
+	- Fixed warnings from Net::LDAP::FAQ POD
+
+Change 389 on 2000/03/21 by <gbarr@pobox.com> (Graham Barr)
+
+	- Added missing files from MANIFGEST needed for schema testing
+	- allow ->async method to change async mode
+
+Change 363 on 2000/02/28 by <gbarr@pobox.com> (Graham Barr)
+
+	- Add docs for Net::LDAP::Schema
+	- Fix dates in Copyrights
+	- Ensure all pods refer to the mailing list
+
+Change 362 on 2000/02/25 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Schema
+	- fix typo
+
+Change 359 on 2000/02/15 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Control
+	- Add some error checking
+
+Change 358 on 2000/02/15 by <gbarr@pobox.com> (Graham Barr)
+
+	More changes for controls
+
+Change 357 on 2000/02/14 by <gbarr@pobox.com> (Graham Barr)
+
+	Extract controls from BER packet
+
+Change 356 on 2000/02/14 by <gbarr@pobox.com> (Graham Barr)
+
+	Add tests for new Schema module
+
+Change 355 on 2000/02/14 by <gbarr@pobox.com> (Graham Barr)
+
+	Release 0.14
+
 Change 354 on 2000/02/14 by <gbarr@pobox.com> (Graham Barr)
 
 	Authen::SASL

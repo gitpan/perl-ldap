@@ -1,4 +1,4 @@
-# Copyright (c) 1998-1999 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# Copyright (c) 1999-2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
@@ -100,7 +100,7 @@ Graham Barr E<lt>F<gbarr@pobox.com>E<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 Graham Barr. All rights reserved. This program is
+Copyright (c) 1999-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
 

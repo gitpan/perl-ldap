@@ -1,4 +1,4 @@
-# Copyright (c) 1998-1999 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# Copyright (c) 1997-2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
@@ -18,6 +18,7 @@ Net::LDAP::BER->define(
   ########################################
 
   [ LDAPDN	      => $STRING,   undef ],
+  [ LDAPOID	      => $STRING,   undef ],
 
   [ REQ_BIND	      => $SEQUENCE,    BER_APPLICATION | BER_CONSTRUCTOR | 0x00 ],
   [ REQ_UNBIND	      => $NULL,        BER_APPLICATION  		 | 0x02 ],
@@ -70,7 +71,7 @@ Net::LDAP::BER->define(
   [ EXTENSIBLE_VALUE  => $STRING,      BER_CONTEXT			 | 0x03 ],
   [ EXTENSIBLE_DN     => $BOOLEAN,     BER_CONTEXT			 | 0x04 ],
 
-  [ LDAP_CONTROLS     => $SEQUENCE_OF, BER_CONTEXT     | BER_CONSTRUCTOR | 0x00 ],
+  [ LDAP_CONTROLS     => $SEQUENCE,    BER_CONTEXT     | BER_CONSTRUCTOR | 0x00 ],
   [ LDAP_REFERRAL     => $SEQUENCE,    BER_CONTEXT     | BER_CONSTRUCTOR | 0x03 ],
 
   [ EXTEND_REQ_NAME   => $STRING,      BER_CONTEXT                       | 0x00 ],

@@ -11,29 +11,27 @@ Net::LDAP::FAQ - Frequently Asked Questions about Net::LDAP
 This document serves to answer the most frequently asked questions on both the
 perl-ldap Mailing List and personally to me.
 
-=head1 QUESTIONS & ANSWERS
+=head1 General
 
-=head2 General
-
-=head3 What is perl-ldap ?
+=head2 What is perl-ldap ?
 
 perl-ldap is the distribution name. The perl-ldap distribution contains
 the Net::LDAP modules.
 
-=head3 Why another perl LDAP implementation ?
+=head2 Why another perl LDAP implementation ?
 
 perl-ldap's goal is to be as portable as possible. It does this by
 being implemented completely in perl. So basically anywhere that perl
 runs perl-ldap will run. This is not true for other implementations
 which require a C compiler.
 
-=head3 Where can I get it ?
+=head2 Where can I get it ?
 
 perl-ldap is available from CPAN. You will find it in the
 authors/id/GBARR directory. Alternatively you can download
 the latest version from http://www.cpan.org/search?dist=perl-ldap
 
-=head3 Is there a mailing list ?
+=head2 Is there a mailing list ?
 
 Yes there is at perl-ldap@mail.med.cornell.edu
 
@@ -43,24 +41,24 @@ of a message to perl-ldap-request@mail.med.cornell.edu
 If you want to unsubscribe, send a message with the word unsubscribe
 in the body to the same address
 
-=head3 Is the mailing list archived ?
+=head2 Is the mailing list archived ?
 
 There is an archive of the perl-ldap mailing list at
 http://www.xray.mpe.mpg.de/mailing-lists/perl-ldap/
 
-=head3 Is there any online documentation ?
+=head2 Is there any online documentation ?
 
 Yes. perl-ldap has a web page at http://www.pobox.com/~gbarr/perl-ldap
 which will have the latest documentation available.
 
-=head3 Is there a public CVS repository ?
+=head2 Is there a public CVS repository ?
 
 No, not right now. But there may be in the future.
 
 
-=head2 Installation
+=head1 Installation
 
-=head3 How do I install perl-ldap ?
+=head2 How do I install perl-ldap ?
 
 To install the modules that are in the perl-ldap distribution follow the
 same steps that you would for most other distributions found on CPAN, that
@@ -77,7 +75,7 @@ is
    make test
    make install
 
-=head3 But I do not have make, how can I install perl-ldap ?
+=head2 But I do not have make, how can I install perl-ldap ?
 
 Well as luck would have it the modules in perl-ldap do not do anything
 complex, so a simple copy is enough to install. First run
@@ -109,7 +107,7 @@ can then be installed with
    cp * /usr/local/perl/perl5.005/lib/site_perl/5.005
 
 
-=head3 What other modules will I need ?
+=head2 What other modules will I need ?
 
 perl-ldap does use other modules. Some are required, but some are
 optional (ie required to use certain features)
@@ -143,21 +141,21 @@ http://search.cpan.org/search?module=URI::ldap
 
 =back
 
-=head2 Using Net::LDAP
+=head1 Using Net::LDAP
 
-=head3 How do I connect to my server ?
+=head2 How do I connect to my server ?
 
 The connection to the server is created when you create a new Net::LDAP
 object, e.g.
 
   $ldap = Net::LDAP->new($server);
 
-=head3 Net::LDAP->new sometimes returns undef, why ?
+=head2 Net::LDAP->new sometimes returns undef, why ?
 
 The constructor will return undef if there was a problem connecting
 to the specified server. Any error message will be available in $@
 
-=head3 How can I tell when the server returns an error, bind() always returns
+=head2 How can I tell when the server returns an error, bind() always returns
 true ?
 
 Most methods in Net::LDAP return a L<Net::LDAP::Message> object, or a sub-class
@@ -172,7 +170,7 @@ So, for example, to determine the result of the bind operation.
     # Handle error codes here
   }
 
-=head3 I did a search on my directory using the 'search' method. Where did
+=head2 I did a search on my directory using the 'search' method. Where did
 the results go ?
 
 Your search results are stored in a 'search object' container.
@@ -265,9 +263,12 @@ can do
 
 Graham Barr <gbarr@pobox.com>
 
+Please report any bugs, or post any suggestions, to the perl-ldap mailing list
+F<L<E<lt>perl-ldap@mail.med.cornell.eduE<gt>|mailto:perl-ldap@mail.med.cornell.edu>>.
+
 =head1 COPYRIGHT
 
-Copyright (c) 1999 Graham Barr. All rights reserved. This document is
+Copyright (c) 1999-2000 Graham Barr. All rights reserved. This document is
 distributed, and may be redistributed, under the same terms as Perl itself.
 
 =cut

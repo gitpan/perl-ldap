@@ -332,9 +332,12 @@ L<Net::LDAP>, L<Net::LDAP::Message>
 
 Graham Barr E<lt>F<gbarr@pobox.com>E<gt>
 
+Please report any bugs, or post any suggestions, to the perl-ldap mailing list
+F<L<E<lt>perl-ldap@mail.med.cornell.eduE<gt>|mailto:perl-ldap@mail.med.cornell.edu>>.
+
 =head1 COPYRIGHT
 
-Copyright (c) 1998-1999 Graham Barr. All rights reserved. This program is
+Copyright (c) 1998-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
 

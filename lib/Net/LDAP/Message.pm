@@ -1,4 +1,4 @@
-# Copyright (c) 1998-1999 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# Copyright (c) 1997-2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
@@ -120,7 +120,7 @@ sub decode {
   my $self = shift;
   my $ber = shift;
 
-  my($code,$dn,$error, $count, $referral);
+  my($code,$dn,$error, $count, $referral, @ctrl);
 
   $ber->decode(
     $self->result_tag => [
@@ -132,6 +132,13 @@ sub decode {
           STRING => $referral = []
         ]
       ]
+    ],
+    OPTIONAL => [
+      LDAP_CONTROLS => [
+        # each is a sequence, but we want to keep the tag
+        # as Net::LDAP::Control decodes that.
+        ANY => \@ctrl 
+      ]
     ]
   ) or return;
 
@@ -142,6 +149,10 @@ sub decode {
   $self->{DN}    = $dn;
   $self->{Error} = $error;
   $self->{Referral} = $referral;
+
+  # Should the controls be associated with the whole request, or in
+  # the case of a search the entry in this packet ? -- GMB
+  push @{$self->{Controls}}, @ctrl;
 
   # free up memory as we have a result so we will not need to re-send it
   $self->{Ber} = undef;
