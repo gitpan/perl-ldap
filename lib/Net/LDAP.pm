@@ -14,7 +14,7 @@ use Net::LDAP::Message;
 use vars qw($VERSION $LDAP_VERSION);
 use UNIVERSAL qw(isa);
 
-$VERSION = "1.08";
+$VERSION = "0.08";
 
 $LDAP_VERSION = 2;      # default LDAP protocol version
 
