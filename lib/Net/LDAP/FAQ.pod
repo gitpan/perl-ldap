@@ -33,10 +33,10 @@ the latest version from http://www.cpan.org/search?dist=perl-ldap
 
 =head2 Is there a mailing list ?
 
-Yes there is at perl-ldap@mail.med.cornell.edu
+Yes there is at <perl-ldap@mail.med.cornell.edu>
 
 You can subscribe to this list by sending the word subscribe in the body
-of a message to perl-ldap-request@mail.med.cornell.edu
+of a message to <perl-ldap-request@mail.med.cornell.edu>
 
 If you want to unsubscribe, send a message with the word unsubscribe
 in the body to the same address
@@ -48,7 +48,7 @@ http://www.xray.mpe.mpg.de/mailing-lists/perl-ldap/
 
 =head2 Is there any online documentation ?
 
-Yes. perl-ldap has a web page at http://www.pobox.com/~gbarr/perl-ldap
+Yes. perl-ldap has a web page at http://www.pobox.com/~gbarr/perl-ldap/
 which will have the latest documentation available.
 
 =head2 Is there a public CVS repository ?
@@ -114,12 +114,12 @@ optional (ie required to use certain features)
 
 =over 4
 
-=item Convert::BER
+=item Convert::ASN1
 
 This module is required for perl-ldap to work.
 
 You can obtain the latest release from
-http://search.cpan.org/search?module=Convert::BER
+http://search.cpan.org/search?module=Convert::ASN1
 
 =item Digest::MD5
 
@@ -133,7 +133,7 @@ http://search.cpan.org/search?module=Digest::MD5
 =item URI::ldap
 
 This module is optional. You only need to install URI::ldap if you are
-going to need to parse ldap referrals. Net::LDAP does not do this
+going to need to parse ldap referrals. L<Net::LDAP|Net::LDAP> does not do this
 automatically yet, so this module is not used by perl-ldap.
 
 You can obtain the latest release from
@@ -158,7 +158,7 @@ to the specified server. Any error message will be available in $@
 =head2 How can I tell when the server returns an error, bind() always returns
 true ?
 
-Most methods in Net::LDAP return a L<Net::LDAP::Message> object, or a sub-class
+Most methods in Net::LDAP return a L<Net::LDAP::Message|Net::LDAP::Message> object, or a sub-class
 of that. This object will hold the results from the server, including and result
 code.
 
@@ -185,14 +185,14 @@ Consider the following:
                       );
 
 $mesg is a search object container. It is a reference blessed into the
-L<Net::LDAP::Search> package. By calling methods on this object
+L<Net::LDAP::Search|Net::LDAP::Search> package. By calling methods on this object
 you can obtain information about the result and also the individual entries.
 
 The first thing to check is if the search was successful. This is done with
 with the method C<$mesg->code>. This method will return the status code
 that the server returned. A success will yield a zero value, but there are
 other values, some of which could also be considered a success.
-See L<Net::LDAP::Constant>
+See L<Net::LDAP::Constant|Net::LDAP::Constant>
 
   use Net::LDAP::Util qw(ldap_error_text);
 
@@ -219,7 +219,7 @@ shift each entry in turn. For example
   }
 
 In each case $entry is an entry object container. It is a reference blessed
-into the L<Net::LDAP::Entry> package. By calling methods on this object
+into the L<Net::LDAP::Entry|Net::LDAP::Entry> package. By calling methods on this object
 you can obtain information about the entry.
 
 For example, to obtain the DN for the entry
@@ -264,12 +264,16 @@ can do
 Graham Barr <gbarr@pobox.com>
 
 Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-F<L<E<lt>perl-ldap@mail.med.cornell.eduE<gt>|mailto:perl-ldap@mail.med.cornell.edu>>.
+<perl-ldap@mail.med.cornell.edu>.
 
 =head1 COPYRIGHT
 
 Copyright (c) 1999-2000 Graham Barr. All rights reserved. This document is
 distributed, and may be redistributed, under the same terms as Perl itself.
+
+=for html <hr>
+
+I<$Id: //depot/ldap-asn/lib/Net/LDAP/FAQ.pod#4 $>
 
 =cut
 

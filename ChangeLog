@@ -1,20 +1,102 @@
-Change 392 on 2000/03/21 by <gbarr@pobox.com> (Graham Barr)
+Change 495 on 2000/04/18 by <gbarr@pobox.com> (Graham Barr)
 
-	Remove Net::LDAP::Schema::oid7 as it is not used
+	- fix Controls critical value
+	- fix debug calls
 
-Change 391 on 2000/03/21 by <gbarr@pobox.com> (Graham Barr)
+Change 494 on 2000/04/18 by <gbarr@pobox.com> (Graham Barr)
 
-	Net::LDAP::Schema update from John Berthels <jjb@berthels.uklinux.net>
+	Added VirtualListView and PAged controls
 
-Change 390 on 2000/03/21 by <gbarr@pobox.com> (Graham Barr)
+Change 491 on 2000/04/17 by <gbarr@pobox.com> (Graham Barr)
 
-	- Added Net::LDAP::Examples POD from Russell Biggs F<rgb@ticnet.com>
-	- Fixed warnings from Net::LDAP::FAQ POD
+	Net::LDAP::Control::Sort
+	- fix typos
+	- evaluate @order before deleting $self->{order}.
+	  Otherwise $_[0] may become undef
 
-Change 389 on 2000/03/21 by <gbarr@pobox.com> (Graham Barr)
+Change 489 on 2000/04/12 by <gbarr@pobox.com> (Graham Barr)
 
-	- Added missing files from MANIFGEST needed for schema testing
-	- allow ->async method to change async mode
+	Net::LDAP
+	- control option will now call ->to_asn on blessed controls
+
+Change 488 on 2000/04/12 by <gbarr@pobox.com> (Graham Barr)
+
+	Added Bundle::Net::LDAP
+
+Change 487 on 2000/04/12 by <gbarr@pobox.com> (Graham Barr)
+
+	Add HTML docs and ppd to MANIFEST
+
+Change 486 on 2000/04/11 by <gbarr@pobox.com> (Graham Barr)
+
+	Rename Net::LDAP::Control::sort to Net::LDAP::Control::Sort
+
+Change 485 on 2000/04/11 by <gbarr@pobox.com> (Graham Barr)
+
+	- Better support for LDAPv3 controls, but more to come
+
+Change 484 on 2000/04/11 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Filter
+	- Fix for endless loop when filter string contained \(
+	- various changes to workaround perl5.6.0 bug in qw()
+
+Change 481 on 2000/04/03 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::LDIF
+	- fix use of undef warning during global cleanup
+
+Change 480 on 2000/04/03 by <gbarr@pobox.com> (Graham Barr)
+
+	Integrate from asn branch
+
+Change 478 on 2000/04/03 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP
+	- new code for schema method from Mark Wilcox
+
+Change 466 on 2000/03/29 by <gbarr@pobox.com> (Graham Barr)
+
+	More doc edits
+
+Change 464 on 2000/03/29 by <gbarr@pobox.com> (Graham Barr)
+
+	Added PPD to Makefile.PL
+	Major POD edits to make pod2html work
+	Added html docs to distribution
+
+Change 399 on 2000/03/22 by <gbarr@pobox.com> (Graham Barr)
+
+	Misc fixes
+	Now passes all tests against slapd
+
+Change 398 on 2000/03/22 by <gbarr@pobox.com> (Graham Barr)
+
+	typo fixes
+
+Change 397 on 2000/03/22 by <gbarr@pobox.com> (Graham Barr)
+
+	Fixes to debug code
+
+Change 394 on 2000/03/21 by <gbarr@pobox.com> (Graham Barr)
+
+	Integrate changes from mainline
+
+Change 388 on 2000/03/21 by <gbarr@pobox.com> (Graham Barr)
+
+	misc. fixes
+
+Change 387 on 2000/03/21 by <gbarr@pobox.com> (Graham Barr)
+
+	Add Net::LDAP::ASN to MANIFEST
+
+Change 385 on 2000/03/21 by <gbarr@pobox.com> (Graham Barr)
+
+	Initial changes to use Convert::ASN1 instead of Convert::BER
+
+Change 381 on 2000/03/13 by <gbarr@pobox.com> (Graham Barr)
+
+	Branch to convert to use Convert::ASN1
 
 Change 363 on 2000/02/28 by <gbarr@pobox.com> (Graham Barr)
 

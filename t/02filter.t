@@ -2,6 +2,9 @@
 # Testcase contributed by  Julian Onions <Julian.Onions@nexor.co.uk>
 
 use Net::LDAP::Filter;
+use Net::LDAP::ASN qw(Filter);
+
+my $asn = $Filter;
 
 @tests = 
     (
@@ -70,9 +73,11 @@ use Net::LDAP::Filter;
        'a035a3090402636e0403666f6fa3090402636e0403626172a21da01ba3070402636e040161a3070402636e040162a3070402636e040163' ],
      [ '(| (& (! (cn=a)) (cn=bar) (cn=foo)) (& (! (cn=b)) (cn=bar) (cn=foo)) (& (! (cn=c)) (cn=bar) (cn=foo)))',
        'a169a021a209a3070402636e040161a3090402636e0403626172a3090402636e0403666f6fa021a209a3070402636e040162a3090402636e0403626172a3090402636e0403666f6fa021a209a3070402636e040163a3090402636e0403626172a3090402636e0403666f6f' ],
+     [ '(| (cn=foo\(bar\)) (cn=test))', 
+       'a11ca30e0402636e0408666f6f2862617229a30a0402636e040474657374' ],
      );
 
-print "1..", 2*scalar(@tests), "\n";
+print "1..", 4*scalar(@tests), "\n";
 my $testno = 0;
 my $testref;
 foreach $testref (@tests) {
@@ -81,15 +86,20 @@ foreach $testref (@tests) {
     $testno ++;
     print "# ",$filter,"\n";
     $filt = new Net::LDAP::Filter $filter;
-    if ($filt ->ber->buffer ne $binary) {
-	print "got    ", unpack("H*", $filt ->ber->buffer), "\n";
+    print "ok $testno\n";
+    $testno ++;
+    my $data = $asn->encode($filt) or print "# ",$asn->error,"\nnot ";
+    print "ok $testno\n";
+    $testno ++;
+    unless($data eq $binary) {
+	print "got    ", unpack("H*", $data), "\n";
 	print "wanted ", unpack("H*", $binary), "\n";
 
-	print "not ok $testno\n";
-	next;
+	print "not "
     }
     print "ok $testno\n";
     $testno ++;
+
     my $str = $filt->as_string;
     $filter = "($filter)" unless $filter =~ /^\(/;
     $filter =~ s/ \(/\(/g;

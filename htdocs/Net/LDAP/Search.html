@@ -1,0 +1,133 @@
+<HTML>
+<HEAD>
+<TITLE>Net::LDAP::Search - Object returned by Net::LDAP search method</TITLE>
+<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+<!--
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#methods">METHODS</A></LI>
+	<LI><A HREF="#see also">SEE ALSO</A></LI>
+	<LI><A HREF="#acknowledgements">ACKNOWLEDGEMENTS</A></LI>
+	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+</UL>
+-->
+<!-- INDEX END -->
+
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>Net::LDAP::Search - Object returned by Net::LDAP search method</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+  use Net::LDAP;
+</PRE>
+<PRE>
+
+  $mesg = $ldap-&gt;search( @search_args );</PRE>
+<PRE>
+
+  @entries = $mesg-&gt;entries;</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P>A <STRONG>Net::LDAP::Search</STRONG> object is returned from the
+<A HREF="../../Net/LDAP.html#item_search">search</A> method of a <A HREF="../../Net/LDAP.html">Net::LDAP</A>
+object. It is a container object which holds the results of the search.</P>
+<P>
+<HR>
+<H1><A NAME="methods">METHODS</A></H1>
+<P><STRONG>Net::LDAP::Search</STRONG> inherits from <A HREF="../../Net/LDAP/Message.html">Net::LDAP::Message</A>, and so supports
+all methods defined in <A HREF="../../Net/LDAP/Message.html">Net::LDAP::Message</A>.</P>
+<DL>
+<DT><STRONG><A NAME="item_as_struct">as_struct</A></STRONG><BR>
+<DD>
+Returns a reference to a HASH, where the keys are the DN's of the results
+and the values are HASH references. These second level HASH's hold the
+attributes such that the keys are the attribute names, in lowercase, and
+the values are references to and ARRAY holding the values.
+<P>This method will block until the whole search request has finished.</P>
+<P></P>
+<DT><STRONG><A NAME="item_count">count</A></STRONG><BR>
+<DD>
+Returns the number of entries returned by the server.
+<P>This method will block until the whole search request has finished.</P>
+<P></P>
+<DT><STRONG><A NAME="item_entry">entry ( INDEX )</A></STRONG><BR>
+<DD>
+Return the N'th entry, which will be a <A HREF="../../Net/LDAP/Entry.html">Net::LDAP::Entry</A> object. If
+INDEX is greater than the total number of entries returned then
+undef will be returned.
+<P>This method will block until the search request has returned enough
+entries.</P>
+<P></P>
+<DT><STRONG><A NAME="item_entries">entries</A></STRONG><BR>
+<DD>
+Return an array of <A HREF="../../Net/LDAP/Entry.html">Net::LDAP::Entry</A> objects hat were returned from the
+server.
+<P>This method will block until the whole search request has finished.</P>
+<P></P>
+<DT><STRONG><A NAME="item_pop_entry">pop_entry</A></STRONG><BR>
+<DD>
+Pop an entry from the internal list of <A HREF="../../Net/LDAP/Entry.html">Net::LDAP::Entry</A> objects for this
+search. If there are not more entries then undef is returned.
+<P>This call will block, if the list is empty, until the server returns
+another entry.</P>
+<P></P>
+<DT><STRONG><A NAME="item_references">references</A></STRONG><BR>
+<DD>
+Return a list of references that the server returned. This will be a list
+of <A HREF="../../Net/LDAP/Reference.html">Net::LDAP::Reference</A> objects.
+<P></P>
+<DT><STRONG><A NAME="item_sorted">sorted ( [ ATTR ] )</A></STRONG><BR>
+<DD>
+Return a list of <A HREF="../../Net/LDAP/Entry.html">Net::LDAP::Entry</A> objects, sorted by ATTR. If ATTR is
+not given then the entries will be sorted by their DN.
+<P></P>
+<DT><STRONG><A NAME="item_shift_entry">shift_entry</A></STRONG><BR>
+<DD>
+Shift an entry from the internal list of <A HREF="../../Net/LDAP/Entry.html">Net::LDAP::Entry</A> objects for this
+search. If there are not more entries then undef is returned.
+<P>This call will block, if the list is empty, until the server returns
+another entry.</P>
+<P></P></DL>
+<P>
+<HR>
+<H1><A NAME="see also">SEE ALSO</A></H1>
+<P><A HREF="../../Net/LDAP.html">Net::LDAP</A>,
+<A HREF="../../Net/LDAP/Message.html">Net::LDAP::Message</A>,
+<A HREF="../../Net/LDAP/Entry.html">Net::LDAP::Entry</A>,
+<A HREF="../../Net/LDAP/Reference.html">Net::LDAP::Reference</A></P>
+<P>
+<HR>
+<H1><A NAME="acknowledgements">ACKNOWLEDGEMENTS</A></H1>
+<P>This document is based on a document originally written by Russell Fulton
+&lt;<A HREF="mailto:r.fulton@auckland.ac.nz">r.fulton@auckland.ac.nz</A>&gt;.</P>
+<P>
+<HR>
+<H1><A NAME="author">AUTHOR</A></H1>
+<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;</P>
+<P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
+&lt;<A HREF="mailto:perl-ldap@mail.med.cornell.edu">perl-ldap@mail.med.cornell.edu</A>&gt;.</P>
+<P>
+<HR>
+<H1><A NAME="copyright">COPYRIGHT</A></H1>
+<P>Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
+free software; you can redistribute it and/or modify it under the same
+terms as Perl itself.</P>
+<hr><P><EM>$Id: //depot/ldap-asn/lib/Net/LDAP/Search.pod#3 $</EM></P>
+
+</BODY>
+
+</HTML>

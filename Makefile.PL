@@ -1,4 +1,5 @@
 # The -*- perl -*- script writes the Makefile for perl-ldap
+# $Id: //depot/ldap-asn/Makefile.PL#4 $
 
 use 5.004;
 use ExtUtils::MakeMaker;
@@ -49,8 +50,8 @@ sub check_module {
 
 print "\nChecking for installed modules\n\n";
 
-check_module('Convert::BER',1.23) or print <<"EDQ","\n";
-Convert::BER version 1.23 or later is essential for perl-ldap
+check_module('Convert::ASN1',0.03) or print <<"EDQ","\n";
+Convert::ASN1 version 0.03 or later is essential for perl-ldap
 EDQ
 
 check_module('URI',1.02) && check_module('URI::ldap',1.10) or print <<"EDQ","\n";
@@ -73,6 +74,15 @@ EDQ
 
 my %PL_FILES = map { ($a = $_) =~ s/\.PL// ? ($_,$a) : () } glob('bin/*.PL');
 
+my @ppd;
+
+if ($] >= 5.00503) {
+  @ppd = (
+    AUTHOR    => 'Graham Barr <gbarr@pobox.com>',
+    ABSTRACT  => 'LDAP Client library'
+  );
+}
+
 WriteMakefile(
   VERSION_FROM => $VERSION_FROM,
   NAME         => $DISTNAME,
@@ -81,5 +91,32 @@ WriteMakefile(
   AUTHOR       => $AUTHOR,
   ABSTRACT     => $ABSTRACT,
   clean        => {FILES => 'temp'},
+  @ppd,
 );
+
+sub MY::postamble {
+
+  my $ppd = $] >= 5.00503 ? 'ppd' : '';
+  my $mkhtml = "../bin/mkhtml";
+  my $html = '';
+
+  if ( -x $mkhtml ) {
+    $mkhtml = <<EDQ;
+mkhtml :
+	$mkhtml
+EDQ
+    $html = 'mkhtml';
+  }
+  else { $mkhtml = '' }
+
+  return '' unless length($ppd.$html);
+
+<<"EDQ";
+
+distdir : $ppd $html
+
+$mkhtml
+
+EDQ
+}
 

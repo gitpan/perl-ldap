@@ -324,7 +324,7 @@ sub write_cmd {
 sub done {
   my $self = shift;
   my $fh = $self->{'fh'};
-  close $fh if $self->{'opened_fh'};
+  close $fh if $fh && $self->{'opened_fh'};
   delete $self->{'fh'};
   1;
 }

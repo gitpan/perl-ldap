@@ -9,16 +9,17 @@ use vars qw(@ISA $VERSION);
 use Net::LDAP::Message;
 use Net::LDAP::Entry;
 use Net::LDAP::Filter;
-use Net::LDAP::BER qw(RES_SEARCH_ENTRY RES_SEARCH_REF);
-use Net::LDAP::Constant qw(LDAP_SUCCESS);
+use Net::LDAP::Constant qw(LDAP_SUCCESS LDAP_DECODING_ERROR);
 
 @ISA = qw(Net::LDAP::Message);
 $VERSION = "0.02";
+
 
 sub first_entry { # compat
   my $self = shift;
   $self->entry(0);
 }
+
 
 sub next_entry { # compat
   my $self = shift;
@@ -27,56 +28,55 @@ sub next_entry { # compat
 		: 0);
 }
 
-sub result_tag { 'RES_SEARCH_RESULT' }
 
 sub decode {
   my $self = shift;
-  my $data = shift;
+  my $result = shift;
 
-  my $tag = $data->tag;
-  my $seq;
+  return $self->SUPER::decode($result)
+    if exists $result->{protocolOp}{searchResDone};
 
-  if ($tag == RES_SEARCH_ENTRY) {
+  my $data;
+
+  if ($data = delete $result->{protocolOp}{searchResEntry}) {
+
     my $entry = Net::LDAP::Entry->new;
 
-    $data->decode('RES_SEARCH_ENTRY' => \$seq);
-    $entry->decode($seq);
+    $entry->decode($data)
+      or $self->set_error(LDAP_DECODING_ERROR,"LDAP decode error")
+     and return;
 
-    push(@{$self->{'Entries'} ||= []}, $entry);
+    push(@{$self->{entries} ||= []}, $entry);
 
-    $self->{Callback}->($self,$entry)
-      if (defined $self->{Callback});
-
-    return $self;
-  }
-  elsif ($tag == RES_SEARCH_REF) {
-    my $ref = Net::LDAP::Reference->new;
-
-    $data->decode('RES_SEARCH_REF' => \$seq);
-    $ref->decode($seq);
-
-    push(@{$self->{'Reference'} ||= []}, $ref->references);
-
-    $self->{Callback}->($self,$ref)
-      if (defined $self->{Callback});
+    $self->{callback}->($self,$entry)
+      if (defined $self->{callback});
 
     return $self;
   }
-  else {
-    return $self->SUPER::decode($data);
+  elsif ($data = delete $result->{protocolOp}{searchResRef}) {
+
+    push(@{$self->{'reference'} ||= []}, @$data);
+
+    $self->{callback}->($self, bless $data, 'Net::LDAP::Reference')
+      if (defined $self->{callback});
+
+    return $self;
   }
+
+  $self->set_error(LDAP_DECODING_ERROR, "LDAP decode error");
+  return;
 }
 
 sub entry {
   my $self = shift;
   my $index = shift || 0; # avoid undef warning and default to first entry
 
-  my $entries = $self->{'Entries'} ||= [];
+  my $entries = $self->{entries} ||= [];
   my $ldap = $self->parent;
 
   # There could be multiple response to a search request
-  # but only the last will set {Code}
-  until (exists $self->{Code} || (@{$entries} > $index)) {
+  # but only the last will set {code}
+  until (exists $self->{code} || (@{$entries} > $index)) {
     return
       unless $ldap->_recvresp($self->mesg_id) == LDAP_SUCCESS;
   }
@@ -84,7 +84,7 @@ sub entry {
   return
     unless (@{$entries} > $index);
 
-  $self->{'CurrentEntry'} = $index; # compat
+  $self->{current_entry} = $index; # compat
 
   return $entries->[$index];
 }
@@ -94,9 +94,9 @@ sub all_entries { goto &entries } # compat
 sub entries {
   my $self = shift;
 
-  $self->sync unless exists $self->{Code};
+  $self->sync unless exists $self->{code};
 
-  @{$self->{'Entries'} || []}
+  @{$self->{entries} || []}
 }
 
 sub count {
@@ -107,24 +107,24 @@ sub count {
 sub shift_entry {
   my $self = shift;
 
-  entry($self, 0) ? shift @{$self->{'Entries'}} : undef;
+  entry($self, 0) ? shift @{$self->{entries}} : undef;
 }
 
 sub pop_entry {
   my $self = shift;
 
-  entry($self, 0) ? pop @{$self->{'Entries'}} : undef;
+  entry($self, 0) ? pop @{$self->{entries}} : undef;
 }
 
 sub sorted {
   my $self = shift;
   my @at;
 
-  $self->sync unless exists $self->{Code};
+  $self->sync unless exists $self->{code};
 
-  return unless exists $self->{'Entries'} && ref($self->{'Entries'});
+  return unless exists $self->{entries} && ref($self->{entries});
 
-  return @{$self->{'Entries'}} unless @{$self->{'Entries'}} > 1;
+  return @{$self->{entries}} unless @{$self->{entries}} > 1;
 
   if (@_) {
     my $attr = shift;
@@ -132,7 +132,7 @@ sub sorted {
     @at = map {
       my $x = $_->get($attr);
       $x ? lc(join("\001",@$x)) : "";
-    } @{$self->{'Entries'}};
+    } @{$self->{entries}};
   }
   else {
     # Sort by dn:
@@ -140,12 +140,12 @@ sub sorted {
       my $x = $_->dn;
       $x =~ s/(^|,)\s*\w+=/\001/sog;
       lc($x)
-    } @{$self->{'Entries'}};
+    } @{$self->{entries}};
   }
 
   my @order = sort { $at[$a] cmp $at[$b] } 0..$#at;
 
-  @{$self->{'Entries'}}[@order];
+  @{$self->{entries}}[@order];
 }
 
 sub references {
@@ -165,25 +165,6 @@ sub as_struct {
 }
 
 package Net::LDAP::Reference;
-
-sub new {
-  my $pkg = shift;
-  bless [],$pkg;
-}
-
-sub decode {
-  my $self = shift;
-  my $ber = shift;
-  my @array;
-
-  # Cannot just use $self here as Convert::BER does if(ref($arg) eq 'ARRAY')
-  $ber->decode(
-    STRING => \@array
-  ) or return;
-
-  @$self = @array;
-  $self;
-}
 
 sub references {
   my $self = shift;

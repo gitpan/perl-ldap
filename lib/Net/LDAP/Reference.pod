@@ -1,6 +1,6 @@
 =head1 NAME
 
-Net::LDAP::Reference -- search reference
+Net::LDAP::Reference - search reference
 
 =head1 SYNOPSIS
 
@@ -40,19 +40,24 @@ Returns a list of references from the server.
 
 =head1 SEE ALSO
 
-L<Net::LDAP>, L<Net::LDAP::Search>
+L<Net::LDAP|Net::LDAP>,
+L<Net::LDAP::Search|Net::LDAP::Search>
 
 =head1 AUTHOR
 
-Graham Barr E<lt>F<gbarr@pobox.com>E<gt>.
+Graham Barr <gbarr@pobox.com>.
 
 Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-F<L<E<lt>perl-ldap@mail.med.cornell.eduE<gt>|mailto:perl-ldap@mail.med.cornell.edu>>.
+<perl-ldap@mail.med.cornell.edu>.
 
 =head1 COPYRIGHT
 
 Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
+
+=for html <hr>
+
+I<$Id: //depot/ldap-asn/lib/Net/LDAP/Reference.pod#3 $>
 
 =cut

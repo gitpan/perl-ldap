@@ -6,7 +6,7 @@ package Net::LDAP::Util;
 
 =head1 NAME
 
-Net::LDAP::Util -- Utility functions
+Net::LDAP::Util - Utility functions
 
 =head1 SYNOPSIS
 
@@ -14,8 +14,8 @@ Net::LDAP::Util -- Utility functions
 
 =head1 DESCRIPTION
 
-Net::LDAP::Util is a collection of utility functions for use with
-te Net::LDAP modules.
+B<Net::LDAP::Util> is a collection of utility functions for use with
+the L<Net::LDAP|Net::LDAP> modules.
 
 =head1 FUNCTIONS
 
@@ -94,15 +94,21 @@ sub ldap_error_text {
   $text;
 }
 
+=back
+
 =head1 AUTHOR
 
-Graham Barr E<lt>F<gbarr@pobox.com>E<gt>
+Graham Barr <gbarr@pobox.com>
 
 =head1 COPYRIGHT
 
 Copyright (c) 1999-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
+
+=for html <hr>
+
+I<$Id: //depot/ldap-asn/lib/Net/LDAP/Util.pm#3 $>
 
 =cut
 

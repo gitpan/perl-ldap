@@ -1,0 +1,139 @@
+<HTML>
+<HEAD>
+<TITLE>Net::LDAP::Filter - representation of LDAP filters</TITLE>
+<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+<!--
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#constructor">CONSTRUCTOR</A></LI>
+	<LI><A HREF="#methods">METHODS</A></LI>
+	<LI><A HREF="#filter syntax">FILTER SYNTAX</A></LI>
+	<LI><A HREF="#see also">SEE ALSO</A></LI>
+	<LI><A HREF="#acknowledgements">ACKNOWLEDGEMENTS</A></LI>
+	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+</UL>
+-->
+<!-- INDEX END -->
+
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>Net::LDAP::Filter - representation of LDAP filters</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+  use Net::LDAP::Filter;
+</PRE>
+<PRE>
+
+  $filter = Net::LDAP::Filter-&gt;new( $filter_str );</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P>
+<HR>
+<H1><A NAME="constructor">CONSTRUCTOR</A></H1>
+<DL>
+<DT><STRONG><A NAME="item_new">new ( FILTER )</A></STRONG><BR>
+<DD>
+Create a new object and parse FILTER.
+<P></P></DL>
+<P>
+<HR>
+<H1><A NAME="methods">METHODS</A></H1>
+<DL>
+<DT><STRONG><A NAME="item_parse">parse ( FILTER )</A></STRONG><BR>
+<DD>
+Parse FILTER. The next call to ber will return this filter encoded.
+<P></P>
+<DT><STRONG><A NAME="item_asn">asn</A></STRONG><BR>
+<DD>
+Return the data structure suitable for passing directly to <A HREF="../../Convert/ASN1.html">the Convert::ASN1 manpage</A>
+to encode a filter object.
+<P></P>
+<DT><STRONG><A NAME="item_as_string">as_string</A></STRONG><BR>
+<DD>
+Return the filter in text form.
+<P></P>
+<DT><STRONG><A NAME="item_print">print ( [ FH ] )</A></STRONG><BR>
+<DD>
+Print the text representation of the filter to FH, or the currently
+selected output handle if FH is not given.
+<P></P></DL>
+<P>
+<HR>
+<H1><A NAME="filter syntax">FILTER SYNTAX</A></H1>
+<P>Below is the syntax for a filter given in
+RFC-2254 <A HREF="http://info.internet.isi.edu/in-notes/rfc/files/rfc2254.txt">http://info.internet.isi.edu/in-notes/rfc/files/rfc2254.txt</A></P>
+<PRE>
+ filter       = &quot;(&quot; filtercomp &quot;)&quot;
+ filtercomp   = and / or / not / item
+ and          = &quot;&amp;&quot; filterlist
+ or           = &quot;|&quot; filterlist
+ not          = &quot;!&quot; filter
+ filterlist   = 1*filter
+ item         = simple / present / substring / extensible
+ simple       = attr filtertype value
+ filtertype   = equal / approx / greater / less
+ equal        = &quot;=&quot;
+ approx       = &quot;~=&quot;
+ greater      = &quot;&gt;=&quot;
+ less         = &quot;&lt;=&quot;
+ extensible   = attr [&quot;:dn&quot;] [&quot;:&quot; matchingrule] &quot;:=&quot; value
+                / [&quot;:dn&quot;] &quot;:&quot; matchingrule &quot;:=&quot; value
+ present      = attr &quot;=*&quot;
+ substring    = attr &quot;=&quot; [initial] any [final]
+ initial      = value
+ any          = &quot;*&quot; *(value &quot;*&quot;)
+ final        = value
+ attr         = AttributeDescription from Section 4.1.5 of RFC-2251
+ matchingrule = MatchingRuleId from Section 4.1.9 of RFC-2251
+ value        = AttributeValue from Section 4.1.6 of RFC-2251
+</PRE>
+<PRE>
+
+ Special Character encodings
+ ---------------------------
+    *               \2a, \*
+    (               \28, \(
+    )               \29, \)
+    \               \5c, \\
+    NUL             \00</PRE>
+<P>
+<HR>
+<H1><A NAME="see also">SEE ALSO</A></H1>
+<P><A HREF="../../Net/LDAP.html">Net::LDAP</A>,
+<A HREF="../../Net/LDAP/RFC.html">Other online documentation</A></P>
+<P>
+<HR>
+<H1><A NAME="acknowledgements">ACKNOWLEDGEMENTS</A></H1>
+<P>This document is based on a document originally written by Russell Fulton
+&lt;<A HREF="mailto:r.fulton@auckland.ac.nz">r.fulton@auckland.ac.nz</A>&gt;.</P>
+<P>
+<HR>
+<H1><A NAME="author">AUTHOR</A></H1>
+<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;</P>
+<P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
+&lt;<A HREF="mailto:perl-ldap@mail.med.cornell.edu">perl-ldap@mail.med.cornell.edu</A>&gt;.</P>
+<P>
+<HR>
+<H1><A NAME="copyright">COPYRIGHT</A></H1>
+<P>Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
+free software; you can redistribute it and/or modify it under the same
+terms as Perl itself.</P>
+<hr><P><EM>$Id: //depot/ldap-asn/lib/Net/LDAP/Filter.pod#3 $</EM></P>
+
+</BODY>
+
+</HTML>

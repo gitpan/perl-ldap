@@ -1,0 +1,119 @@
+<HTML>
+<HEAD>
+<TITLE>Net::LDAP::Message - Message response from LDAP server</TITLE>
+<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+<!--
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#methods">METHODS</A></LI>
+	<LI><A HREF="#see also">SEE ALSO</A></LI>
+	<LI><A HREF="#acknowledgements">ACKNOWLEDGEMENTS</A></LI>
+	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+</UL>
+-->
+<!-- INDEX END -->
+
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>Net::LDAP::Message - Message response from LDAP server</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+  use Net::LDAP;</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P><STRONG>Net::LDAP::Message</STRONG> is a base class for the objects returned by the
+<A HREF="../../Net/LDAP.html">Net::LDAP</A> methods
+<A HREF="../../Net/LDAP.html#item_abandon">abandon</A>,
+<A HREF="../../Net/LDAP.html#item_add">add</A>,
+<A HREF="../../Net/LDAP.html#item_bind">bind</A>,
+<A HREF="../../Net/LDAP.html#item_compare">compare</A>,
+<A HREF="../../Net/LDAP.html#item_delete">delete</A>,
+<A HREF="../../Net/LDAP.html#item_modify">modify</A>,
+<A HREF="../../Net/LDAP.html#item_moddn">moddn</A>,
+<A HREF="../../Net/LDAP.html#item_search">search</A> and
+<A HREF="../../Net/LDAP.html#item_unbind">unbind</A>.</P>
+<P>The sub-class <A HREF="../../Net/LDAP/Search.html">Net::LDAP::Search</A> returned by <A HREF="../../Net/LDAP.html#item_search">search</A> also
+defines many methods.</P>
+<P>If the <A HREF="../../Net/LDAP.html">Net::LDAP</A> object is in async mode then all these methods, except
+<A HREF="#item_done"><CODE>done</CODE></A>, will cause a wait until the request is completed.</P>
+<P>
+<HR>
+<H1><A NAME="methods">METHODS</A></H1>
+<DL>
+<DT><STRONG><A NAME="item_code">code</A></STRONG><BR>
+<DD>
+The code value in the result message from the server. Normally for
+a success zero will be returned. <A HREF="../../Net/LDAP/Constant.html">Constants</A> for the result codes
+can be imported from the <A HREF="../../Net/LDAP.html">Net::LDAP</A> module.
+<P></P>
+<DT><STRONG><A NAME="item_error">error</A></STRONG><BR>
+<DD>
+The error message in the result message from the server.
+<P></P>
+<DT><STRONG><A NAME="item_mesg_id">mesg_id</A></STRONG><BR>
+<DD>
+The message id of the request message sent to the server.
+<P></P>
+<DT><STRONG><A NAME="item_done">done</A></STRONG><BR>
+<DD>
+Returns <EM>true</EM> if the request has been completed.
+<P></P>
+<DT><STRONG><A NAME="item_dn">dn</A></STRONG><BR>
+<DD>
+The DN in the result message from the server.
+<P></P>
+<DT><STRONG><A NAME="item_sync">sync</A></STRONG><BR>
+<DD>
+Wait for the server to complete the request.
+<P></P>
+<DT><STRONG><A NAME="item_referrals">referrals</A></STRONG><BR>
+<DD>
+Returns a list of referrals from the result message.
+<P></P>
+<DT><STRONG><A NAME="item_control_%5B_OID_%5D">control [ OID ]</A></STRONG><BR>
+<DD>
+Return a list of controls returned from the server. If OID is given
+then only controls with type equal to OID will be returned.
+<P></P></DL>
+<P>
+<HR>
+<H1><A NAME="see also">SEE ALSO</A></H1>
+<P><A HREF="../../Net/LDAP.html">Net::LDAP</A>,
+<A HREF="../../Net/LDAP/Search.html">Net::LDAP::Search</A>,
+<A HREF="../../Net/LDAP/Constant.html">Net::LDAP::Constant</A></P>
+<P>
+<HR>
+<H1><A NAME="acknowledgements">ACKNOWLEDGEMENTS</A></H1>
+<P>This document is based on a document originally written by Russell Fulton
+&lt;<A HREF="mailto:r.fulton@auckland.ac.nz">r.fulton@auckland.ac.nz</A>&gt;.</P>
+<P>
+<HR>
+<H1><A NAME="author">AUTHOR</A></H1>
+<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;</P>
+<P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
+&lt;<A HREF="mailto:perl-ldap@mail.med.cornell.edu">perl-ldap@mail.med.cornell.edu</A>&gt;.</P>
+<P>
+<HR>
+<H1><A NAME="copyright">COPYRIGHT</A></H1>
+<P>Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
+free software; you can redistribute it and/or modify it under the same
+terms as Perl itself.</P>
+<hr><P><EM>$Id: //depot/ldap/lib/Net/LDAP/Message.pod#10 $</EM></P>
+
+</BODY>
+
+</HTML>

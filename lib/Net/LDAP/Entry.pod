@@ -1,6 +1,6 @@
 =head1 NAME
 
-Net::LDAP::Entry -- An LDAP entry object
+Net::LDAP::Entry - An LDAP entry object
 
 =head1 SYNOPSIS
 
@@ -39,17 +39,17 @@ Net::LDAP::Entry -- An LDAP entry object
 
 =head1 DESCRIPTION
 
-The Net::LDAP::Entry object represents a single entry in the directory.
+The B<Net::LDAP::Entry> object represents a single entry in the directory.
 It is a container for attribute-value pairs.
 
-A Net::LDAP::Entry object can be used in two situations. The first and
+A B<Net::LDAP::Entry> object can be used in two situations. The first and
 probably most common use is in the result of a search to the directory
 server.
 
 The other is where a new object is created locally and then a single
 command is sent to the directory server to add, modify or replace an
 entry. Entries for this purpose can also be created by reading an
-LDIF file with the L<Net::LDAP::LDIF> module.
+LDIF file with the L<Net::LDAP::LDIF|Net::LDAP::LDIF> module.
 
 =head1 CONSTRUCTOR
 
@@ -110,11 +110,11 @@ or delete since the last call to changetype or update was made.
 CLIENT should be a C<Net::LDAP> object where the update
 should be sent to.
 
-CLIENT is only optional is the Net::LDAP::Entry object was created
+CLIENT is only optional is the B<Net::LDAP::Entry> object was created
 by a search on a directory server. In which case, if omitted, the
 update will be sent back to the same server.
 
-The result will be an object of type C<Net::LDAP::Message> as returned
+The result will be an object of type L<Net::LDAP::Message|Net::LDAP::Message> as returned
 by the add, modify or delete method called on CLIENT.
 
 =item attributes
@@ -159,19 +159,24 @@ entry on the directory server.
 
 =head1 SEE ALSO
 
-L<Net::LDAP>, L<Net::LDAP::LDIF>
+L<Net::LDAP|Net::LDAP>,
+L<Net::LDAP::LDIF|Net::LDAP::LDIF>
 
 =head1 AUTHOR
 
-Graham Barr E<lt>F<gbarr@pobox.com>E<gt>.
+Graham Barr <gbarr@pobox.com>.
 
 Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-F<L<E<lt>perl-ldap@mail.med.cornell.eduE<gt>|mailto:perl-ldap@mail.med.cornell.edu>>.
+<perl-ldap@mail.med.cornell.edu>.
 
 =head1 COPYRIGHT
 
 Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
+
+=for html <hr>
+
+I<$Id: //depot/ldap-asn/lib/Net/LDAP/Entry.pod#3 $>
 
 =cut

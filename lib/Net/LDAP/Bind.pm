@@ -5,7 +5,7 @@
 package Net::LDAP::Bind;
 
 use strict;
-use Net::LDAP qw(LDAP_SASL_BIND_IN_PROGRESS);
+use Net::LDAP qw(LDAP_SASL_BIND_IN_PROGRESS LDAP_DECODING_ERROR);
 use Net::LDAP::Message;
 use vars qw(@ISA);
 
@@ -13,88 +13,43 @@ use vars qw(@ISA);
 
 sub _sasl_info {
   my $self = shift;
-  $self->{DN} = shift;
-  $self->{SaslCtrl} = shift;
-  $self->{Sasl} = shift;
-  
+  @{$self}{qw(dn saslctrl sasl)} = @_;
 }
 
 sub decode {
   my $self = shift;
-  my $ber = shift;
+  my $result = shift;
+  my $bind = $result->{protocolOp}{bindResponse}
+     or $self->set_error(LDAP_DECODING_ERROR,"LDAP decode error")
+    and return;
 
-  my($code,$dn,$error, $referral, $saslref, $count);
+  return $self->SUPER::decode($result)
+    unless $bind->{resultCode} == LDAP_SASL_BIND_IN_PROGRESS;
 
-  $ber->decode(
-    $self->result_tag => [
-      ENUM   => \$code,
-      STRING => \$dn,
-      STRING => \$error,
-      OPTIONAL => [ 
-        LDAP_REFERRAL => [
-          STRING => $referral = []
-        ]
-      ],
-      OPTIONAL => [ SASL_CREDENTIALS => \$saslref ],
-    ]
-  ) or
-    return;
-
-  # it is the setting of the Code entry that tells the rest
-  # of the code that we have a response for this message
-
-  # tell out LDAP client to forget us as this message has now completed
+  # tell our LDAP client to forget us as this message has now completed
   # all communications with the server
   $self->parent->_forgetmesg($self);
 
-  if ($code == LDAP_SASL_BIND_IN_PROGRESS) {
-    
-    # This is where we fake it a bit. If the server has
-    # sent us a challenge, use the sasl object to get the
-    # response and send it
-    #
-    # But if we are running async the user already has a ref to $self
-    # so we must re-use $self so it will contain the results of the
-    # last response on the sequence
+  $self->{mesgid} = Net::LDAP::Message->NewMesgID(); # Get a new message ID
 
-    $self->{Ber}    = Net::LDAP::BER->new;
-    $self->{MesgID} = $self->NewMesgID(); # Get a new message ID
+  my $sasl = $self->{sasl};
+  my $ldap = $self->parent;
+  my $resp = $sasl->challenge($result->{saslCred});
 
-    my $sasl = $self->{Sasl};
-    my $ldap = $self->parent;
-    my $resp = $sasl->challenge($saslref);
+  $self->encode(
+    bindRequest => {
+    version => $ldap->version,
+    name    => $self->{dn},
+    authentication => {
+      sasl    => {
+        mechanism   => $sasl->name,
+        credentials => $resp
+      }
+    },
+    control => $self->{saslcontrol}
+  });
 
-    $self->ber->encode(
-      SEQUENCE => [
-        INTEGER  => $self->mesg_id,
-        REQ_BIND => [
-          INTEGER    => $ldap->version,
-          LDAPDN     => $self->{DN},
-          AUTH_SASL  => [
-            SASL_MECHANISM => $sasl->name,
-            STRING         => $resp,
-          ]
-        ],
-        BER => $self->{SaslCtrl}
-      ]
-    );
-    $ldap->_sendmesg($self);
-  }
-  else {
-    $self->{Code}  = $code;
-    $self->{DN}    = $dn;
-    $self->{Error} = $error;
-    $self->{Referral} = $referral;
-    $self->{Sasl} = $saslref;
-
-    # free up memory as we have a result so we will not need to re-send it
-    $self->{Ber} = undef;
-
-    $self->{Callback}->($self)
-      if (defined $self->{Callback});
-  }
-
-  $self;
+  $ldap->_sendmesg($self);
 }
 
 1;

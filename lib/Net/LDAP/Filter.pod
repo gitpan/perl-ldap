@@ -1,13 +1,13 @@
 =head1 NAME
 
-Net::LDAP::Filter -- representation of LDAP filters
+Net::LDAP::Filter - representation of LDAP filters
 
 =head1 SYNOPSIS
 
   use Net::LDAP::Filter;
   
   $filter = Net::LDAP::Filter->new( $filter_str );
-  
+
 =head1 DESCRIPTION
 
 =head1 CONSTRUCTOR
@@ -28,9 +28,10 @@ Create a new object and parse FILTER.
 
 Parse FILTER. The next call to ber will return this filter encoded.
 
-=item ber
+=item asn
 
-Return the filter encoded into BER.
+Return the data structure suitable for passing directly to L<Convert::ASN1>
+to encode a filter object.
 
 =item as_string
 
@@ -46,7 +47,7 @@ selected output handle if FH is not given.
 =head1 FILTER SYNTAX
 
 Below is the syntax for a filter given in
-L<RFC-2254|http://info.internet.isi.edu/in-notes/rfc/files/rfc2254.txt>
+RFC-2254 http://info.internet.isi.edu/in-notes/rfc/files/rfc2254.txt
 
  filter       = "(" filtercomp ")"
  filtercomp   = and / or / not / item
@@ -83,36 +84,29 @@ L<RFC-2254|http://info.internet.isi.edu/in-notes/rfc/files/rfc2254.txt>
 
 =head1 SEE ALSO
 
-L<Net::LDAP>
-
-=over 4
-
-=item L<RFC-2251|http://info.internet.isi.edu/in-notes/rfc/files/rfc2251.txt>
-
-Lightweight Directory Access Protocol (v3).
-
-=item L<RFC-2254|http://info.internet.isi.edu/in-notes/rfc/files/rfc2254.txt>
-
-The String Representation of LDAP Search Filters.
-
-=back
+L<Net::LDAP|Net::LDAP>,
+L<Other online documentation|Net::LDAP::RFC>
 
 =head1 ACKNOWLEDGEMENTS
 
 This document is based on a document originally written by Russell Fulton
-E<lt>F<r.fulton@auckland.ac.nz>E<gt>.
+<r.fulton@auckland.ac.nz>.
 
 =head1 AUTHOR
 
-Graham Barr E<lt>F<gbarr@pobox.com>E<gt>
+Graham Barr <gbarr@pobox.com>
 
 Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-F<L<E<lt>perl-ldap@mail.med.cornell.eduE<gt>|mailto:perl-ldap@mail.med.cornell.edu>>.
+<perl-ldap@mail.med.cornell.edu>.
 
 =head1 COPYRIGHT
 
 Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
+
+=for html <hr>
+
+I<$Id: //depot/ldap-asn/lib/Net/LDAP/Filter.pod#3 $>
 
 =cut

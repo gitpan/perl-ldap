@@ -1,0 +1,199 @@
+<HTML>
+<HEAD>
+<TITLE>Net::LDAP::Entry - An LDAP entry object</TITLE>
+<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+<!--
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#constructor">CONSTRUCTOR</A></LI>
+	<LI><A HREF="#methods">METHODS</A></LI>
+	<LI><A HREF="#see also">SEE ALSO</A></LI>
+	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+</UL>
+-->
+<!-- INDEX END -->
+
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>Net::LDAP::Entry - An LDAP entry object</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+  use Net::LDAP;</PRE>
+<PRE>
+  $ldap = Net::LDAP-&gt;new($host);
+  $mesg = $ldap-&gt;search(@search_args);</PRE>
+<PRE>
+  my $max = $mesg-&gt;count;
+  for($i = 0 ; $i &lt; $max ; $i++) {
+    my $entry = $mesg-&gt;entry($i);
+    foreach my $attr ($entry-&gt;attributes) {
+      print join(&quot;\n &quot;,$attr, $entry-&gt;get($attr)),&quot;\n&quot;;
+    }
+  }</PRE>
+<PRE>
+  # or</PRE>
+<PRE>
+  use Net::LDAP::Entry;
+</PRE>
+<PRE>
+
+  $entry = Net::LDAP::Entry-&gt;new;</PRE>
+<PRE>
+
+  $entry-&gt;add(
+    attr1 =&gt; 'value1',
+    attr2 =&gt; [qw(value1 value2)]
+  );</PRE>
+<PRE>
+
+  $entry-&gt;delete( 'unwanted' );</PRE>
+<PRE>
+
+  $entry-&gt;replace(
+    attr1 =&gt; 'newvalue'
+    attr2 =&gt; [qw(new values)]
+  );</PRE>
+<PRE>
+
+  $entry-&gt;update( $ldap ); # update directory server</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P>The <STRONG>Net::LDAP::Entry</STRONG> object represents a single entry in the directory.
+It is a container for attribute-value pairs.</P>
+<P>A <STRONG>Net::LDAP::Entry</STRONG> object can be used in two situations. The first and
+probably most common use is in the result of a search to the directory
+server.</P>
+<P>The other is where a new object is created locally and then a single
+command is sent to the directory server to add, modify or replace an
+entry. Entries for this purpose can also be created by reading an
+LDIF file with the <A HREF="../../Net/LDAP/LDIF.html">Net::LDAP::LDIF</A> module.</P>
+<P>
+<HR>
+<H1><A NAME="constructor">CONSTRUCTOR</A></H1>
+<P>
+<HR>
+<H1><A NAME="methods">METHODS</A></H1>
+<DL>
+<DT><STRONG><A NAME="item_add">add ( ATTR =&gt; VALUE [, ATTR2 =&gt; VALUE2 ... ] )</A></STRONG><BR>
+<DD>
+Add one or more new attributes to the entry. Each value
+must be a scalar variable or a reference to an array. The
+values given will be added to the values which already exist
+for the given attributes.
+<PRE>
+  $entry-&gt;add( 'sn' =&gt; 'Barr');</PRE>
+<PRE>
+  $entry-&gt;add( 'street' =&gt; [ '1 some road','nowhere']);</PRE>
+<P><STRONG>NOTE</STRONG>: these changes are local to the client and will not
+appear on the directory server until the <A HREF="#item_update"><CODE>update</CODE></A> method
+is called.</P>
+<P></P>
+<DT><STRONG><A NAME="item_replace">replace ( ATTR =&gt; VALUE [, ATTR2 =&gt; VALUE2 ... ] )</A></STRONG><BR>
+<DD>
+Similar to add, except that the values given will replace
+any values that already exist for the given attributes.
+<P><STRONG>NOTE</STRONG>: these changes are local to the client and will not
+appear on the directory server until the <A HREF="#item_update"><CODE>update</CODE></A> method
+is called.</P>
+<P></P>
+<DT><STRONG><A NAME="item_delete">delete ( [ ATTR [, ATTR2 ... ]] )</A></STRONG><BR>
+<DD>
+Delete the given attributes from the entry. If no attributes
+are passed then the next call to update will cause the entry
+to be deleted from the server.
+<P><STRONG>NOTE</STRONG>: these changes are local to the client and will not
+appear on the directory server until the <A HREF="#item_update"><CODE>update</CODE></A> method
+is called.</P>
+<P></P>
+<DT><STRONG><A NAME="item_dn">dn ( [ DN ] )</A></STRONG><BR>
+<DD>
+Set or get the DN for the entry. With no arguments <A HREF="#item_dn"><CODE>dn</CODE></A> will return
+the current DN. If an argument is given then it will change the DN
+for the entry and return the previous value.
+<P><STRONG>NOTE</STRONG>: these changes are local to the client and will not
+appear on the directory server until the <A HREF="#item_update"><CODE>update</CODE></A> method
+is called.</P>
+<P></P>
+<DT><STRONG><A NAME="item_update">update ( [ CLIENT ] )</A></STRONG><BR>
+<DD>
+Update the directory server with any changes that have been made
+locally. This means any calls that have been made to add, replace
+or delete since the last call to changetype or update was made.
+<P>CLIENT should be a <CODE>Net::LDAP</CODE> object where the update
+should be sent to.</P>
+<P>CLIENT is only optional is the <STRONG>Net::LDAP::Entry</STRONG> object was created
+by a search on a directory server. In which case, if omitted, the
+update will be sent back to the same server.</P>
+<P>The result will be an object of type <A HREF="../../Net/LDAP/Message.html">Net::LDAP::Message</A> as returned
+by the add, modify or delete method called on CLIENT.</P>
+<P></P>
+<DT><STRONG><A NAME="item_attributes">attributes</A></STRONG><BR>
+<DD>
+Return a list of attributes that this entry has.
+<P></P>
+<DT><STRONG><A NAME="item_get">get ( ATTR )</A></STRONG><BR>
+<DD>
+Get the values for the attribute ATTR. The result will be a reference
+to an array, if that attribute exists. If the attribute does not exist
+the <CODE>undef</CODE> will be returned.
+<P></P>
+<DT><STRONG><A NAME="item_changetype">changetype ( [ TYPE ] )</A></STRONG><BR>
+<DD>
+If called without arguments it returns the type of operation that would
+be performed when the update method is called. If called with an argument
+it will set the changetype to TYPE.
+<P>Possible values for TYPE are</P>
+<DL>
+<DT><STRONG>add</STRONG><BR>
+<DD>
+The update method will call the add method on the client object, which
+will result in the entry being added to the directory server.
+<P></P>
+<DT><STRONG>delete</STRONG><BR>
+<DD>
+The update method will call the delete method on the client object, which
+will result in the entry being removed from the directory server.
+<P></P>
+<DT><STRONG><A NAME="item_modify">modify</A></STRONG><BR>
+<DD>
+The update method will call the modify method on the client object, which
+will result in any changes that have been made locally being made to the
+entry on the directory server.
+<P></P></DL>
+</DL>
+<P>
+<HR>
+<H1><A NAME="see also">SEE ALSO</A></H1>
+<P><A HREF="../../Net/LDAP.html">Net::LDAP</A>,
+<A HREF="../../Net/LDAP/LDIF.html">Net::LDAP::LDIF</A></P>
+<P>
+<HR>
+<H1><A NAME="author">AUTHOR</A></H1>
+<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;.</P>
+<P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
+&lt;<A HREF="mailto:perl-ldap@mail.med.cornell.edu">perl-ldap@mail.med.cornell.edu</A>&gt;.</P>
+<P>
+<HR>
+<H1><A NAME="copyright">COPYRIGHT</A></H1>
+<P>Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
+free software; you can redistribute it and/or modify it under the same
+terms as Perl itself.</P>
+<hr><P><EM>$Id: //depot/ldap-asn/lib/Net/LDAP/Entry.pod#3 $</EM></P>
+
+</BODY>
+
+</HTML>

@@ -4,13 +4,13 @@
 
 package Net::LDAP;
 
+use strict;
 use IO::Socket;
 use IO::Select;
-use strict;
-use Net::LDAP::BER;
-use Net::LDAP::Message;
 use vars qw($VERSION $LDAP_VERSION);
-use UNIVERSAL qw(isa);
+use Convert::ASN1 qw(asn_recv);
+use Net::LDAP::Message;
+use Net::LDAP::ASN qw(LDAPResponse);
 use Net::LDAP::Constant qw(LDAP_SUCCESS
 			   LDAP_OPERATIONS_ERROR
 			   LDAP_DECODING_ERROR
@@ -18,9 +18,10 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 			   LDAP_ENCODING_ERROR
 			   LDAP_FILTER_ERROR
 			   LDAP_LOCAL_ERROR
+			   LDAP_PARAM_ERROR
 			);
 
-$VERSION = "0.15";
+$VERSION = "0.16";
 
 $LDAP_VERSION = 2;      # default LDAP protocol version
 
@@ -32,43 +33,27 @@ sub import {
 }
 
 sub _options {
-  my %ret = ();
-  my $once = 1;
-  while (@_) {
-    my($k,$v) = splice(@_,0,2);
-    if ($k =~ s/^-// && $once && $^W) {
-      $once = 0;
-      require Carp;
-      Carp::carp("depricated use of leading - for options");
-    }
-    $ret{$k} = $v;
+  my %ret = @_;
+  my $once = 0;
+  for my $v (grep { /^-/ } keys %ret) {
+    require Carp;
+    $once++ or Carp::carp("depricated use of leading - for options");
+    $ret{substr($v,1)} = $ret{$v};
   }
+
+  $ret{control} = [ map { (ref($_) =~ /[^A-Z]/) ? $_->to_asn : $_ } 
+		      ref($ret{control}) eq 'ARRAY'
+			? @{$ret{control}}
+			: $ret{control}
+                  ]
+    if exists $ret{control};
+
   \%ret;
 }
 
-# make up an LDAP Controls option
-sub _controls {
-  my ($ctrl) = @_;
-
-  return undef unless $ctrl;
-  
-  $ctrl = [ $ctrl ] if UNIVERSAL::isa($ctrl,'HASH');
-
-  return undef unless ref($ctrl) eq 'ARRAY';
-
-  my $ber = Net::LDAP::BER->new(
-    LDAP_CONTROLS => [ $ctrl,
-      SEQUENCE => [
-        STRING   => sub { $_[0]->{'type'} },
-        BOOLEAN  => sub { $_[0]->{'critical'} ? 1 : 0 },
-        OPTIONAL => [
-          STRING => sub { $_[0]->{'value'} }
-        ],
-      ]
-    ]
-  );
-  
-  $ber;
+sub _dn_options {
+  unshift @_, 'dn' if @_ & 1;
+  &_options;
 }
 
 sub new {
@@ -80,25 +65,26 @@ sub new {
 
   my $sock = IO::Socket::INET->new(
                PeerAddr => $host,
-               PeerPort => $arg->{'port'} || '389',
+               PeerPort => $arg->{port} || '389',
                Proto    => 'tcp',
-               Timeout  => defined $arg->{'timeout'}
-                             ? $arg->{'timeout'}
+               Timeout  => defined $arg->{timeout}
+                             ? $arg->{timeout}
                              : 120
              ) or return;
 
   $sock->autoflush(1);
 
-  $obj->{'net_ldap_socket'}  = $sock;
-  $obj->{'net_ldap_host'}    = $host;
-  $obj->{'net_ldap_resp'}    = {};
-  $obj->{'net_ldap_debug'}   = $arg->{'debug'} || 0;
-  $obj->{'net_ldap_version'} = $arg->{'version'} || $LDAP_VERSION;
-  $obj->{'net_ldap_async'}   = $arg->{'async'} ? 1 : 0;
+  $obj->{net_ldap_socket}  = $sock;
+  $obj->{net_ldap_host}    = $host;
+  $obj->{net_ldap_resp}    = {};
+  $obj->{net_ldap_version} = $arg->{version} || $LDAP_VERSION;
+  $obj->{net_ldap_async}   = $arg->{async} ? 1 : 0;
 
-#    my $opt = $obj->{'net_ldap_options'}  = {};
+  $obj->debug($arg->{debug} || 0 );
+
+#    my $opt = $obj->{net_ldap_options}  = {};
 #
-#    $opt->{'async'} = $arg->{'async'} ? 1 : 0;
+#    $opt->{async} = $arg->{async} ? 1 : 0;
 #
 #    my $option;
 #    foreach $option (qw(timelimit sizelimit)) {
@@ -120,13 +106,15 @@ sub async {
 sub debug {
   my $ldap = shift;
 
+  require Convert::ASN1::Debug if $_[0];
+
   @_
-    ? ($ldap->{'net_ldap_debug'},$ldap->{'net_ldap_debug'} = shift)[0]
-    : $ldap->{'net_ldap_debug'};
+    ? ($ldap->{net_ldap_debug},$ldap->{net_ldap_debug} = shift)[0]
+    : $ldap->{net_ldap_debug};
 }
 
 sub socket {
-  $_[0]->{'net_ldap_socket'};
+  $_[0]->{net_ldap_socket};
 }
 
 # what version are we talking?
@@ -134,25 +122,25 @@ sub version {
   my $ldap = shift;
 
   @_
-    ? ($ldap->{'net_ldap_version'},$ldap->{'net_ldap_version'} = shift)[0]
-    : $ldap->{'net_ldap_version'};
+    ? ($ldap->{net_ldap_version},$ldap->{net_ldap_version} = shift)[0]
+    : $ldap->{net_ldap_version};
 }
+
 
 sub unbind {
   my $ldap = shift;
-  my $arg = &_options;
+  my $arg  = &_options;
 
   my $mesg = Net::LDAP::Unbind->new($ldap,$arg);
 
-  $mesg->ber->encode(
-    SEQUENCE => [
-      INTEGER    => $mesg->mesg_id,
-      REQ_UNBIND => 1                 # dummy arg to keep even args :-)
-    ]
+  $mesg->encode(
+    unbindRequest => 1,
+    controls      => $arg->{control}
   ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
-  $ldap->_sendmesg($mesg);
+  $ldap->_sendmesg();
 }
+
 
 sub ldapbind {
   require Carp;
@@ -160,136 +148,117 @@ sub ldapbind {
   goto &bind;
 }
 
+
+my %ptype = qw(
+  password        simple
+  krb41password   krbv41
+  krb42password   krbv42
+  kerberos41      krbv41
+  kerberos42      krbv42
+  sasl            sasl
+);
+
 sub bind {
   my $ldap = shift;
-  my $dn   = @_ & 1 ? shift : undef;
-  my $arg  = &_options;
-
-  $dn = $arg->{'dn'} || "" unless defined($dn); # compat
+  my $arg  = &_dn_options;
 
   require Net::LDAP::Bind;
-
-  $ldap->version($arg->{'version'}) if exists $arg->{'version'};
-
   my $mesg = Net::LDAP::Bind->new($ldap,$arg);
-  my $version = $ldap->version;
 
-  my %ptype = qw(
-    noauth          AUTH_NONE
-    password        AUTH_SIMPLE
-    krb41password   AUTH_KRBV41
-    krb42password   AUTH_KRBV42
-    kerberos41      AUTH_KRBV41
-    kerberos42      AUTH_KRBV42
-    sasl            AUTH_SASL
+  $ldap->version($arg->{version})
+    if exists $arg->{version};
+
+  my $dn = $arg->{dn} || '';
+
+  my %stash = (
+    name    => ref($dn) ? $dn->dn : $dn,
+    version => $ldap->version,
   );
 
-  my($auth_type,$passwd) = ( AUTH_NONE => "");
-  my $ctrl = _controls($arg->{'control'}) if ($version > 2);
+  my($auth_type,$passwd) = (simple => "");
 
-  $dn = $dn->dn
-    if (ref($dn) && isa($dn,'Net::LDAP::Entry'));
-
-  my $ptype;
-  foreach $ptype (keys %ptype) {
-    if (exists $arg->{$ptype}) {
-      ($auth_type,$passwd) = ($ptype{$ptype},$arg->{$ptype});
+  while(my($param,$type) = each %ptype) {
+    if (exists $arg->{$param}) {
+      ($auth_type,$passwd) = ($type,$arg->{$param});
       last;
     }
   }
 
-  $passwd = "" if ($auth_type  eq 'AUTH_NONE');
+  if ($auth_type eq 'sasl') {
+#    if ($version < 3) {
+#      # FIXME: Need V3 for SASL
+#    }
 
-  if ($auth_type eq 'AUTH_SASL') {
-    if ($version < 3) {
-      # FIXME: Need V3 for SASL
-    }
     my $sasl = $passwd;
-
     # Tell the SASL object our user identifier
     $sasl->user("dn: $dn");
 
-    $passwd = [
-        SASL_MECHANISM => $sasl->name,
-        OPTIONAL => [ STRING => $sasl->initial ]
-    ];
+    $passwd = {
+      mechanism   => $sasl->name,
+      credentials => $sasl->initial
+    };
 
     # Save data, we will need it later
-    $mesg->_sasl_info($dn,$ctrl,$sasl);
+    $mesg->_sasl_info($stash{name},$arg->{control},$sasl);
   }
 
-  $mesg->ber->encode(
-    SEQUENCE => [
-      INTEGER  => $mesg->mesg_id,
-      REQ_BIND => [
-        INTEGER     => $version,
-        LDAPDN      => $dn || "",
-        $auth_type  => $passwd
-      ],
-      OPTIONAL => [ BER => $ctrl ]
-    ]
+  $stash{authentication} = { $auth_type => $passwd };
+
+  $mesg->encode(
+    bindRequest => \%stash,
+    controls    => $arg->{control}
   ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
 }
+
 
 my %scope = qw(base  0 one    1 single 1 sub    2 subtree 2);
 my %deref = qw(never 0 search 1 find   2 always 3);
 
 sub search {
   my $ldap = shift;
-  my $arg = &_options;
+  my $arg  = &_options;
 
   require Net::LDAP::Search;
 
   my $mesg = Net::LDAP::Search->new($ldap,$arg);
 
-  my $base      = $arg->{'base'} || "";
-  my $scope     = 2;
-  my $deref     = 2;
-  my $sizeLimit = $arg->{'sizelimit'} || 0;
-  my $timeLimit = $arg->{'timelimit'} || 0;
-  my $typesOnly = $arg->{'typesonly'} || $arg->{'attrsonly'} || 0;
-  my $filter    = $arg->{'filter'};
-  my $attribs   = $arg->{'attrs'} || [];
+  my $base = $arg->{base} || '';
+  my $filter;
 
-  if (exists $arg->{'scope'}) {
-    my $sc = lc $arg->{'scope'};
-    $scope = 0 + (exists $scope{$sc} ? $scope{$sc} : $sc);
-  }
-
-  if (exists $arg->{'deref'}) {
-    my $dr = lc $arg->{'deref'};
-    $deref = 0 + (exists $deref{$dr} ? $deref{$dr} : $dr);
-  }
-
-  unless (ref($filter)) {
+  unless (ref ($filter = $arg->{filter})) {
     require Net::LDAP::Filter;
-    $filter = Net::LDAP::Filter->new($filter)
-      or return $mesg->set_error(LDAP_FILTER_ERROR,"$@");
+    my $f = Net::LDAP::Filter->new;
+    $f->parse($filter)
+      or return $mesg->set_error(LDAP_PARAM_ERROR,"Bad filter");
+    $filter = $f;
   }
 
-  my $ctrl = _controls($arg->{'control'});
+  my %stash = (
+    baseObject   => ref($base) ? $base->dn : $base,
+    scope        => 2,
+    derefAliases => 2,
+    sizeLimit    => $arg->{sizelimit} || 0,
+    timeLimit    => $arg->{timelimit} || 0,
+    typesOnly    => $arg->{typesonly} || $arg->{attrsonly} || 0,
+    filter       => $filter,
+    attributes   => $arg->{attrs} || []
+  );
 
-  $mesg->ber->encode(
-    SEQUENCE => [
-      INTEGER    => $mesg->mesg_id,
-      REQ_SEARCH => [
-        LDAPDN   => $base,
-        ENUM     => $scope,
-        ENUM     => $deref,
-        INTEGER  => $sizeLimit,
-        INTEGER  => $timeLimit,
-        BOOLEAN  => $typesOnly,
-        BER      => $filter->isa('Convert::BER')
-                      ? $filter
-                      : $filter->ber,
-        SEQUENCE => [
-          STRING => $attribs  # sequence of STRINGs
-        ]
-      ],
-      OPTIONAL => [ BER => $ctrl ]
-    ]
+  if (exists $arg->{scope}) {
+    my $sc = lc $arg->{scope};
+    $stash{scope} = 0 + (exists $scope{$sc} ? $scope{$sc} : $sc);
+  }
+
+  if (exists $arg->{deref}) {
+    my $dr = lc $arg->{deref};
+    $stash{derefAliases} = 0 + (exists $deref{$dr} ? $deref{$dr} : $dr);
+  }
+
+  $mesg->encode(
+    searchRequest => \%stash,
+    controls => $arg->{control}
   ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
@@ -298,65 +267,63 @@ sub search {
 
 sub add {
   my $ldap = shift;
-  my $dn   = @_ & 1 ? shift : undef;
-  my $arg  = &_options;
+  my $arg  = &_dn_options;
 
   my $mesg = Net::LDAP::Add->new($ldap,$arg);
 
-  my $entry;
+  my $entry = $arg->{dn}
+    or return $mesg->set_error(LDAP_PARAM_ERROR,"No DN specified");
 
-  $dn ||= $arg->{'dn'} || undef;
-
-  if (ref($dn) && isa($dn,'Net::LDAP::Entry')) {
-    $entry = $dn;
-  }
-  else {
+  unless (ref $entry) {
     require Net::LDAP::Entry;
-    $entry = Net::LDAP::Entry->new();
-    $entry->dn($dn);
-    $entry->add(@{$arg->{'attrs'} || $arg->{'attr'} || []});
+    $entry = Net::LDAP::Entry->new;
+    $entry->dn($arg->{dn});
+    $entry->add(@{$arg->{attrs} || $arg->{attr} || []});
   }
 
-  my $ctrl = _controls($arg->{'control'});
-  $mesg->ber->encode(
-    SEQUENCE => [
-      INTEGER => $mesg->mesg_id,
-      REQ_ADD => [
-        BER => $entry->encode,
-      ],
-      OPTIONAL => [ BER => $ctrl ]
-    ]
+  $mesg->encode(
+    addRequest => $entry->asn,
+    controls   => $arg->{control}
   ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
 }
 
+
 my %opcode = ( 'add' => 0, 'delete' => 1, 'replace' => 2);
 
 sub modify {
   my $ldap = shift;
-  my $dn   = @_ & 1 ? shift : undef;
-  my $arg  = &_options;
+  my $arg  = &_dn_options;
 
-  $dn = $arg->{'dn'} unless defined($dn); # compat
+  my $mesg = Net::LDAP::Modify->new($ldap,$arg);
 
-  $dn = $dn->dn if (ref($dn) && isa($dn,'Net::LDAP::Entry'));
+  exists $arg->{dn}
+    or return $mesg->set_error(LDAP_PARAM_ERROR,"No DN specified");
 
   my @ops;
   my $opcode;
   my $op;
 
-  if (exists $arg->{'changes'}) {
+  if (exists $arg->{changes}) {
     my $chg;
     my $opcode;
     my $j = 0;
-    while($j < @{$arg->{'changes'}}) {
-      $opcode = $opcode{$arg->{'changes'}[$j++]};
-      $chg = $arg->{'changes'}[$j++];
+    while($j < @{$arg->{changes}}) {
+      return $mesg->set_error(LDAP_PARAM_ERROR,"Bad change type '" . $arg->{changes}[--$j] . "'")
+       unless defined($opcode = $opcode{$arg->{changes}[$j++]});
+      
+      $chg = $arg->{changes}[$j++];
       if (ref($chg)) {
 	my $i = 0;
 	while ($i < @$chg) {
-          push @ops, [ $opcode, $chg->[$i], $chg->[$i+1] ];
+          push @ops, {
+	    operation => $opcode,
+	    modification => {
+	      type => $chg->[$i],
+	      vals => $chg->[$i+1]
+	    }
+	  };
 	  $i += 2;
 	}
       }
@@ -371,7 +338,13 @@ sub modify {
 
       if (ref($opt) eq 'HASH') {
 	while (($k,$v) = each %$opt) {
-          push @ops, [ $opcode, $k, $v ];
+          push @ops, {
+	    operation => $opcode,
+	    modification => {
+	      type => $k,
+	      vals => ref($v) ? $v : [$v]
+	    }
+	  };
 	}
       }
       elsif (ref($opt) eq 'ARRAY') {
@@ -379,64 +352,51 @@ sub modify {
 	while ($k < @{$opt}) {
           my $attr = ${$opt}[$k++];
           my $val = $opcode == 1 ? [] : ${$opt}[$k++];
-          push @ops, [ $opcode, $attr, $val ];
+          push @ops, {
+	    operation => $opcode,
+	    modification => {
+	      type => $attr,
+	      vals => $val
+	    }
+	  };
 	}
       }
       else {
-	push @ops, [ $opcode, "$opt", [] ];
+	push @ops, {
+	  operation => $opcode,
+	  modification => {
+	    type => $opt,
+	    vals => []
+	  }
+	};
       }
     }
   }
 
-  my $mesg = Net::LDAP::Modify->new($ldap,$arg);
+  my $dn;
 
-  my $ctrl = _controls($arg->{'control'});
-  $mesg->ber->encode(
-    SEQUENCE    => [
-      INTEGER     => $mesg->mesg_id,
-      REQ_MODIFY  => [
-        LDAPDN      => $dn,
-        SEQUENCE_OF => [ \@ops,
-          SEQUENCE    => [
-            ENUM      => sub { $_[0]->[0] },
-            SEQUENCE  => [
-              STRING    => sub { $_[0]->[1] },
-              SET       => [
-                STRING    => sub { $_[0]->[2] }
-              ]
-            ]
-          ]
-        ]
-      ],
-      OPTIONAL => [ BER => $ctrl ]
-    ]
-  ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
+  $mesg->encode(
+    modifyRequest => {
+      object => ref($dn = $arg->{dn}) ? $dn->dn : $dn,
+      modification => \@ops
+    },
+    controls => $arg->{control}
+  )
+    or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
 }
 
 sub delete {
   my $ldap = shift;
-  my $dn   = @_ & 1 ? shift : undef;
-  my $arg  = &_options;
-
-  $dn = $arg->{'dn'} unless defined($dn); # compat
+  my $arg  = &_dn_options;
 
   my $mesg = Net::LDAP::Delete->new($ldap,$arg);
+  my $dn;
 
-  $dn = $dn->dn
-    if (ref($dn) && isa($dn,'Net::LDAP::Entry'));
-
-  my $ctrl = _controls($arg->{'control'});
-
-  $mesg->ber->encode(
-    SEQUENCE => [
-      INTEGER    => $mesg->mesg_id,
-      REQ_DELETE => $dn,
-      OPTIONAL => [
-        BER => $ctrl
-      ]
-    ]
+  $mesg->encode(
+    delRequest => ref($dn = $arg->{dn}) ? $dn->dn : $dn,
+    controls   => $arg->{control}
   ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
@@ -444,41 +404,28 @@ sub delete {
 
 sub moddn {
   my $ldap = shift;
-  my $dn   = @_ & 1 ? shift : undef;
-  my $arg  = &_options;
-  my $new  = $arg->{'newrdn'} || $arg->{'new'};
-  my $del  = $arg->{'deleteoldrdn'} || $arg->{'delete'} || 0;
-
-  $dn = $arg->{'dn'} unless defined($dn); # compat
+  my $arg  = &_dn_options;
+  my $del  = $arg->{deleteoldrdn} || $arg->{delete} || 0;
+  my $newsup = $arg->{newsuperior};
 
   my $mesg = Net::LDAP::ModDN->new($ldap,$arg);
 
-  $dn = $dn->dn
-    if (ref($dn) && isa($dn,'Net::LDAP::Entry'));
+  exists $arg->{dn}
+    or return $mesg->set_error(LDAP_PARAM_ERROR,"No DN specified");
 
-  $new = $new->dn
-    if (ref($new) && isa($new,'Net::LDAP::Entry'));
+  my $new  = $arg->{newrdn} || $arg->{new}
+    or return $mesg->set_error(LDAP_PARAM_ERROR,"No NewRDN specified");
 
-  my $newsup = $arg->{'newsuperior'};
+  my $dn;
 
-  $newsup = $newsup->dn
-    if (ref($newsup) && isa($newsup,'Net::LDAP::Entry'));
-
-  my $ctrl = _controls($arg->{'control'});
-
-  $mesg->ber->encode(
-    SEQUENCE => [
-      INTEGER   => $mesg->mesg_id,
-      REQ_MODDN => [
-        LDAPDN    => $dn,
-        LDAPDN    => $new,
-        BOOLEAN   => $del,
-        OPTIONAL  => [
-          MOD_SUPERIOR => $newsup
-        ]
-      ],
-      OPTIONAL => [ BER => $ctrl ]
-    ]
+  $mesg->encode(
+    modifyDNRequest => {
+      entry        => ref($dn = $arg->{dn}) ? $dn->dn : $dn,
+      newrdn       => ref($new) ? $new->dn : $new,
+      deleteoldrdn => $del,
+      newSuperior  => ref($newsup) ? $newsup->dn : $newsup,
+    },
+    controls => $arg->{control}
   ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
@@ -489,40 +436,35 @@ sub modrdn { goto &moddn }
 
 sub compare {
   my $ldap  = shift;
-  my $dn   = @_ & 1 ? shift : undef;
-  my $arg   = &_options;
-
-  $dn = $arg->{'dn'} unless defined($dn); # compat
-
-  my $attr = exists $arg->{'attr'}
-		? $arg->{'attr'}
-		: exists $arg->{'attrs'} #compat
-		   ? $arg->{'attrs'}[0]
-		   : "";
-
-  my $value = exists $arg->{'value'}
-		? $arg->{'value'}
-		: exists $arg->{'attrs'} #compat
-		   ? $arg->{'attrs'}[1]
-		   : "";
+  my $arg   = &_dn_options;
 
   my $mesg = Net::LDAP::Compare->new($ldap,$arg);
-  my $ctrl = _controls($arg->{'control'});
 
-  $dn = $dn->dn if (ref($dn) && isa($dn,'Net::LDAP::Entry'));
+  my $dn = $arg->{dn}
+    or return $mesg->set_error(LDAP_PARAM_ERROR,"No DN specified");
 
-  $mesg->ber->encode(
-    SEQUENCE => [
-      INTEGER     => $mesg->mesg_id,
-      REQ_COMPARE => [
-        LDAPDN      => $dn,
-        SEQUENCE    => [
-          STRING => $attr,
-          STRING => $value,
-        ]
-      ],
-      OPTIONAL => [ BER => $ctrl ]
-    ]
+  my $attr = exists $arg->{attr}
+		? $arg->{attr}
+		: exists $arg->{attrs} #compat
+		   ? $arg->{attrs}[0]
+		   : "";
+
+  my $value = exists $arg->{value}
+		? $arg->{value}
+		: exists $arg->{attrs} #compat
+		   ? $arg->{attrs}[1]
+		   : "";
+
+
+  $mesg->encode(
+    compareRequest => {
+      entry => ref($dn) ? $dn->dn : $dn,
+      ava   => {
+	attributeDesc  => $attr,
+	assertionValue => $value
+      }
+    },
+    controls => $arg->{control}
   ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
@@ -530,23 +472,16 @@ sub compare {
 
 sub abandon {
   my $ldap = shift;
-  my $mesg_id = @_ & 1 ? shift : undef;
+  unshift @_,'id' if @_ & 1;
   my $arg = &_options;
 
-  $mesg_id ||= $arg->{'id'};
-
-  $mesg_id = $mesg_id->mesg_id
-    if (ref($mesg_id) && UNIVERSAL::isa($mesg_id, 'Net::LDAP::Message'));
+  my $id = $arg->{id};
 
   my $mesg = Net::LDAP::Abandon->new($ldap,$arg);
-  my $ctrl = _controls($arg->{'control'});
 
-  $mesg->ber->encode(
-    SEQUENCE => [
-      INTEGER     => $mesg->mesg_id,
-      REQ_ABANDON => $mesg_id
-    ],
-    OPTIONAL => [ BER => $ctrl ]
+  $mesg->encode(
+    abandonRequest => ref($id) ? $id->mesg_id : $id,
+    controls       => $arg->{control}
   ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
@@ -555,25 +490,20 @@ sub abandon {
 sub extension {
   my $ldap = shift;
   my $arg  = &_options;
-  my $oid  = $arg->{'name'};
-  my $string = $arg->{'value'};
+  my $oid  = $arg->{name};
 
   return if ($ldap->version < 3);
 
   require Net::LDAP::Extension;
 
   my $mesg = Net::LDAP::Extension->new($ldap, $arg);
-  my $ctrl = _controls($arg->{'control'});
-  my $ref  = defined ($string)
-	       ? [ EXTEND_REQ_NAME => $oid, EXTEND_REQ_VALUE => $string ]
-	       : [ EXTEND_REQ_NAME => $oid ];
 
-  $mesg->ber->encode(
-    SEQUENCE => [
-      INTEGER    => $mesg->mesg_id,
-      REQ_EXTEND => $ref,
-      OPTIONAL   => [ BER => $ctrl ]
-    ]
+  $mesg->encode(
+    extendedRequest => {
+      requestName  => $oid,
+      requestValue => (exists $arg->{value} ? $arg->{value} : undef)
+    },
+    controls => $arg->{control}
   ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
@@ -582,8 +512,9 @@ sub extension {
 sub sync {
   my $ldap = shift;
   my $mid  = shift;
-  my $table = $ldap->{'net_ldap_mesg'};
+  my $table = $ldap->{net_ldap_mesg};
   my $err = LDAP_SUCCESS;
+
   $mid = $mid->mesg_id if ref($mid);
   while (defined($mid) ? exists $table->{$mid} : %$table) {
     last if $err = $ldap->_recvresp($mid);
@@ -595,14 +526,14 @@ sub sync {
 sub _sendmesg {
   my $ldap = shift;
   my $mesg = shift;
-  my $ber = $mesg->ber;
 
   if ($ldap->debug & 1) {
+    require Convert::ASN1::Debug;
     print STDERR "$ldap sending:\n";
-    $ber->hexdump(\*STDERR);
+    Convert::ASN1::asn_hexdump(*STDERR, $mesg->pdu);
   }
 
-  $ber->write($ldap->socket)
+  send($ldap->socket, $mesg->pdu, 0)
     or return $mesg->set_error(LDAP_LOCAL_ERROR,"$!");
 
   # for CLDAP, here we need to recode when we were sent
@@ -612,7 +543,7 @@ sub _sendmesg {
 
   unless ($mesg->done) { # may not have a responce
 
-    $ldap->{'net_ldap_mesg'}->{$mid} = $mesg;
+    $ldap->{net_ldap_mesg}->{$mid} = $mesg;
 
     unless ($ldap->async) {
       my $err = $ldap->sync($mid);
@@ -630,30 +561,25 @@ sub _recvresp {
   my $ready;
 
   for( $ready = 1 ; $ready ; $ready = $sel->can_read(0)) {
-    my $ber = Net::LDAP::BER->new();
-
-    $ber->read($sock) or
-      return LDAP_OPERATIONS_ERROR;
+    my $pdu;
+    asn_recv($sock, $pdu, 0)
+      or return LDAP_OPERATIONS_ERROR;
 
     if ($ldap->debug & 2) {
+      require Convert::ASN1::Debug;
       print STDERR "$ldap received:\n";
-      $ber->hexdump(\*STDERR);
+      Convert::ASN1::asn_hexdump(\*STDERR,$pdu);
     }
 
-    my($mid,$data);
+    my $result = $LDAPResponse->decode($pdu)
+      or return LDAP_DECODING_ERROR;
 
-    $ber->decode(
-      SEQUENCE => [
-        INTEGER => \$mid,
-        BER     => \$data
-      ]
-    ) or
-      return LDAP_DECODING_ERROR;
+    my $mid = $result->{messageID};
 
-    my $mesg = $ldap->{'net_ldap_mesg'}->{$mid} or
+    my $mesg = $ldap->{net_ldap_mesg}->{$mid} or
       return LDAP_PROTOCOL_ERROR;
 
-    $mesg->decode($data) or
+    $mesg->decode($result) or
       return $mesg->code;
 
     last if defined $what && $what == $mid;
@@ -671,51 +597,55 @@ sub _forgetmesg {
 
   my $mid = $mesg->mesg_id;
 
-  delete $ldap->{'net_ldap_mesg'}->{$mid};
+  delete $ldap->{net_ldap_mesg}->{$mid};
 }
+
+#Mark Wilcox 3-20-2000
+#now accepts named parameters
+#dn => "dn of subschema entry"
 
 sub schema {
   require Net::LDAP::Schema;
   my $self = shift;
-  my $default = shift;
+  my %arg = @_;
+  my $base;
   my $mesg;
 
-  unless ($self->{'net_ldap_schema'}) {
-    my $root = $self->root_dse;
+  if (exists $arg{'dn'}) {
+    $base = $arg{'dn'};
+  }
+  else {
+    my $root = $self->root_dse
+      or return undef;
 
-    if( $root ) {
-
-    my $base = ($root->get('subschemasubentry'))[0] || 'cn=schema';
-
-    $mesg = $self->search(
-      base     => $base,
-      scope    => 'base',
-      filter   => '(objectClass=*)',
-    );
-    $self->{'net_ldap_schema'} = Net::LDAP::Schema->new($mesg)
-      unless $mesg->code;
+    $base = ($root->get('subschemasubentry'))[0] || 'cn=schema';
   }
 
-    $self->{'net_ldap_schema'} ||= Net::LDAP::Schema->new($default)
-  }
+  $mesg = $self->search(
+    base   => $base,
+    scope  => 'base',
+    filter => '(objectClass=*)',
+  );
 
-  return $self->{'net_ldap_schema'};
+  $mesg->code
+    ? undef
+    : Net::LDAP::Schema->new($mesg);
 }
 
 sub root_dse {
-  my $self = shift;
+  my $ldap = shift;
   my $mesg;
   
-  unless ($self->{'net_ldap_rootdse'}) {
-    $mesg = $self->search(
+  unless ($ldap->{net_ldap_rootdse}) {
+    $mesg = $ldap->search(
       base   => "",
       scope  => 'base',
       filter => "(objectClass=*)",
     );
-    $self->{'net_ldap_rootdse'} = $mesg->entry;
+    $ldap->{net_ldap_rootdse} = $mesg->entry;
   }
 
-  return $self->{'net_ldap_rootdse'};
+  return $ldap->{net_ldap_rootdse};
 }
 
 1;

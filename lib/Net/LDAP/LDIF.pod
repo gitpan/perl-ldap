@@ -1,25 +1,26 @@
 =head1 NAME
 
-Net::LDAP::LDIF -- LDIF reading and writing
+Net::LDAP::LDIF - LDIF reading and writing
 
 =head1 SYNOPSIS
 
-use Net::LDAP::LDIF;
+  use Net::LDAP::LDIF;
 
-$ldif = Net::LDAP::LDIF->new( "file.ldif", "r" );
-while( $entry = $ldif->read() ) {
-	# Do things with $entry
-}
-$ldif->done();
+  $ldif = Net::LDAP::LDIF->new( "file.ldif", "r" );
+  while( $entry = $ldif->read() ) {
+	  # Do things with $entry
+  }
+  $ldif->done();
 
-$ldif = Net::LDAP::LDIF->new( $fh, "r" );
-@entries = $ldif->read();
+  $ldif = Net::LDAP::LDIF->new( $fh, "r" );
+  @entries = $ldif->read();
 
 =head1 DESCRIPTION
 
-Net::LDAP::LDIF provides a means to convert between Net::LDAP::Entry objects
-and LDAP entries represented in LDIF format files. Reading and writing are
-supported and may manipulate single entries or lists of entries.
+B<Net::LDAP::LDIF> provides a means to convert between
+L<Net::LDAP::Entry|Net::LDAP::Entry> objects and LDAP entries represented
+in LDIF format files. Reading and writing are supported and may manipulate
+single entries or lists of entries.
 
 As when reading an entire file into memory with perl normally, take into
 account the possibility of memory use when loading an LDIF file in one go.
@@ -65,7 +66,7 @@ This method signals that the LDIF object is no longer needed. If a file was
 opened automatically when the object was created it will be closed. This
 method is called automatically via DESTROY when the object goes out of scope.
 
-$ldif->done();
+  $ldif->done();
 
 =back
 
@@ -73,15 +74,19 @@ $ldif->done();
 
 =head1 AUTHOR
 
-Graham Barr F<L<E<lt>gbarr@pobox.comE<gt>|mailto:gbarr@pobox.com>>.
+Graham Barr <gbarr@pobox.com>.
 
 Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-F<L<E<lt>perl-ldap@mail.med.cornell.eduE<gt>|mailto:perl-ldap@mail.med.cornell.edu>>.
+<perl-ldap@mail.med.cornell.edu>.
 
 =head1 COPYRIGHT
 
 Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
+
+=for html <hr>
+
+I<$Id: //depot/ldap-asn/lib/Net/LDAP/LDIF.pod#3 $>
 
 =cut

@@ -1,0 +1,90 @@
+<HTML>
+<HEAD>
+<TITLE>Net::LDAP::Reference - search reference</TITLE>
+<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+<!--
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#methods">METHODS</A></LI>
+	<LI><A HREF="#see also">SEE ALSO</A></LI>
+	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+</UL>
+-->
+<!-- INDEX END -->
+
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>Net::LDAP::Reference - search reference</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+  use Net::LDAP;
+</PRE>
+<PRE>
+
+  $ldap-&gt;search( @search_args, callback =&gt; \&amp;process);</PRE>
+<PRE>
+
+  sub process {
+    my $mesg = shift;
+    my $obj = shift;
+    if (!$obj) {
+      # Search complete
+    }
+    elsif ($obj-&gt;isa('Net::LDAP::Reference')) {
+      my $ref;</PRE>
+<PRE>
+
+      foreach $ref ($obj-&gt;references) {
+        # process ref
+      }
+    }
+    else {
+      # Process Net::LDAP::Entry
+    }
+  }</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P>
+<HR>
+<H1><A NAME="methods">METHODS</A></H1>
+<DL>
+<DT><STRONG><A NAME="item_references">references</A></STRONG><BR>
+<DD>
+Returns a list of references from the server.
+<P></P></DL>
+<P>
+<HR>
+<H1><A NAME="see also">SEE ALSO</A></H1>
+<P><A HREF="../../Net/LDAP.html">Net::LDAP</A>,
+<A HREF="../../Net/LDAP/Search.html">Net::LDAP::Search</A></P>
+<P>
+<HR>
+<H1><A NAME="author">AUTHOR</A></H1>
+<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;.</P>
+<P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
+&lt;<A HREF="mailto:perl-ldap@mail.med.cornell.edu">perl-ldap@mail.med.cornell.edu</A>&gt;.</P>
+<P>
+<HR>
+<H1><A NAME="copyright">COPYRIGHT</A></H1>
+<P>Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
+free software; you can redistribute it and/or modify it under the same
+terms as Perl itself.</P>
+<hr><P><EM>$Id: //depot/ldap-asn/lib/Net/LDAP/Reference.pod#3 $</EM></P>
+
+</BODY>
+
+</HTML>

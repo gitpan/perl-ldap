@@ -12,6 +12,7 @@ print "ok 1\n";
 
 $mesg = $ldap->bind($MANAGERDN, password => $PASSWD);
 
+print "#",$mesg->code,"\n";
 print "not " if $mesg->code;
 print "ok 2\n";
 
@@ -23,10 +24,12 @@ my $i = 4;
 foreach $e ($ldif->read_cmd) {
   print "ok ",$i++,"\n";
   $mesg = $e->update($ldap);
+  print "#",$mesg->code,"\n";
   print "not " if $mesg->code;
   print "ok ",$i++,"\n";
 }
 
 $mesg = $ldap->search(base => $BASEDN, filter => 'objectclass=*');
+  print "#",$mesg->code,"\n";
 
 compare_ldif("50",$mesg,$i);

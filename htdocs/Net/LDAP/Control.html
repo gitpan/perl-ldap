@@ -1,0 +1,115 @@
+<HTML>
+<HEAD>
+<TITLE>Net::LDAP::Control - LDAPv3 control object base class</TITLE>
+<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+<!--
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#constructors">CONSTRUCTORS</A></LI>
+	<LI><A HREF="#methods">METHODS</A></LI>
+	<LI><A HREF="#see also">SEE ALSO</A></LI>
+	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+</UL>
+-->
+<!-- INDEX END -->
+
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>Net::LDAP::Control - LDAPv3 control object base class</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+ use Net::LDAP::Control;</PRE>
+<PRE>
+ $ctrl = Net::LDAP::Control-&gt;new(
+   type     =&gt; &quot;1.2.3.4&quot;,
+   value    =&gt; &quot;help&quot;,
+   critical =&gt; 0
+ );</PRE>
+<PRE>
+ $mesg = $ldap-&gt;search( @args, control =&gt; [ $ctrl ]);</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P><CODE>Net::LDAP::Control</CODE> is a base-class for LDAPv3 control objects.</P>
+<P>
+<HR>
+<H1><A NAME="constructors">CONSTRUCTORS</A></H1>
+<DL>
+<DT><STRONG><A NAME="item_new">new ARGS</A></STRONG><BR>
+<DD>
+<DL>
+<DT><STRONG><A NAME="item_type">type</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_value">value</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_critical">critical</A></STRONG><BR>
+<DD>
+</DL>
+<DT><STRONG><A NAME="item_from_asn_HASHREF">from_asn HASHREF</A></STRONG><BR>
+<DD>
+</DL>
+<P>
+<HR>
+<H1><A NAME="methods">METHODS</A></H1>
+<P>Net::LDAP::Control provides the following methods in the base class.</P>
+<DL>
+<DT><STRONG><A NAME="item_init">init</A></STRONG><BR>
+<DD>
+init will be called as the last step in both contructors. What it does will depend
+on the sub-class. It must always return the object.
+<P></P>
+<DT><STRONG><A NAME="item_error">error</A></STRONG><BR>
+<DD>
+Returns true if there has been an error.
+<P></P>
+<DT><STRONG><A NAME="item_valid">valid</A></STRONG><BR>
+<DD>
+Returns true if the object is valid and can be encoded.
+<P></P>
+<DT><STRONG><A NAME="item_type_%5B_OID_%5D">type [ OID ]</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_value_%5B_VALUE_%5D">value [ VALUE ]</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_critical_%5B_CRITICAL_%5D">critical [ CRITICAL ]</A></STRONG><BR>
+<DD>
+<DT><STRONG><A NAME="item_to_asn">to_asn</A></STRONG><BR>
+<DD>
+Returns the asn structure for encoding. This method will be called by <A HREF="../../Net/LDAP.html">Net::LDAP</A>
+when the control is used. The base class implementaion of this method will call the <A HREF="#item_value"><CODE>value</CODE></A>
+method without arguments to allow a sub-class to encode it's value. Sub-classes should not need
+to override this method.
+<P></P></DL>
+<P>
+<HR>
+<H1><A NAME="see also">SEE ALSO</A></H1>
+<P><A HREF="../../Net/LDAP.html">Net::LDAP</A></P>
+<P>
+<HR>
+<H1><A NAME="author">AUTHOR</A></H1>
+<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;</P>
+<P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
+&lt;<A HREF="mailto:perl-ldap@mail.med.cornell.edu">perl-ldap@mail.med.cornell.edu</A>&gt;</P>
+<P>
+<HR>
+<H1><A NAME="copyright">COPYRIGHT</A></H1>
+<P>Copyright (c) 1999-2000 Graham Barr. All rights reserved. This program is
+free software; you can redistribute it and/or modify it under the same
+terms as Perl itself.</P>
+<hr><P><EM>$Id: //depot/ldap/lib/Net/LDAP/Control.pm#9 $</EM></P>
+
+</BODY>
+
+</HTML>

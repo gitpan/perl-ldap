@@ -1,6 +1,6 @@
 =head1 NAME
 
-Net::LDAP::Constant -- Constants for use with Net::LDAP
+Net::LDAP::Constant - Constants for use with Net::LDAP
 
 =head1 SYNOPSIS
 
@@ -9,11 +9,9 @@ Net::LDAP::Constant -- Constants for use with Net::LDAP
  # import all constants 
  use Net::LDAP qw(:all);
 
-=over 4
-
 =head1 DESCRIPTION
 
-Net::LDAP::Constant exports constant subroutines for the following LDAP
+B<Net::LDAP::Constant> exports constant subroutines for the following LDAP
 error codes.
 
 =over 4
@@ -326,19 +324,24 @@ The referral hop limit has been exceeded.
 
 =head1 SEE ALSO
 
-L<Net::LDAP>, L<Net::LDAP::Message>
+L<Net::LDAP|Net::LDAP>,
+L<Net::LDAP::Message|Net::LDAP::Message>
 
 =head1 AUTHOR
 
-Graham Barr E<lt>F<gbarr@pobox.com>E<gt>
+Graham Barr <gbarr@pobox.com>
 
 Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-F<L<E<lt>perl-ldap@mail.med.cornell.eduE<gt>|mailto:perl-ldap@mail.med.cornell.edu>>.
+<perl-ldap@mail.med.cornell.edu>
 
 =head1 COPYRIGHT
 
 Copyright (c) 1998-2000 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
+
+=for html <hr>
+
+I<$Id: //depot/ldap-asn/lib/Net/LDAP/Constant.pod#3 $>
 
 =cut

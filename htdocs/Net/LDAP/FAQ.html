@@ -1,0 +1,299 @@
+<HTML>
+<HEAD>
+<TITLE>Net::LDAP::FAQ - Frequently Asked Questions about Net::LDAP</TITLE>
+<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#general">General</A></LI>
+	<UL>
+
+		<LI><A HREF="#what is perlldap ">What is perl-ldap ?</A></LI>
+		<LI><A HREF="#why another perl ldap implementation ">Why another perl LDAP implementation ?</A></LI>
+		<LI><A HREF="#where can i get it ">Where can I get it ?</A></LI>
+		<LI><A HREF="#is there a mailing list ">Is there a mailing list ?</A></LI>
+		<LI><A HREF="#is the mailing list archived ">Is the mailing list archived ?</A></LI>
+		<LI><A HREF="#is there any online documentation ">Is there any online documentation ?</A></LI>
+		<LI><A HREF="#is there a public cvs repository ">Is there a public CVS repository ?</A></LI>
+	</UL>
+
+	<LI><A HREF="#installation">Installation</A></LI>
+	<UL>
+
+		<LI><A HREF="#how do i install perlldap ">How do I install perl-ldap ?</A></LI>
+		<LI><A HREF="#but i do not have make, how can i install perlldap ">But I do not have make, how can I install perl-ldap ?</A></LI>
+		<LI><A HREF="#what other modules will i need ">What other modules will I need ?</A></LI>
+	</UL>
+
+	<LI><A HREF="#using net::ldap">Using Net::LDAP</A></LI>
+	<UL>
+
+		<LI><A HREF="#how do i connect to my server ">How do I connect to my server ?</A></LI>
+		<LI><A HREF="#net::ldap>new sometimes returns undef, why ">Net::LDAP-&gt;new sometimes returns undef, why ?</A></LI>
+		<LI><A HREF="#how can i tell when the server returns an error, bind() always returns">How can I tell when the server returns an error, <CODE>bind()</CODE> always returns</A></LI>
+		<LI><A HREF="#i did a search on my directory using the 'search' method. where did">I did a search on my directory using the 'search' method. Where did</A></LI>
+	</UL>
+
+	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>Net::LDAP::FAQ - Frequently Asked Questions about Net::LDAP</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+ perldoc Net::LDAP::FAQ</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P>This document serves to answer the most frequently asked questions on both the
+perl-ldap Mailing List and personally to me.</P>
+<P>
+<HR>
+<H1><A NAME="general">General</A></H1>
+<P>
+<H2><A NAME="what is perlldap ">What is perl-ldap ?</A></H2>
+<P>perl-ldap is the distribution name. The perl-ldap distribution contains
+the Net::LDAP modules.</P>
+<P>
+<H2><A NAME="why another perl ldap implementation ">Why another perl LDAP implementation ?</A></H2>
+<P>perl-ldap's goal is to be as portable as possible. It does this by
+being implemented completely in perl. So basically anywhere that perl
+runs perl-ldap will run. This is not true for other implementations
+which require a C compiler.</P>
+<P>
+<H2><A NAME="where can i get it ">Where can I get it ?</A></H2>
+<P>perl-ldap is available from CPAN. You will find it in the
+authors/id/GBARR directory. Alternatively you can download
+the latest version from <A HREF="http://www.cpan.org/search?dist=perl-ldap">http://www.cpan.org/search?dist=perl-ldap</A></P>
+<P>
+<H2><A NAME="is there a mailing list ">Is there a mailing list ?</A></H2>
+<P>Yes there is at &lt;<A HREF="mailto:perl-ldap@mail.med.cornell.edu">perl-ldap@mail.med.cornell.edu</A>&gt;</P>
+<P>You can subscribe to this list by sending the word subscribe in the body
+of a message to &lt;<A HREF="mailto:perl-ldap-request@mail.med.cornell.edu">perl-ldap-request@mail.med.cornell.edu</A>&gt;</P>
+<P>If you want to unsubscribe, send a message with the word unsubscribe
+in the body to the same address</P>
+<P>
+<H2><A NAME="is the mailing list archived ">Is the mailing list archived ?</A></H2>
+<P>There is an archive of the perl-ldap mailing list at
+<A HREF="http://www.xray.mpe.mpg.de/mailing-lists/perl-ldap/">http://www.xray.mpe.mpg.de/mailing-lists/perl-ldap/</A></P>
+<P>
+<H2><A NAME="is there any online documentation ">Is there any online documentation ?</A></H2>
+<P>Yes. perl-ldap has a web page at <A HREF="http://www.pobox.com/~gbarr/perl-ldap/">http://www.pobox.com/~gbarr/perl-ldap/</A>
+which will have the latest documentation available.</P>
+<P>
+<H2><A NAME="is there a public cvs repository ">Is there a public CVS repository ?</A></H2>
+<P>No, not right now. But there may be in the future.</P>
+<P>
+<HR>
+<H1><A NAME="installation">Installation</A></H1>
+<P>
+<H2><A NAME="how do i install perlldap ">How do I install perl-ldap ?</A></H2>
+<P>To install the modules that are in the perl-ldap distribution follow the
+same steps that you would for most other distributions found on CPAN, that
+is</P>
+<PRE>
+   # replace 0.13 with the version you have</PRE>
+<PRE>
+   gunzip perl-ldap-0.13.tar.gz
+   tar xvf perl-ldap-0.13.tar       
+   cd perl-ldap-0.13
+</PRE>
+<PRE>
+
+   perl Makefile.PL
+   make
+   make test
+   make install</PRE>
+<P>
+<H2><A NAME="but i do not have make, how can i install perlldap ">But I do not have make, how can I install perl-ldap ?</A></H2>
+<P>Well as luck would have it the modules in perl-ldap do not do anything
+complex, so a simple copy is enough to install. First run</P>
+<PRE>
+  perl -V</PRE>
+<P>This will output information about the version of perl you have
+installed. Near the bottom you will find something like</P>
+<PRE>
+  @INC:
+    /usr/local/perl/perl5.005/lib/5.00502/sun4-solaris
+    /usr/local/perl/perl5.005/lib/5.00502
+    /usr/local/perl/perl5.005/lib/site_perl/5.005/sun4-solaris
+    /usr/local/perl/perl5.005/lib/site_perl/5.005
+    .</PRE>
+<P>This is a list of directories that perl searches when it is looking for
+a module. The directory you need is the site_perl directory, but without
+the syatem architecture name, in this case it is
+<CODE>/usr/local/perl/perl5.005/lib/site_perl/5.005</CODE>. The files required
+can then be installed with</P>
+<PRE>
+   # replace 0.13 with the version you have</PRE>
+<PRE>
+   gunzip perl-ldap-0.13.tar.gz
+   tar xvf perl-ldap-0.13.tar       
+   cd perl-ldap-0.13/lib</PRE>
+<PRE>
+   cp * /usr/local/perl/perl5.005/lib/site_perl/5.005</PRE>
+<P>
+<H2><A NAME="what other modules will i need ">What other modules will I need ?</A></H2>
+<P>perl-ldap does use other modules. Some are required, but some are
+optional (ie required to use certain features)</P>
+<DL>
+<DT><STRONG><A NAME="item_Convert%3A%3AASN1">Convert::ASN1</A></STRONG><BR>
+<DD>
+This module is required for perl-ldap to work.
+<P>You can obtain the latest release from
+<A HREF="http://search.cpan.org/search?module=Convert::ASN1">http://search.cpan.org/search?module=Convert::ASN1</A></P>
+<P></P>
+<DT><STRONG><A NAME="item_Digest%3A%3AMD5">Digest::MD5</A></STRONG><BR>
+<DD>
+This module is optional. It also requires a C compiler when installing.
+You only need to install Digest::MD5 if you want to use the SASL
+authentication method.
+<P>You can obtain the latest release from
+<A HREF="http://search.cpan.org/search?module=Digest::MD5">http://search.cpan.org/search?module=Digest::MD5</A></P>
+<P></P>
+<DT><STRONG><A NAME="item_URI%3A%3Aldap">URI::ldap</A></STRONG><BR>
+<DD>
+This module is optional. You only need to install URI::ldap if you are
+going to need to parse ldap referrals. <A HREF="../../Net/LDAP.html">Net::LDAP</A> does not do this
+automatically yet, so this module is not used by perl-ldap.
+<P>You can obtain the latest release from
+<A HREF="http://search.cpan.org/search?module=URI::ldap">http://search.cpan.org/search?module=URI::ldap</A></P>
+<P></P></DL>
+<P>
+<HR>
+<H1><A NAME="using net::ldap">Using Net::LDAP</A></H1>
+<P>
+<H2><A NAME="how do i connect to my server ">How do I connect to my server ?</A></H2>
+<P>The connection to the server is created when you create a new Net::LDAP
+object, e.g.</P>
+<PRE>
+  $ldap = Net::LDAP-&gt;new($server);</PRE>
+<P>
+<H2><A NAME="net::ldap>new sometimes returns undef, why ">Net::LDAP-&gt;new sometimes returns undef, why ?</A></H2>
+<P>The constructor will return undef if there was a problem connecting
+to the specified server. Any error message will be available in $@</P>
+<P>
+<H2><A NAME="how can i tell when the server returns an error, bind() always returns true ">How can I tell when the server returns an error, <CODE>bind()</CODE> always returns
+true ?</A></H2>
+<P>Most methods in Net::LDAP return a <A HREF="../../Net/LDAP/Message.html">Net::LDAP::Message</A> object, or a sub-class
+of that. This object will hold the results from the server, including and result
+code.</P>
+<P>So, for example, to determine the result of the bind operation.</P>
+<PRE>
+  $mesg = $ldap-&gt;bind( $dn, password =&gt; $passwd);
+</PRE>
+<PRE>
+
+  if ( $mesg-&gt;code ) {
+    # Handle error codes here
+  }</PRE>
+<P>
+<H2><A NAME="i did a search on my directory using the 'search' method. where did the results go ">I did a search on my directory using the 'search' method. Where did
+the results go ?</A></H2>
+<P>Your search results are stored in a 'search object' container.
+Consider the following:</P>
+<PRE>
+ use Net::LDAP;</PRE>
+<PRE>
+ $ldap = Net::LDAP-&gt;new('ldap.acme.com') or die &quot;$@&quot;;
+ $mesg = $ldap-&gt;search(
+                       base   =&gt; &quot;o=acme.com&quot;,
+                       filter =&gt; &quot;uid=jsmith&quot;,
+                      );</PRE>
+<P>$mesg is a search object container. It is a reference blessed into the
+<A HREF="../../Net/LDAP/Search.html">Net::LDAP::Search</A> package. By calling methods on this object
+you can obtain information about the result and also the individual entries.</P>
+<P>The first thing to check is if the search was successful. This is done with
+with the method <CODE>$mesg-</CODE>code&gt;. This method will return the status code
+that the server returned. A success will yield a zero value, but there are
+other values, some of which could also be considered a success.
+See <A HREF="../../Net/LDAP/Constant.html">Net::LDAP::Constant</A></P>
+<PRE>
+  use Net::LDAP::Util qw(ldap_error_text);</PRE>
+<PRE>
+  die ldap_error_text($mesg-&gt;code)
+    if $mesg-&gt;code;</PRE>
+<P>There are two ways in which you can access the entries. You can access
+then with an index or you can treat the container like a stack and
+shift each entry in turn. For example</P>
+<PRE>
+  # as an array</PRE>
+<PRE>
+  my $max = $mesg-&gt;count;  # How many entries were returned from the search</PRE>
+<PRE>
+  for( my $index = 0 ; $index &lt; $max ; $index++) {
+    my $entry = $mesg-&gt;entry($index);
+    # ...
+  }</PRE>
+<PRE>
+  # or as a stack
+</PRE>
+<PRE>
+
+  while( my $entry = $mesg-&gt;shift_entry) {
+    # ...
+  }</PRE>
+<P>In each case $entry is an entry object container. It is a reference blessed
+into the <A HREF="../../Net/LDAP/Entry.html">Net::LDAP::Entry</A> package. By calling methods on this object
+you can obtain information about the entry.</P>
+<P>For example, to obtain the DN for the entry</P>
+<PRE>
+  $dn = $entry-&gt;dn;</PRE>
+<P>To obtain the attributes that a given entry has</P>
+<PRE>
+  @attrs = $entry-&gt;attributes;</PRE>
+<P>And to get the list of values for a given attribute</P>
+<PRE>
+  $values = $entry-&gt;get( 'sn' );</PRE>
+<P>Notice that the assignment is to a scalar. This is because <CODE>get</CODE> will return
+a reference to a list, even if there is only one value for that attribute,
+and <CODE>undef</CODE> if the attribute does not exist. One thing to remember is that
+attribute names are case insensitive, so 'sn', 'Sn', 'sN' and 'SN' are all
+the same.</P>
+<P>So, if you want to print all the values for the attribute <CODE>'ou'</CODE> then this
+is as simple as</P>
+<PRE>
+  if( my $values = $entry-&gt;get( 'ou' )) {
+    foreach (@$values) {
+      print $_,&quot;\n&quot;;
+    }
+  }</PRE>
+<P>Now if you just want to print all the values for all the attributes you
+can do</P>
+<PRE>
+  foreach my $attr ($entry-&gt;attributes) {
+    foreach my $value ($entry-&gt;get($attr)) {
+      print $attr, &quot;: &quot;, $value, &quot;\n&quot;;
+    }
+  }</PRE>
+<P>
+<HR>
+<H1><A NAME="author">AUTHOR</A></H1>
+<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;</P>
+<P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
+&lt;<A HREF="mailto:perl-ldap@mail.med.cornell.edu">perl-ldap@mail.med.cornell.edu</A>&gt;.</P>
+<P>
+<HR>
+<H1><A NAME="copyright">COPYRIGHT</A></H1>
+<P>Copyright (c) 1999-2000 Graham Barr. All rights reserved. This document is
+distributed, and may be redistributed, under the same terms as Perl itself.</P>
+<hr><P><EM>$Id: //depot/ldap-asn/lib/Net/LDAP/FAQ.pod#4 $</EM></P>
+
+</BODY>
+
+</HTML>

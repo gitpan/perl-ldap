@@ -1,0 +1,151 @@
+<HTML>
+<HEAD>
+<TITLE>Net::LDAP::Schema - Load and manipulate an LDAP v3 Schema</TITLE>
+<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+<!--
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#methods">METHODS</A></LI>
+	<LI><A HREF="#see also">SEE ALSO</A></LI>
+	<LI><A HREF="#authors">AUTHORS</A></LI>
+	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+</UL>
+-->
+<!-- INDEX END -->
+
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>Net::LDAP::Schema - Load and manipulate an LDAP v3 Schema</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+ use Net::LDAP;
+ use Net::LDAP::Schema;</PRE>
+<PRE>
+ #
+ # Read schema from server
+ #
+ $ldap = Net::LDAP-&gt;new( $server );
+ $ldap-&gt;bind();
+ $schema = $ldap-&gt;schema();</PRE>
+<PRE>
+ #
+ # Load from LDIF
+ #
+ $schema = Net::LDAP-&gt;new( &quot;schema.ldif&quot; );</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P><STRONG>Net::LDAP::Schema</STRONG> provides a means to load an LDAP schema and query it
+for information regarding supported objectclasses, attributes and syntaxes.</P>
+<P>
+<HR>
+<H1><A NAME="methods">METHODS</A></H1>
+<P>Where a method is stated as taking the 'name or oid' of a schema item (which
+may be an object class, attribute or syntax) then a case-insensitive name
+or raw oid (object identifier, in dotted numeric string form, e.g. 2.5.4.0)
+may be supplied.</P>
+<DL>
+<DT><STRONG><A NAME="item_attributes">attributes</A></STRONG><BR>
+<DD>
+With no arguments, returns a list of the names all attributes in the schema.
+<PRE>
+  @atts = $schema-&gt;attributes();</PRE>
+<P>If called with an argument which is the name or oid of a known object class,
+returns a list of the attributes which may (or must) be present in the OC.</P>
+<PRE>
+  @person_atts = $schema-&gt;attributes( &quot;person&quot; );</PRE>
+<P>Return value is an array or array reference depending on calling context, or
+empty list on error.</P>
+<P></P>
+<DT><STRONG><A NAME="item_objectclasses">objectclasses</A></STRONG><BR>
+<DD>
+Returns a list of the names of all objectclasses in the schema.
+<PRE>
+  @ocs = $schema-&gt;objectclasses();</PRE>
+<P>Return value is an array or array reference depending on calling context.</P>
+<P></P>
+<DT><STRONG><A NAME="item_syntaxes">syntaxes</A></STRONG><BR>
+<DD>
+Returns a list of the names of all objectclasses in the schema. (The name of
+a syntax is not well defined. It may be an OID or abbreviated description).
+<PRE>
+  @syns = $schema-&gt;syntaxes();</PRE>
+<P>Return value is an array or array reference depending on calling context.</P>
+<P></P>
+<DT><STRONG><A NAME="item_syntax">syntax</A></STRONG><BR>
+<DD>
+Given an argument which is the name or oid of a known attribute, returns the
+name of the attribute's syntax (or the syntax of the attributes superior
+if the syntax is inherited).
+<PRE>
+  $name_syntax = $schema-&gt;syntax( &quot;commonName&quot; );</PRE>
+<P></P>
+<DT><STRONG><A NAME="item_must">must</A></STRONG><BR>
+<DD>
+Given an argument which is the name or oid of a known object class, returns
+the name of the attributes which are mandatory in the class
+<PRE>
+  @must = $schema-&gt;must( $oc );</PRE>
+<P>Return value is an array or array reference depending on calling context.</P>
+<P></P>
+<DT><STRONG><A NAME="item_may">may</A></STRONG><BR>
+<DD>
+Given an argument which is the name or oid of a known object class, returns
+the name of the attributes which are optional in the class.
+<PRE>
+  @may = $schema-&gt;may( $oc );</PRE>
+<P>Return value is an array or array reference depending on calling context.</P>
+<P></P>
+<DT><STRONG><A NAME="item_name2oid">name2oid</A></STRONG><BR>
+<DD>
+Given the name of a schema item (object class, attribute or syntax) returns
+the assoicated OID or undef if it is not recognised.
+<P></P>
+<DT><STRONG><A NAME="item_is_objectclass%2C_is_attribute%2C_is_syntax">is_objectclass, is_attribute, is_syntax</A></STRONG><BR>
+<DD>
+Given the name or oid of a schema item (object class, attribute or syntax
+respectively) returns the assoicated OID or undef if the name or oid is not of
+the appropriate type.
+<PRE>
+  # Is foo a known OC?
+  $oid = $schema-&gt;is_objectclass( &quot;foo&quot; );
+  # No? Bale out.
+  die( &quot;Not an objectclass&quot; ) unless $oid;
+  # Yes...so we can do this
+  @must = $schema-&gt;must( $oid );</PRE>
+<P></P></DL>
+<P>
+<HR>
+<H1><A NAME="see also">SEE ALSO</A></H1>
+<P><A HREF="../../Net/LDAP.html">Net::LDAP</A>,
+<A HREF="../../Net/LDAP/RFC.html">Other online documentation</A></P>
+<P>
+<HR>
+<H1><A NAME="authors">AUTHORS</A></H1>
+<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;
+John Berthels &lt;<A HREF="mailto:jjb@nexor.co.uk">jjb@nexor.co.uk</A>&gt;</P>
+<P>Please report any bugs, or post any suggestions, to the perl-ldap mailing list
+&lt;<A HREF="mailto:perl-ldap@mail.med.cornell.edu">perl-ldap@mail.med.cornell.edu</A>&gt;.</P>
+<P>
+<HR>
+<H1><A NAME="copyright">COPYRIGHT</A></H1>
+<P>Copyright (c) 1998-2000 Graham Barr. All rights reserved. This program is
+free software; you can redistribute it and/or modify it under the same
+terms as Perl itself.</P>
+<hr><P><EM>$Id: //depot/ldap-asn/lib/Net/LDAP/Schema.pod#3 $</EM></P>
+
+</BODY>
+
+</HTML>

@@ -1,0 +1,67 @@
+<HTML>
+<HEAD>
+<TITLE>Net::LDAP::Util - Utility functions</TITLE>
+<LINK REV="made" HREF="mailto:gbarr@chipper.localdomain">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+<!--
+
+<UL>
+
+	<LI><A HREF="#name">NAME</A></LI>
+	<LI><A HREF="#synopsis">SYNOPSIS</A></LI>
+	<LI><A HREF="#description">DESCRIPTION</A></LI>
+	<LI><A HREF="#functions">FUNCTIONS</A></LI>
+	<LI><A HREF="#author">AUTHOR</A></LI>
+	<LI><A HREF="#copyright">COPYRIGHT</A></LI>
+</UL>
+-->
+<!-- INDEX END -->
+
+<P>
+<H1><A NAME="name">NAME</A></H1>
+<P>Net::LDAP::Util - Utility functions</P>
+<P>
+<HR>
+<H1><A NAME="synopsis">SYNOPSIS</A></H1>
+<PRE>
+  use Net::LDAP::Util qw(ldap_error_text);</PRE>
+<P>
+<HR>
+<H1><A NAME="description">DESCRIPTION</A></H1>
+<P><STRONG>Net::LDAP::Util</STRONG> is a collection of utility functions for use with
+the <A HREF="../../Net/LDAP.html">Net::LDAP</A> modules.</P>
+<P>
+<HR>
+<H1><A NAME="functions">FUNCTIONS</A></H1>
+<DL>
+<DT><STRONG><A NAME="item_ldap_error_name">ldap_error_name ( NUM )</A></STRONG><BR>
+<DD>
+Returns the name corresponding with the error number passed in. If the
+error is not known the a string in the form <CODE>&quot;LDAP error code %d(0x%02X)&quot;</CODE>
+is returned.
+<P></P>
+<DT><STRONG><A NAME="item_ldap_error_text">ldap_error_text ( NUM )</A></STRONG><BR>
+<DD>
+Returns the text from the POD description for the given error. If the
+error code given is unknown then <CODE>undef</CODE> is returned.
+<P></P></DL>
+<P>
+<HR>
+<H1><A NAME="author">AUTHOR</A></H1>
+<P>Graham Barr &lt;<A HREF="mailto:gbarr@pobox.com">gbarr@pobox.com</A>&gt;</P>
+<P>
+<HR>
+<H1><A NAME="copyright">COPYRIGHT</A></H1>
+<P>Copyright (c) 1999-2000 Graham Barr. All rights reserved. This program is
+free software; you can redistribute it and/or modify it under the same
+terms as Perl itself.</P>
+<hr><P><EM>$Id: //depot/ldap-asn/lib/Net/LDAP/Util.pm#3 $</EM></P>
+
+</BODY>
+
+</HTML>
