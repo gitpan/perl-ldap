@@ -77,6 +77,10 @@ Net::LDAP::BER->define(
   [ EXTEND_REQ_VALUE  => $STRING,      BER_CONTEXT                       | 0x01 ],
 
   [ MOD_SUPERIOR      => $STRING,      BER_CONTEXT			 | 0x00 ],
+  
+  # Server side sorting
+  [ SSS_MATCHRULE     => $STRING,      BER_CONTEXT                       | 0x00 ],
+  [ SSS_REVERSE       => $BOOLEAN,     BER_CONTEXT                       | 0x01 ],
 );
 
 1;

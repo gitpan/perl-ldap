@@ -5,20 +5,20 @@ Net::LDAP -- Lightweight Directory Access Protocol
 =head1 SYNOPSIS
 
  use Net::LDAP;
-
+ 
  $ldap = Net::LDAP->new('ldap.bigfoot.com') or die "$@";
-
+ 
  $ldap->bind ;    # an anonymous bind
-
+ 
  $mesg = $ldap->search (  # perform a search
                         base   => "c=US",
                         filter => "(&(sn=Barr) (o=Texas Instruments))"
                        );
-
+ 
  $mesg->code && die $mesg->error;
-
+ 
  foreach $entry ($mesg->all_entries) { $entry->dump; }
-
+ 
  $ldap->unbind;   # take down session
  
  
@@ -28,17 +28,19 @@ Net::LDAP -- Lightweight Directory Access Protocol
               dn       => 'cn=root, o=University of Michigan, c=us',
               password => 'secret'
              );
-
-
+ 
  $result = $ldap->add (
-              dn   => 'cn = Barbara Jensen, o=University of Michigan, c=us',
-              attr => [ 'cn'   => ['Barbara Jensen', 'Barbs Jensen'],
-                        'sn    => 'Jensen',
-                        'mail' => 'b.jensen@umich.edu'
-                      ]
-            );
-  $result->code && warn "failed to add entry: ", $result->error ;
-
+               dn   => 'cn = Barbara Jensen, o=University of Michigan, c=us',
+               attr => [ 'cn'   => ['Barbara Jensen', 'Barbs Jensen'],
+                	 'sn    => 'Jensen',
+                	 'mail' => 'b.jensen@umich.edu',
+                	 'objectclass' => ['top', 'person',
+                                           'organizationalPerson',
+                                           'inetOrgPerson' ],
+                       ]
+             );
+ 
+ $result->code && warn "failed to add entry: ", $result->error ;
 
 =head1 DESCRIPTION
 
@@ -489,8 +491,11 @@ B<Example>
 =item unbind
 
 The unbind method does not take any parameters and will unbind you
-from the server. You may then either re-bind with another DN and password
-or close the connection.
+from the server. While some servers may allow you to re-bind or perform
+other operations after unbinding, the only portable operation is closing
+the connection. In the case that you wish to switch to another set of
+credentials while continuing to use the same connection, re-binding with
+another DN and password, without unbind-ing, will generally work.
 
 B<Example>
 

@@ -1,3 +1,18 @@
+Well I have an update to printMembers.pl as well ;)
+
+The only difference is that it adds support for dynamic groups as well.
+
+BTW Do you think these would make logical methods in Utils or should there
+be a Net::LDAP::Groups object or should they just be left as scripts?
+
+Mark
+
+Graham Barr wrote:
+
+> Arg, and I just sent out 0.13. Ah well it will be in the next release.
+
+------------------------------------------------------------------------
+
 Here's another script I'd like to submit. This one is called
 printMembers.pl
 

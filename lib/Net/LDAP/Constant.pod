@@ -181,6 +181,17 @@ The server is unwilling to perform the requested operation
 
 The server was unable to perform the request due to an internal loop detected
 
+=item LDAP_SORT_CONTROL_MISSING
+
+The search contained a "virtual list view" control, but not a server-side
+sorting control, which is required when a "virtual list view" is given.
+
+=item LDAP_INDEX_RANGE_ERROR
+
+The search contained a control for a "virtual list view" and the results
+exceeded the range specified by the requested offsets.
+
+
 =item LDAP_NAMING_VIOLATION
 
 The request violates the structure of the DIT
@@ -281,6 +292,35 @@ An invalid parameter was specified
 =item LDAP_NO_MEMORY
 
 Out of memory error
+
+=item LDAP_CONNECT_ERROR
+
+A connection to the server could not be established
+
+=item LDAP_NOT_SUPPORTED
+
+An attempt has been made to use a feature not supported by Net::LDAP
+
+=item LDAP_CONTROL_NOT_FOUND
+
+The controls required to perform the requested operation were not
+found.
+
+=item LDAP_NO_RESULTS_RETURNED
+
+No results were returned from the server.
+
+=item LDAP_MORE_RESULTS_TO_RETURN
+
+There are more results in the chain of results.
+
+=item LDAP_CLIENT_LOOP
+
+A loop has been detected. For example when following referals.
+
+=item LDAP_REFERRAL_LIMIT_EXCEEDED
+
+The referral hop limit has been exceeded.
 
 =back
 

@@ -4,6 +4,8 @@
 #given the name of a group (assume object class is groupOfUniqueNames) will
 #display the members of the group including members of any groups that may be a member
 #of the original group
+
+#*Now Handles Netscape Dynamic Groups*
 #
 #By default it will display the DN of the member entries, you can specify a particular 
 #attribute you wish to display instead (e.g. mail attribute)
@@ -16,14 +18,16 @@
 #Mark Wilcox mark@mjwilcox.com
 #
 #first version: August 8, 1999
+#second version: August 15, 1999
 
 use strict;
 use Carp;
 use Net::LDAP;
+use URI;
 use vars qw($opt_h $opt_p $opt_D $opt_w $opt_b $opt_n $opt_a );
 use Getopt::Std;
 
-my $usage = "usage: $0 [-hpDwba] -n group_DN";
+my $usage = "usage: $0 [-hpDwba] -n group_name";
 
 die $usage unless @ARGV;
 
@@ -31,6 +35,8 @@ getopts('h:p:D:w:b:n:a:');
 
 die $usage unless ($opt_n);
 
+
+my $DEBUG = 0; #DEBUG 1 if you want debugging info
 #get configuration setup
 $opt_h = "airwolf" unless $opt_h;
 $opt_p = 389 unless $opt_p;
@@ -74,7 +80,7 @@ sub printMembers
 {
   my ($dn,$attr) = @_;
 
-  my @attrs = ["uniquemember"];
+  my @attrs = ["uniquemember","memberurl"];
 
   my $mesg = $ldap->search(
                base => $dn,
@@ -109,7 +115,7 @@ sub printMembers
        #as our search base, greatly reducing the number of entries we 
        #must search through for a match to 1 :)
 
-       my @entryAttrs = ["objectclass",$attr];
+       my @entryAttrs = ["objectclass","memberurl",$attr];
 
        $mesg = $ldap->search(
                base => $val,
@@ -143,12 +149,87 @@ sub printMembers
 
         # This value is also a group, print the members of it as well  
 
-        &printMembers($entry->dn(),$attr) if (grep /groupOfUniqueNames/, @{$values});
+
+        &printMembers($entry->dn(),$attr) if (grep /groupOfUniqueNames/i, @{$values});
      };
    } 
+        my $urls = $entry->get("memberurl");
+	&printDynamicMembers($entry->dn(),$urls,$attr) if ($urls); 
  };
     return 0;
   }
+
+
+
+#prints out a search results
+#for members of dynamic group (as supported by the Netscape Directory Server)
+
+#*Note this may or may not return all of the resulting members and their attribute values 
+#depending on how the LDAP connection is binded. Normally users who are not binded as the Directory Manager
+#are restricted to 2000 or less total search results. 
+
+#In theory a dynamic group could have a million or more entries
+sub printDynamicMembers
+{
+   my ($entryDN,$urls,$attr) = @_;
+
+   print "\nMembers of dynamic group: $entryDN\n";
+
+
+   foreach my $url (@{$urls})
+   {
+     print "url is $url\n" if $DEBUG;
+     my $uri;
+     eval
+     {
+      $uri =  URI->new($url);
+     } ;
+
+     print "ref ",ref($uri),"\n" if $DEBUG;
+
+     my $base = $uri->dn();
+
+     print "base is $base\n" if $DEBUG;
+     my $scope = $uri->scope(); 
+
+     my $filter = $uri->filter();
+
+     my @attrs = [$attr];
+
+     my $mesg = $ldap->search(
+               base => $base,
+	       scope => $scope,
+	       filter => $filter,
+	       attrs => @attrs
+	       );
+ 
+     #print results
+
+     my $entry;
+     while ($entry = $mesg->pop_entry())
+     { 
+
+        if ($attr)
+	{
+          my  $values = $entry->get($attr);
+
+           foreach my $vals (@{$values})
+           {
+             print $vals,"\n";
+           }
+	}
+        else
+	{
+           print $entry->dn(),"\n";
+	} 
+     }
+
+    }
+  return 0;
+} 
+
+
+
 
 
 

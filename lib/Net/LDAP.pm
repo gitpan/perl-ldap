@@ -20,7 +20,7 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 			   LDAP_LOCAL_ERROR
 			);
 
-$VERSION = "0.13";
+$VERSION = "0.14";
 
 $LDAP_VERSION = 2;      # default LDAP protocol version
 
@@ -50,7 +50,9 @@ sub _options {
 sub _controls {
   my ($ctrl) = @_;
 
-  $ctrl = [ $ctrl ] if ref($ctrl) eq 'HASH';
+  return undef unless $ctrl;
+  
+  $ctrl = [ $ctrl ] if UNIVERSAL::isa($ctrl,'HASH');
 
   return undef unless ref($ctrl) eq 'ARRAY';
 
@@ -671,12 +673,13 @@ sub _forgetmesg {
 sub schema {
   require Net::LDAP::Schema;
   my $self = shift;
+  my $default = shift;
   my $mesg;
 
   unless ($self->{'net_ldap_schema'}) {
-    my($m,$root) = $self->root_dse;
+    my $root = $self->root_dse;
 
-    return ($m, undef) unless $root;
+    if( $root ) {
 
     my $base = ($root->get('subschemasubentry'))[0] || 'cn=schema';
 
@@ -685,12 +688,14 @@ sub schema {
       scope    => 'base',
       filter   => '(objectClass=*)',
     );
-
     $self->{'net_ldap_schema'} = Net::LDAP::Schema->new($mesg)
       unless $mesg->code;
   }
 
-  return ( $mesg, $self->{'net_ldap_schema'} );
+    $self->{'net_ldap_schema'} ||= Net::LDAP::Schema->new($default)
+  }
+
+  return $self->{'net_ldap_schema'};
 }
 
 sub root_dse {
@@ -706,7 +711,7 @@ sub root_dse {
     $self->{'net_ldap_rootdse'} = $mesg->entry;
   }
 
-  return ($mesg, $self->{'net_ldap_rootdse'});
+  return $self->{'net_ldap_rootdse'};
 }
 
 1;

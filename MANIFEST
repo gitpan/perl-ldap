@@ -6,6 +6,18 @@ TODO
 bin/ldapdelete.PL
 bin/ldapmodrdn.PL
 bin/ldapsearch.PL
+contrib/checkauth.pl
+contrib/examples
+contrib/isMember.pl
+contrib/isMember.readme
+contrib/printMembers.pl
+contrib/printMembers.readme
+contrib/schema
+contrib/schema.README
+contrib/schema.tklkup
+contrib/tklkup
+contrib/tklkup.README
+contrib/tklkup.tklkup
 data/00-cmp2.ldif
 data/00-in.ldif
 data/50-cmp.ldif
@@ -21,7 +33,6 @@ data/52-mod.ldif
 data/slapd-conf.in
 data/slapd.at.conf
 data/slapd.oc.conf
-examples/example.pl
 lib/Authen/SASL.pm
 lib/Authen/SASL/CRAM_MD5.pm
 lib/LWP/Protocol/ldap.pm
@@ -32,9 +43,12 @@ lib/Net/LDAP/BER.pod
 lib/Net/LDAP/Bind.pm
 lib/Net/LDAP/Constant.pm
 lib/Net/LDAP/Constant.pod
+lib/Net/LDAP/Control.pm
+lib/Net/LDAP/Control/sort.pm
 lib/Net/LDAP/Entry.pm
 lib/Net/LDAP/Entry.pod
 lib/Net/LDAP/Extension.pm
+lib/Net/LDAP/FAQ.pod
 lib/Net/LDAP/Filter.pm
 lib/Net/LDAP/Filter.pod
 lib/Net/LDAP/LDIF.pm
@@ -54,7 +68,3 @@ t/50populate.t
 t/51search.t
 t/52modify.t
 t/common.pl
-contrib/isMember.pl
-contrib/isMember.readme
-contrib/printMembers.pl
-contrib/printMembers.readme

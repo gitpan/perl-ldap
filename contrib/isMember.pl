@@ -4,29 +4,34 @@
 #pass the common name of a group entry (assuming groupOfUniqueNames objectclass) and 
 #a uid, the script will tell you if the uid is a member of the group or not.
 
-$version = 2.0;
+$version = 3.0;
 
 #in this version, the uid is a member of the given group if:
 #are a member of the given group
 #or are a member of a group who is a member of the given group
+#or are a member of a dynamic group (currently only supported by Netscape Directory Server)
+
 
 #Mark Wilcox mark@mjwilcox.com
 #
 #first version: August 8, 1999
-#second version: August 14, 1999
+#second version: August 15, 1999
 
 #bugs: none ;)
 #
-#To Do: add support of Netscape Directory Server's dymanic groups 
+
+#To Do: Change this into a module for Net::LDAP??
+#       Add ability to handle various group objectclasses
 
 use strict;
 use Carp;
 use Net::LDAP;
+use URI;
 use vars qw($opt_h $opt_p $opt_D $opt_w $opt_b $opt_n $opt_u );
 use Getopt::Std;
 
 
-my $DEBUG = 1;
+my $DEBUG = 0; #set to 1 to turn debugging on
 
 my $usage = "usage: $0 [-hpDwb] -n group_name -u uid ";
 
@@ -80,16 +85,15 @@ eval
    print "group is $groupDN\n" if $DEBUG;
 
 
-   $isMember = &getIsMember($groupDN,$userDN);
+   &getIsMember($groupDN,$userDN);
 
 }; 
 
 
 die $mesg->error if $mesg->code;
 
-#
 
-
+print "isMember is $isMember\n" if $DEBUG;
 if ($isMember)
 {
   print "$opt_u is a member of group $opt_n\n";
@@ -106,8 +110,9 @@ sub getIsMember
 {
    my ($groupDN,$userDN) = @_;
 
-   my $isMember = 0;
+  # my $isMember = 0;
 
+   print "in getIsMember:$groupDN\n" if $DEBUG;
 
    eval
    {
@@ -116,33 +121,77 @@ sub getIsMember
 
       my $mesg = $ldap->compare($groupDN,attr=>"uniquemember",value=>$userDN);
 
-      print $mesg->code(),":$groupDN:$userDN\n" if $DEBUG;
       if ($mesg->code() == 6)
       {
         $isMember = 1;
         return $isMember;
       }
+    };
 
 
+   eval
+   {
       #ok so you're not a member of this group, perhaps a member of the group
       #is also a group and you're a member of that group
 
 
-      my @groupattrs = ["uniquemember","objectclass"];
+      my @groupattrs = ["uniquemember","objectclass","memberurl"];
 
       $mesg = $ldap->search(
                base => $groupDN,
-	       filter => "(&(cn=$opt_n)(objectclass=groupOfUniqueNames)",
+	       filter => "(|(objectclass=groupOfUniqueNames)(objectclass=groupOfUrls))",
 	       attrs => @groupattrs
 	       );
 
       my $entry = $mesg->pop_entry();
 
-      my $values = $entry->get("uniquemember");
+
+
+      #check to see if our entry matches the search filter
+
+      my $urlvalues = $entry->get("memberurl");
+
+      foreach my $urlval (@{$urlvalues})
+      {
+
+         my $uri = new URI ($urlval);
+
+
+         my $filter = $uri->filter();
+
+	 my @attrs = $uri->attributes();
+
+         $mesg = $ldap->search(
+               base => $userDN,
+	       scope => "base",
+	       filter => $filter,
+	       attrs => \@attrs
+	       );
+
+        #if we find an entry it returns true
+	#else keep searching
+	
+        eval
+	{ 
+          my $entry = $mesg->pop_entry();
+	  print "ldapurl",$entry->dn,"\n" if $DEBUG;
+
+	  $isMember  = 1;
+	  return $isMember;
+	};
+
+
+      } #end foreach
+
+
+      my $membervalues = $entry->get("uniquemember");
     
-     foreach my $val (@{$values})
+     foreach my $val (@{$membervalues})
      {
-       &getIsMember($val,$userDN) if (grep /groupOfUniqueNames/, @{$val});
+       my $return= &getIsMember($val,$userDN);
+
+       #stop as soon as we have a winner
+       last if $isMember;
      }
      
 
@@ -151,7 +200,7 @@ sub getIsMember
 
      #if make it this far then you must be a member
   
-   }; 
+   };
 
    return $0;
 }

@@ -16,9 +16,10 @@ my %mode = qw(w > r < a >>);
 sub new {
   my $pkg = shift;
   my $file = shift || "-";
-  my $mode = shift || "w";
+  my $mode = shift || "r";
   my %opt = @_;
   my $fh;
+  my $opened_fh = 0;
   
   if (ref($file)) {
     $fh = $file;
@@ -37,6 +38,7 @@ sub new {
       $fh = Symbol::gensym();
       my $open = ($mode{$mode} || "<") . $file;
       open($fh,$open) or return;
+      $opened_fh = 1;
     }
   }
 
@@ -47,6 +49,7 @@ sub new {
     %opt,
     fh   => $fh,
     file => "$file",
+    opened_fh => $opened_fh,
   };
 
   bless $self, $pkg;
@@ -320,8 +323,15 @@ sub write_cmd {
 
 sub done {
   my $self = shift;
+  my $fh = $self->{'fh'};
+  close $fh if $self->{'opened_fh'};
   delete $self->{'fh'};
   1;
+}
+
+sub DESTROY {
+    my $self = shift;
+    $self->done();
 }
 
 1;

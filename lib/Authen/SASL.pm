@@ -7,7 +7,7 @@ package Authen::SASL;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = "0.1";
+$VERSION = "0.11";
 
 sub new {
   my $pkg = shift;
@@ -15,7 +15,7 @@ sub new {
   my %opt = @_;
   $pkg .= "::" . $type;
   $pkg =~ s/-/_/g;
-  eval "require $pkg";
+  eval "require $pkg" or die;
   my $self = bless {}, $pkg;
 
   $self->init(\%opt);
@@ -29,6 +29,7 @@ sub init {
 sub name {
   my $name = ref($_[0]) || $_[0];
   $name =~ s/.*:://;
+  $name =~ s/_/-/g;
   uc($name);
 }
 
@@ -48,7 +49,9 @@ sub challenge {
 
 sub initial {
   my $self = shift;
-  undef;
+  my $initial = $self->{'initial'};
+  $self->{'initial'} = shift if @_;
+  $initial;
 }
 
 1;

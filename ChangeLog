@@ -1,3 +1,65 @@
+Change 354 on 2000/02/14 by <gbarr@pobox.com> (Graham Barr)
+
+	Authen::SASL
+	- die if require fails
+
+Change 353 on 2000/02/09 by <gbarr@pobox.com> (Graham Barr)
+
+	Added re-vamped schema code from
+	John Berthels <jjb@berthels.uklinux.net>
+	
+	Included in the diff is a minor tweak to Net::LDAP::LDIF (change
+	default mode to 'read' not 'truncate' after I blew away a test
+	file ;-) and a little added documentation.
+
+Change 352 on 2000/02/09 by <gbarr@pobox.com> (Graham Barr)
+
+	Added more to contrib directory and started an FAQ
+
+Change 342 on 1999/10/22 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP.pod
+	attrs description update from Dan Harasty
+
+Change 337 on 1999/09/24 by <gbarr@pobox.com> (Graham Barr)
+
+	Added inital implementation of Net::LDAP::Control
+
+Change 334 on 1999/09/18 by <gbarr@pobox.com> (Graham Barr)
+
+	Authen::SASL
+	- do not ignore initial
+
+Change 326 on 1999/09/05 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP.pod
+	- Update unbind docs to describe that some servers will
+	  close the connection
+
+Change 325 on 1999/09/05 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP.pod
+	- Added objectClass to add example
+	
+	Net::LDAP::Constant
+	- Added more constants
+
+Change 324 on 1999/09/05 by <gbarr@pobox.com> (Graham Barr)
+
+	Updated contrib/printMembers.pl from Mark
+
+Change 323 on 1999/08/15 by <gbarr@pobox.com> (Graham Barr)
+
+	Update 3.0 to contrib/isMember.pl
+
+Change 322 on 1999/08/15 by <gbarr@pobox.com> (Graham Barr)
+
+	Release 0.13
+
+Change 321 on 1999/08/15 by <gbarr@pobox.com> (Graham Barr)
+
+	update to contrib/isMember.pl from Mark Wilcox
+
 Change 320 on 1999/08/11 by <gbarr@pobox.com> (Graham Barr)
 
 	Added contrib directory with ismember.pl and printMembers.pl

@@ -4,6 +4,21 @@ Net::LDAP::Entry -- An LDAP entry object
 
 =head1 SYNOPSIS
 
+  use Net::LDAP;
+
+  $ldap = Net::LDAP->new($host);
+  $mesg = $ldap->search(@search_args);
+
+  my $max = $mesg->count;
+  for($i = 0 ; $i < $max ; $i++) {
+    my $entry = $mesg->entry($i);
+    foreach my $attr ($entry->attributes) {
+      print join("\n ",$attr, $entry->get($attr)),"\n";
+    }
+  }
+
+  # or
+
   use Net::LDAP::Entry;
   
   $entry = Net::LDAP::Entry->new;
@@ -19,8 +34,22 @@ Net::LDAP::Entry -- An LDAP entry object
     attr1 => 'newvalue'
     attr2 => [qw(new values)]
   );
+  
+  $entry->update( $ldap ); # update directory server
 
 =head1 DESCRIPTION
+
+The Net::LDAP::Entry object represents a single entry in the directory.
+It is a container for attribute-value pairs.
+
+A Net::LDAP::Entry object can be used in two situations. The first and
+probably most common use is in the result of a search to the directory
+server.
+
+The other is where a new object is created locally and then a single
+command is sent to the directory server to add, modify or replace an
+entry. Entries for this purpose can also be created by reading an
+LDIF file with the L<Net::LDAP::LDIF> module.
 
 =head1 CONSTRUCTOR
 
@@ -30,30 +59,107 @@ Net::LDAP::Entry -- An LDAP entry object
 
 =item add ( ATTR => VALUE [, ATTR2 => VALUE2 ... ] )
 
+Add one or more new attributes to the entry. Each value
+must be a scalar variable or a reference to an array. The
+values given will be added to the values which already exist
+for the given attributes.
+
+  $entry->add( 'sn' => 'Barr');
+
+  $entry->add( 'street' => [ '1 some road','nowhere']);
+
+B<NOTE>: these changes are local to the client and will not
+appear on the directory server until the C<update> method
+is called.
+
 =item replace ( ATTR => VALUE [, ATTR2 => VALUE2 ... ] )
 
-=item delete ( ATTR [, ATTR2 ... ] )
+Similar to add, except that the values given will replace
+any values that already exist for the given attributes.
+
+B<NOTE>: these changes are local to the client and will not
+appear on the directory server until the C<update> method
+is called.
+
+=item delete ( [ ATTR [, ATTR2 ... ]] )
+
+Delete the given attributes from the entry. If no attributes
+are passed then the next call to update will cause the entry
+to be deleted from the server.
+
+B<NOTE>: these changes are local to the client and will not
+appear on the directory server until the C<update> method
+is called.
 
 =item dn ( [ DN ] )
 
+Set or get the DN for the entry. With no arguments C<dn> will return
+the current DN. If an argument is given then it will change the DN
+for the entry and return the previous value.
+
+B<NOTE>: these changes are local to the client and will not
+appear on the directory server until the C<update> method
+is called.
+
 =item update ( [ CLIENT ] )
 
-This method is not implemented yet.
+Update the directory server with any changes that have been made
+locally. This means any calls that have been made to add, replace
+or delete since the last call to changetype or update was made.
+
+CLIENT should be a C<Net::LDAP> object where the update
+should be sent to.
+
+CLIENT is only optional is the Net::LDAP::Entry object was created
+by a search on a directory server. In which case, if omitted, the
+update will be sent back to the same server.
+
+The result will be an object of type C<Net::LDAP::Message> as returned
+by the add, modify or delete method called on CLIENT.
 
 =item attributes
 
+Return a list of attributes that this entry has.
+
 =item get ( ATTR )
+
+Get the values for the attribute ATTR. The result will be a reference
+to an array, if that attribute exists. If the attribute does not exist
+the C<undef> will be returned.
+
+=item changetype ( [ TYPE ] )
+
+If called without arguments it returns the type of operation that would
+be performed when the update method is called. If called with an argument
+it will set the changetype to TYPE.
+
+Possible values for TYPE are
+
+=over 4
+
+=item add
+
+The update method will call the add method on the client object, which
+will result in the entry being added to the directory server.
+
+=item delete
+
+The update method will call the delete method on the client object, which
+will result in the entry being removed from the directory server.
+
+=item modify
+
+The update method will call the modify method on the client object, which
+will result in any changes that have been made locally being made to the
+entry on the directory server.
+
+=back
 
 =back
 
 =head1 SEE ALSO
 
-L<Net::LDAP>
-
-=head1 ACKNOWLEDGEMENTS
-
-This document is based on a document originally written by Russell Fulton
-E<lt>F<r.fulton@auckland.ac.nz>E<gt>.
+L<Net::LDAP>, L<Net::LDAP::LDIF>
 
 =head1 AUTHOR
 
