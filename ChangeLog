@@ -1,3 +1,26 @@
+Change 526 on 2000/05/22 by <gbarr@pobox.com> (Graham Barr)
+
+	Now passes -wc with 5.004, 5.005_03 and 5.6.0
+
+Change 525 on 2000/05/22 by <gbarr@pobox.com> (Graham Barr)
+
+	Bundle::Net::LDAP
+	- Change Convert::ASN to Convert::ASN1
+
+Change 522 on 2000/05/19 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Filter
+	- Return an error when there are unmatched ()
+
+Change 517 on 2000/05/15 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Search
+	- fix bug in ->as_struct introduced by new code in Net::LDAP::Entry
+
+Change 516 on 2000/05/12 by <gbarr@pobox.com> (Graham Barr)
+
+	Release 0.17
+
 Change 512 on 2000/05/09 by <gbarr@pobox.com> (Graham Barr)
 
 	Net::LDAP

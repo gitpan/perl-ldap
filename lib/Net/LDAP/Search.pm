@@ -12,7 +12,7 @@ use Net::LDAP::Filter;
 use Net::LDAP::Constant qw(LDAP_SUCCESS LDAP_DECODING_ERROR);
 
 @ISA = qw(Net::LDAP::Message);
-$VERSION = "0.02";
+$VERSION = "0.04";
 
 
 sub first_entry { # compat
@@ -91,14 +91,6 @@ sub entry {
 
 sub all_entries { goto &entries } # compat
 
-sub entries {
-  my $self = shift;
-
-  $self->sync unless exists $self->{code};
-
-  @{$self->{entries} || []}
-}
-
 sub count {
   my $self = shift;
   scalar entries($self);
@@ -160,8 +152,16 @@ sub references {
 
 sub as_struct {
   my $self = shift;
-  my %result = map { ( $_->dn, $_->{'attrs'} ) } entries($self);
+  my %result = map { ( $_->dn, ($_->{'attrs'} || $_->_build_attrs) ) } entries($self);
   return \%result;
+}
+
+sub entries {
+  my $self = shift;
+
+  $self->sync unless exists $self->{code};
+
+  @{$self->{entries} || []}
 }
 
 package Net::LDAP::Reference;

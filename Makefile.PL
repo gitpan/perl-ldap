@@ -78,8 +78,8 @@ my @ppd;
 
 if ($] >= 5.00503) {
   @ppd = (
-    AUTHOR    => 'Graham Barr <gbarr@pobox.com>',
-    ABSTRACT  => 'LDAP Client library'
+    AUTHOR       => $AUTHOR,
+    ABSTRACT     => $ABSTRACT,
   );
 }
 
@@ -88,8 +88,6 @@ WriteMakefile(
   NAME         => $DISTNAME,
   EXE_FILES    => $opt_s ? [ values %PL_FILES ] : [],
   PL_FILES     => \%PL_FILES,
-  AUTHOR       => $AUTHOR,
-  ABSTRACT     => $ABSTRACT,
   clean        => {FILES => 'temp'},
   @ppd,
 );

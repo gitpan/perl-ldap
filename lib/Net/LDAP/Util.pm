@@ -23,13 +23,14 @@ the L<Net::LDAP|Net::LDAP> modules.
 
 =cut
 
+use vars qw($VERSION);
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(
   ldap_error_name
   ldap_error_text
 );
-$VERSION = "0.02";
+$VERSION = "0.03";
 
 =item ldap_error_name ( NUM )
 

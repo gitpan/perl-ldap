@@ -1,7 +1,7 @@
 
 package Bundle::Net::LDAP;
 
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 1;
 
@@ -17,7 +17,7 @@ C<perl -MCPAN -e 'install Bundle::Net::LDAP'>
 
 =head1 CONTENTS
 
-Convert::ASN
+Convert::ASN1
 
 Digest::MD5
 
@@ -37,7 +37,7 @@ Graham Barr
 
 =for html <hr>
 
-I<$Id: //depot/ldap/lib/Bundle/Net/LDAP.pm#1 $>
+I<$Id: //depot/ldap/lib/Bundle/Net/LDAP.pm#2 $>
 
 =cut
 

@@ -1,4 +1,4 @@
-# $Id: //depot/ldap/lib/Net/LDAP/Message.pm#16 $
+# $Id: //depot/ldap/lib/Net/LDAP/Message.pm#17 $
 # Copyright (c) 1997-2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
@@ -10,7 +10,7 @@ use Net::LDAP::ASN qw(LDAPRequest);
 use strict;
 use vars qw($VERSION);
 
-$VERSION = "1.02";
+$VERSION = "1.03";
 
 my $MsgID = 0;
 
@@ -33,18 +33,6 @@ sub new {
   }, $type;
 
   $self;
-}
-
-sub callback {
-  shift->{callback};
-}
-
-sub parent {
-  shift->{parent};
-}
-
-sub mesg_id {
-  shift->{mesgid};
 }
 
 sub code {
@@ -161,10 +149,6 @@ sub saslref {
     : undef
 }
 
-sub pdu {
-  shift->{pdu};
-}
-
 
 sub encode {
   my $self = shift;
@@ -193,6 +177,11 @@ sub control {
          : ()
      : map { @$_ } values %{$self->{ctrl_hash}};
 }
+
+sub pdu      {  shift->{pdu}      }
+sub callback {  shift->{callback} }
+sub parent   {  shift->{parent}   }
+sub mesg_id  {  shift->{mesgid}   }
 
 ##
 ##
