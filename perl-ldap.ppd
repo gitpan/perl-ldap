@@ -1,4 +1,4 @@
-<SOFTPKG NAME="perl-ldap" VERSION="0,18,0,0">
+<SOFTPKG NAME="perl-ldap" VERSION="0,19,0,0">
 	<TITLE>perl-ldap</TITLE>
 	<ABSTRACT>perl-ldap is a library of modules implementing an LDAP client. The aim
 of the perl-ldap project is to implement a very portable LDAP client in
