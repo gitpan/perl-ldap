@@ -22,7 +22,7 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 			   LDAP_INAPPROPRIATE_AUTH
 			);
 
-$VERSION 	= 0.251;
+$VERSION 	= "0.26";
 @ISA     	= qw(Net::LDAP::Extra);
 $LDAP_VERSION 	= 2;      # default LDAP protocol version
 
@@ -96,7 +96,14 @@ sub new {
   my $arg  = &_options;
   my $obj  = bless {}, $type;
 
-  $obj->_connect($host, $arg) or return;
+  foreach my $h (ref($host) ? @$host : ($host)) {
+    if ($obj->_connect($host, $arg)) {
+      $obj->{net_ldap_host} = $h;
+      last;
+    }
+  }
+
+  return undef unless $obj->{net_ldap_socket};
 
   $obj->{net_ldap_host}    = $host;
   $obj->{net_ldap_resp}    = {};
@@ -253,7 +260,6 @@ sub bind {
 
     # Save data, we will need it later
     $mesg->_sasl_info($stash{name},$control,$sasl_conn);
-    $ldap->{sasl} = $sasl_conn;
   }
 
   $stash{authentication} = { $auth_type => $passwd };
@@ -578,7 +584,7 @@ sub extension {
     if $ldap->{net_ldap_version} < 3;
 
   $mesg->encode(
-    extendedRequest => {
+    extendedReq => {
       requestName  => $arg->{name},
       requestValue => $arg->{value}
     },
@@ -802,7 +808,7 @@ sub start_tls {
   require Net::LDAPS;
   $arg->{sslversion} = 'tlsv1' unless defined $arg->{sslversion};
   IO::Socket::SSL::context_init( { Net::LDAPS::SSL_context_init_args($arg) } );
-  (IO::Socket::SSL::socketToSSL($sock) and tie *{$sock}, 'IO::Socket::SSL', $sock)
+  IO::Socket::SSL::socketToSSL($sock, {Net::LDAPS::SSL_context_init_args($arg)})
     ? $mesg
     : _error($ldap, $mesg, LDAP_OPERATIONS_ERROR, $@);
 }

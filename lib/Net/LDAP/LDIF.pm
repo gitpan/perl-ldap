@@ -9,7 +9,7 @@ use SelectSaver;
 require Net::LDAP::Entry;
 use vars qw($VERSION);
 
-$VERSION = "0.09";
+$VERSION = "0.12";
 
 my %mode = qw(w > r < a >>);
 
@@ -60,6 +60,7 @@ sub new {
     file => "$file",
     opened_fh => $opened_fh,
     eof => 0,
+    write_count => ($mode eq 'a' and tell($fh) > 0) ? 1 : 0,
   };
 
   bless $self, $pkg;
@@ -79,8 +80,8 @@ sub _read_lines {
        $self->eof(1);
        return;
     }
-    $ln =~ s/^#.*\n//mg;
     $ln =~ s/\n //sg;
+    $ln =~ s/^#.*\n//mg;
     chomp($ln);
     $self->{_current_lines} = $ln;
     chomp(@ldif = split(/^/, $ln));
@@ -104,6 +105,13 @@ sub _read_entry {
   @ldif = $self->_read_lines;
   return unless @ldif;
   shift @ldif if @ldif && $ldif[0] !~ /\D/;
+
+  if (@ldif and $ldif[0] =~ /^version:\s+(\d+)/) {
+    $self->{version} = $1;
+    shift @ldif;
+    return $self->_read_entry
+      unless @ldif;
+  }
 
   if (@ldif <= 1) {
      $self->_error("LDIF entry is not valid", @ldif);
@@ -356,7 +364,12 @@ sub write_entry {
       # Skip entry if there is nothing to write
       next if $type eq 'modify' and !@changes;
 
-      print "\n" if tell($self->{'fh'});
+      if ($self->{write_count}++) {
+	print "\n";
+      }
+      else {
+        print "version: $self->{version}\n" if defined $self->{version};
+      }
       _write_dn($entry->dn,$self->{'encode'},$wrap);
 
       print "changetype: $type\n";
@@ -394,9 +407,14 @@ sub write_entry {
     }
 
     else {
-       print "\n" if tell($self->{'fh'});
-       _write_dn($entry->dn,$self->{'encode'},$wrap);
-       _write_attrs($entry,$wrap,$lower);
+      if ($self->{write_count}++) {
+	print "\n";
+      }
+      else {
+        print "version: $self->{version}\n" if defined $self->{version};
+      }
+      _write_dn($entry->dn,$self->{'encode'},$wrap);
+      _write_attrs($entry,$wrap,$lower);
     }
   }
 
@@ -493,6 +511,11 @@ sub current_entry {
 sub current_lines {
   my $self = shift;
   $self->{_current_lines};
+}
+
+sub version {
+  my $self = shift;
+  $self->{version};
 }
 
 sub next_lines {

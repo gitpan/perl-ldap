@@ -1,5 +1,5 @@
 # The -*- perl -*- script writes the Makefile for perl-ldap
-# $Id: Makefile.PL,v 1.6 2001/04/10 17:02:34 gbarr Exp $
+# $Id: Makefile.PL,v 1.10 2002/06/03 15:48:12 gbarr Exp $
 
 use 5.004;
 use ExtUtils::MakeMaker;
@@ -59,12 +59,20 @@ check_module('Digest::MD5') or print <<"EDQ","\n";
 The Digest::MD5 module is needed ONLY IF intend to use CRAM-MD5 SASL authentication
 EDQ
 
-check_module('IO::Socket::SSL') or print <<"EDQ","\n";
+check_module('IO::Socket::SSL',0.81) or print <<"EDQ","\n";
 The IO::Socket::SSL module is needed ONLY IF you intend to use LDAPS
 EDQ
 
 check_module('XML::Parser') or print <<"EDQ","\n";
 The XML::Parser module is needed ONLY IF you intend to read/write DSML files
+EDQ
+
+check_module('MIME::Base64') or print <<"EDQ","\n";
+The MIME::Base64 module is needed ONLY IF you intend to read/write LDIF files
+EDQ
+
+check_module('Authen::SASL', 2.00) or print <<"EDQ","\n";
+If you intend to use SASL authentication you need at least version 2.00
 EDQ
 
 print "\n",<<"EDQ","\n" if $missing;
@@ -102,13 +110,10 @@ sub MY::postamble {
 
 <<EOS;
 
-run_mkhtml :
-	./mkhtml
-
-run_mkmanf : run_mkhtml
+run_mkmanf : 
 	./mkmanf
 
-distdir : run_mkhtml run_mkmanf
+distdir : run_mkmanf
 
 EOS
 

@@ -1,4 +1,3 @@
-version: 1
 dn: o=University of Michigan, c=US
 objectclass: top
 objectclass: organization

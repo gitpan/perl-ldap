@@ -724,11 +724,24 @@ don't encrypt!
 
 =item clientkey
 
+=item decryptkey
+
 If you want to use the client to offer a certificate to the server for
 SSL authentication (which is not the same as for the LDAP Bind
 operation) then set clientcert to the user's certificate file, and
 clientkey to the user's private key file. These files must be in PEM
 format.
+
+If the private key is encrypted (highly recommended!) then set
+decryptkey to a reference to a subroutine that returns the decrypting
+key. For example:
+
+ $ldap = new Net::LDAP('myhost.example.com', version => 3);
+ $ldap->start_tls(verify => 'require',
+                  clientcert => 'mycert.pem',
+                  clientkey => 'mykey.pem',
+                  decryptkey => sub { 'secret'; },
+                  capath => '/usr/local/cacerts/');
 
 =item capath
 
@@ -740,8 +753,8 @@ the filename containing the certificate of the CA who signed the
 server's certificate. These certificates must all be in PEM format.
 
 The directory in 'capath' must contain certificates named using the
-hash value of themselves. To generate these names, use OpenSSL like
-this in Unix:
+hash value of the certificates' subject names. To generate these
+names, use OpenSSL like this in Unix:
 
     ln -s cacert.pem `openssl x509 -hash -noout < cacert.pem`.0
 
@@ -852,24 +865,35 @@ http://www.pobox.com/~gbarr/perl-ldap/.
 This document is based on a document originally written by Russell Fulton
 <r.fulton@auckland.ac.nz>.
 
-Chris Ridd @isode.com for the many hours spent testing and contribution
-of the ldap* command line utilities.
+Chris Ridd <chris.ridd@messagingdirect.com> for the many hours spent
+testing and contribution of the ldap* command line utilities.
+
+=head1 MAILING LIST
+
+A discussion mailing list is hosted by sourceforge at
+<perl-ldap-dev@lists.sourceforge.net> Don't be put off by the -dev
+in the name, the list is open for all questions.
+
+=head1 BUGS
+
+We hope you do not find any, but if you do please report them to
+the mailing list.
+
+If you have a patch, please send it as an attachment to the mailing
+list.
 
 =head1 AUTHOR
 
 Graham Barr <gbarr@pobox.com>
 
-Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-<perl-ldap-dev@lists.sourceforge.net>
-
 =head1 COPYRIGHT
 
-Copyright (c) 1997-2000 Graham Barr. All rights reserved. This program is
+Copyright (c) 1997-2002 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: LDAP.pod,v 1.14 2001/10/24 12:37:14 gbarr Exp $>
+I<$Id: LDAP.pod,v 1.16 2002/06/03 15:35:52 gbarr Exp $>
 
 =cut

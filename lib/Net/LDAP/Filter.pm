@@ -7,7 +7,7 @@ package Net::LDAP::Filter;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = "0.12";
+$VERSION = "0.13";
 
 # filter       = "(" filtercomp ")"
 # filtercomp   = and / or / not / item
@@ -88,9 +88,7 @@ sub _unescape {
   $_[0];
 }
 
-my %ch = split(/\s+/, '( \\( ) \\) \\ \\\\ * \\*');
-
-sub _escape { (my $t = $_[0]) =~ s/([\\\(\)\*\0-\37])/$ch{$1}||sprintf("\\%02x",ord($1))/sge; $t }
+sub _escape { (my $t = $_[0]) =~ s/([\\\(\)\*\0-\37])/sprintf("\\%02x",ord($1))/sge; $t }
 
 sub _encode {
   my($attr,$op,$val) = @_;
@@ -109,9 +107,9 @@ sub _encode {
     return ( {
       extensibleMatch => {
 	matchingRule => $rule,
-	type         => $type,
+	type         => length($type) ? $type : undef,
 	matchValue   => _unescape($val), 
-	dnAttributes => $dn ? 1 : 0
+	dnAttributes => $dn ? 1 : undef
       }
     });
   }
@@ -119,14 +117,14 @@ sub _encode {
   # If the op is = and contains one or more * not
   # preceeded by \ then do partial matches
 
-  if ($op eq '=' && $val =~ /^(\\.|[^\\*]+)*\*/o ) {
+  if ($op eq '=' && $val =~ /^(\\.|[^\\*]*)*\*/o ) {
 
     my $n = [];
     my $type = 'initial';
 
-    while ($val =~ s/^((\\.|[^\\*]+)*)\*+//) {
+    while ($val =~ s/^((\\.|[^\\*]*)*)\*//) {
       push(@$n, { $type, _unescape("$1") })         # $1 is readonly, copy it
-	if length $1;
+	if length($1) or $type eq 'any';
 
       $type = 'any';
     }
@@ -259,7 +257,8 @@ sub _string {    # prints things of the form (<op> (<list>) ... )
       return "($_[1]->{type}=$str)";
     };
     /^extensibleMatch/ and do {
-      my $str = "($_[1]->{type}";
+      my $str = "(";
+      $str .= $_[1]->{type} if defined $_[1]->{type};
       $str .= ":dn" if $_[1]->{dnAttributes};
       $str .= ":$_[1]->{matchingRule}" if defined $_[1]->{matchingRule};
       $str .= ":=" . _escape($_[1]->{matchValue}) . ")";

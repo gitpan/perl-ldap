@@ -1031,6 +1031,23 @@ replace the placeholders.
 
   print ldap_error_name($result->code);
 
+=head2 How can I simiulate server failover.
+
+Perl-LDAP does not do server failover, however there are several
+programming options for getting around this situation.
+
+Here is one possible solution.
+
+   unless ( $ldaps =
+            Net::LDAPS->new($ldapserverone,
+                            port=>636,timeout=>5) ) 
+           {
+            $ldaps = Net::LDAPS->new($ldapservertwo,
+                                     port=>636,timeout=>20) || 
+            return 
+            "Can't connect to $ldapserverone or $ldapservertwo via LDAPS: $@";
+           }
+
 =head1 Using X.509 certificates.
 
 =head2 How do I store X.509 certificates in the directory?
@@ -1100,6 +1117,9 @@ http://www.dsml.org/
 eMailman LDAP information
 http://www.emailman.com/ldap/
 
+Rafael Corvalan's LDAP shell
+http://sf.net/projects/ldapsh
+
 LDAPS, also known as LDAPGURU.
 I<This web site has a nasty habit of resizing the browser
 to cover the WHOLE screen.>
@@ -1120,9 +1140,6 @@ http://www.cp.net/
 Innosoft                                  
 http://www.innosoft.com
 
-IPlanet - Netscape and SUN Alliance
-http://www.iplanet.com/
-
 MessagingDirect                                  
 http://www.messagingdirect.com/
 
@@ -1135,8 +1152,14 @@ http://www.nexor.com/info/directory.htm/
 Novell's LDAPzone
 http://ldapzone.com/
 
+Octet String
+http://www.octetstring.com/
+
 SUN JAVA JNDI (Java Naming and Directory Interface)
 http://www.java.sun.com/jndi/
+
+Sun One, formerly IPlanet.
+http://wwws.sun.com/software/
 
 Eine deutsche LDAP Website 
 A german LDAP Website
@@ -1163,8 +1186,14 @@ LDAP : Programming Directory-Enabled Applications With
 Lightweight Directory Access Protocol. 
 By Tim Howes, Mark Smith.  ISBN:  1578700000
 
+LDAP Programming; Directory Management and Integration in Perl.
+By Clayton Donley.  ISBN:  1884777910
+
 LDAP Programming with Java. 
 By Rob Weltman, Tony Dahbura.  ISBN:  0201657589
+
+Managing Enterprise Active Directory Services. 
+By Robbie Allen, Richard Puckett.  ISBN:  0672321254
 
 Solaris and LDAP Naming Services.
 By Tom Bialaski, Michael Haines. ISBN:  0-13-030678-9

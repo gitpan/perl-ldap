@@ -27,14 +27,14 @@ sub decode {
   my $ldap = $self->parent;
 
   $ldap->{net_ldap_socket} = $sasl->securesocket($ldap->{net_ldap_socket})
-    if ($sasl and ($bind->{resultCode} == LDAP_SUCCESS));
+    if $sasl and $bind->{resultCode} == LDAP_SUCCESS;
 
   return $self->SUPER::decode($result)
     unless $bind->{resultCode} == LDAP_SASL_BIND_IN_PROGRESS;
 
   # tell our LDAP client to forget us as this message has now completed
   # all communications with the server
-  $self->parent->_forgetmesg($self);
+  $ldap->_forgetmesg($self);
 
   $self->{mesgid} = Net::LDAP::Message->NewMesgID(); # Get a new message ID
 
