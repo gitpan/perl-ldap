@@ -18,6 +18,10 @@ Net::LDAP::Search -- Object returned by Net::LDAP search method
 
 =over 4
 
+=item as_struct
+
+=item count
+
 =item entry ( INDEX )
 
 =item entries

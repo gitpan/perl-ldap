@@ -7,7 +7,7 @@ package Net::LDAP::Extension;
 use vars qw(@ISA $VERSION);
 
 @ISA = qw(Net::LDAP::Message);
-$VERSION = "1.00";
+$VERSION = "1.01";
 
 sub result_tag { 'RES_EXTEND' }
 
@@ -48,7 +48,7 @@ sub decode {
 
   # tell out LDAP client to forget us as this message has now completed
   # all communications with the server
-  $self->parent->forgetmesg($self);
+  $self->parent->_forgetmesg($self);
 
   $self->{Callback}->($self)
     if (defined $self->{Callback});
@@ -59,7 +59,10 @@ sub decode {
 #fetch the response name
 sub response_name { 
   my $self = shift;
-  exists $self->{ResponseName} || $self->sync
+
+  $self->sync unless exists $self->{Code};
+
+  exists $self->{ResponseName}
     ? $self->{ResponseName}
     : undef;
 }
@@ -67,7 +70,10 @@ sub response_name {
 # fetch the response.
 sub response {
   my $self = shift;
-  exists $self->{Response} || $self->sync
+
+  $self->sync unless exists $self->{Code};
+
+  exists $self->{Response}
     ? $self->{Response}
     : undef;
 }

@@ -49,8 +49,8 @@ sub check_module {
 
 print "\nChecking for installed modules\n\n";
 
-check_module('Convert::BER',1.18) or print <<"EDQ","\n";
-Convert::BER is essential for perl-ldap
+check_module('Convert::BER',1.23) or print <<"EDQ","\n";
+Convert::BER version 1.23 or later is essential for perl-ldap
 EDQ
 
 check_module('URI::URL',1.18) or print <<"EDQ","\n";

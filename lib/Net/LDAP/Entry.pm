@@ -13,7 +13,7 @@ sub new {
   my $self = shift;
   my $type = ref($self) || $self;
 
-  my $entry = bless { changetype => 'add' }, $type;
+  my $entry = bless { 'changetype' => 'add' }, $type;
 
   $entry;
 }
@@ -27,10 +27,10 @@ sub decode {
   my %attrs;
 
   %{$self} = (
-    dn    => undef,
-    order => \@order,
-    attrs => \%attrs,
-    changetype => 'modify'
+    'dn'    => undef,
+    'order' => \@order,
+    'attrs' => \%attrs,
+    'changetype' => 'modify'
   );
 
   $ber->decode(
@@ -99,7 +99,7 @@ sub dump {
   my $spc = "\n  " . " " x $l;
 
   foreach $attr ($self->attributes) {
-    $val = $self->{'attrs'}{$attr};
+    $val = $self->{'attrs'}{lc($attr)};
     printf "%${l}s: ", $attr;
     my($i,$v);
     $i = 0;
@@ -160,9 +160,10 @@ sub ldif_read {
     unless ($ronce++);
 
   %{$self} = (
-    dn    => undef,
-    order => [],
-    attrs => {}
+    'dn'    => undef,
+    'order' => [],
+    'attrs' => {},
+    'changetype' => 'modify'
   );
 
   my $ln = "";
@@ -291,6 +292,12 @@ sub replace {
 
 sub delete {
   my $self = shift;
+
+  unless (@_) {
+    $self->changetype('delete');
+    return;
+  }
+
   my $cmd = $self->{'changetype'} eq 'modify' ? [] : undef;
 
   while(@_) {
@@ -342,13 +349,13 @@ sub update {
   my $cb = sub { $self->changetype('modify') unless $_[0]->code };
 
   if ($self->{'changetype'} eq 'add') {
-    $mesg = $ldap->add($self, callback => $cb);
+    $mesg = $ldap->add($self, 'callback' => $cb);
   }
   elsif ($self->{'changetype'} eq 'delete') {
-    $mesg = $ldap->delete($self, callback => $cb);
+    $mesg = $ldap->delete($self, 'callback' => $cb);
   }
   else {
-    $mesg = $ldap->modify($self, changes => $self->{'changes'}, callback => $cb);
+    $mesg = $ldap->modify($self, 'changes' => $self->{'changes'}, 'callback' => $cb);
   }
 
   return $mesg;

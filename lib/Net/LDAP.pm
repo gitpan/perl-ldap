@@ -13,8 +13,16 @@ use Net::LDAP::BER;
 use Net::LDAP::Message;
 use vars qw($VERSION $LDAP_VERSION);
 use UNIVERSAL qw(isa);
+use Net::LDAP::Constant qw(LDAP_SUCCESS
+			   LDAP_OPERATIONS_ERROR
+			   LDAP_DECODING_ERROR
+			   LDAP_PROTOCOL_ERROR
+			   LDAP_ENCODING_ERROR
+			   LDAP_FILTER_ERROR
+			   LDAP_LOCAL_ERROR
+			);
 
-$VERSION = "0.08";
+$VERSION = "0.09";
 
 $LDAP_VERSION = 2;      # default LDAP protocol version
 
@@ -137,7 +145,7 @@ sub unbind {
       INTEGER    => $mesg->mesg_id,
       REQ_UNBIND => 1                 # dummy arg to keep even args :-)
     ]
-  ) or return;
+  ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
 }
@@ -216,7 +224,7 @@ sub bind {
       ],
       OPTIONAL => [ BER => $ctrl ]
     ]
-  ) or return;
+  ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
 }
@@ -254,7 +262,7 @@ sub search {
   unless (ref($filter)) {
     require Net::LDAP::Filter;
     $filter = new Net::LDAP::Filter($filter)
-      or return;
+      or return $mesg->set_error(LDAP_FILTER_ERROR,"$@");
   }
 
   my $ctrl = _controls($arg->{'control'});
@@ -278,7 +286,7 @@ sub search {
       ],
       OPTIONAL => [ BER => $ctrl ]
     ]
-  ) or return;
+  ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
 }
@@ -314,7 +322,7 @@ sub add {
       ],
       OPTIONAL => [ BER => $ctrl ]
     ]
-  ) or return;
+  ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
 }
@@ -398,7 +406,7 @@ sub modify {
       ],
       OPTIONAL => [ BER => $ctrl ]
     ]
-  ) or return;
+  ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
 }
@@ -423,7 +431,7 @@ sub delete {
       REQ_DELETE => $dn
     ],
     OPTIONAL => [ BER => $ctrl ]
-  ) or return;
+  ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
 }
@@ -465,7 +473,7 @@ sub moddn {
       ],
       OPTIONAL => [ BER => $ctrl ]
     ]
-  ) or return;
+  ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
 }
@@ -509,7 +517,7 @@ sub compare {
       ],
       OPTIONAL => [ BER => $ctrl ]
     ]
-  ) or return;
+  ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
 }
@@ -533,7 +541,7 @@ sub abandon {
       REQ_ABANDON => $mesg_id
     ],
     OPTIONAL => [ BER => $ctrl ]
-  ) or return;
+  ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
 }
@@ -560,7 +568,7 @@ sub extension {
       REQ_EXTEND => $ref,
       OPTIONAL   => [ BER => $ctrl ]
     ]
-  ) or return;
+  ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
 }
@@ -569,11 +577,13 @@ sub sync {
   my $ldap = shift;
   my $mid  = shift;
   my $table = $ldap->{'net_ldap_mesg'};
+  my $err = LDAP_SUCCESS;
+  $mid = $mid->mesg_id if ref($mid);
+  while (defined($mid) ? exists $table->{$mid} : %$table) {
+    last if $err = $ldap->_recvresp;
+  }
 
-  $ldap->_recvresp || die $@
-    while (defined($mid) ? exists $table->{$mid} : %$table);
-
-  $ldap;
+  $err;
 }
 
 sub _sendmesg {
@@ -587,7 +597,7 @@ sub _sendmesg {
   }
 
   $ber->write($ldap->socket)
-    or return;
+    or return $mesg->set_error(LDAP_LOCAL_ERROR,"$!");
 
   # for CLDAP, here we need to recode when we were sent
   # so that we can perform timeouts and resends
@@ -599,7 +609,7 @@ sub _sendmesg {
     $ldap->{'net_ldap_mesg'}->{$mid} = $mesg;
 
     unless ($ldap->async) {
-      $ldap->sync($mid) or
+      $ldap->sync($mid) and
         return undef;
     }
   }
@@ -608,12 +618,13 @@ sub _sendmesg {
 
 sub _recvresp {
   my $ldap = shift;
+  my $what = shift;
 
   do {
     my $ber = new Net::LDAP::BER();
 
     $ber->read($ldap->socket) or
-      return;
+      return LDAP_OPERATIONS_ERROR;
 
     if ($ldap->debug & 2) {
       print STDERR "$ldap received:\n";
@@ -628,19 +639,21 @@ sub _recvresp {
         BER     => \$data
       ]
     ) or
-      return;
+      return LDAP_DECODING_ERROR;
 
     my $mesg = $ldap->{'net_ldap_mesg'}->{$mid} or
-      return;
+      return LDAP_PROTOCOL_ERROR;
 
-    $mesg->decode($data) or die $@;
+    $mesg->decode($data) or
+      return $mesg->code;
 
+    last if defined $what && $what == $mid;
   } while (IO::Select->new($ldap->socket)->can_read(0));
 
   # FIXME: in CLDAP here we need to check if any message has timed out
   # and if so do we resend it or what
 
-  $ldap;
+  return LDAP_SUCCESS;
 }
 
 sub _forgetmesg {

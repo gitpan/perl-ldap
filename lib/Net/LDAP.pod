@@ -508,11 +508,13 @@ If C<VALUE> is given the debug bit-value will be set to C<VALUE> and the
 previous value will be returned. If not given the bit-value will remain
 unchanged and will be returned.
 
-=item sync
+=item sync ( [ MESG ] )
 
-Calling this method will syncronize the client with thye server. It will
-not return until all requests have been completed. Returns the B<Net::LDAP>
-object.
+Calling this method will syncronize the client with the server. It will
+not return until all requests have been completed, or id C<MESG> is given
+it will return when C<MESG> has been completed.
+
+Returns an error code defined in L<Net::LDAP::Constant>
 
 =item version
 

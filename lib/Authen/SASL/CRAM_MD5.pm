@@ -8,7 +8,7 @@ use vars qw(@ISA $VERSION);
 use Digest::HMAC_MD5 qw(hmac_md5_hex);
 use strict;
 
-$VERSION = "0.3";
+$VERSION = "0.31";
 
 @ISA = qw(Authen::SASL);
 
@@ -28,7 +28,7 @@ sub name { "CRAM-MD5" }
 sub response {
   my $self   = shift;
   my $string = shift;
-  defined $self->{'password'} ? $self->{'password'} : "";
+  defined $self->{'response'} ? $self->{'response'} : "";
 }
 
 sub encode {

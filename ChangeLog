@@ -1,3 +1,45 @@
+Change 238 on 1998/12/23 by <gbarr@pobox.com> (Graham Barr)
+
+	- fixed typos in Authen::SASL::CRAM_MD5 &  Net::LDAP::Extension
+	
+	- fixed URI::URL::ldap to work with new and old URI modules
+	
+	- Net::LDAP::LDIF can now read base64 encoded entries
+	
+	- Added methods ->count and ->as_struct to Net::LDAP::Search
+
+Change 237 on 1998/11/09 by <gbarr@pobox.com> (Graham Barr)
+
+	Change Makefile.PL to check for Convert::BER v1.23 or later
+
+Change 236 on 1998/11/09 by <gbarr@pobox.com> (Graham Barr)
+
+	Better error handling
+
+Change 235 on 1998/11/09 by <gbarr@pobox.com> (Graham Barr)
+
+	 fix case insensetivity in Net::LDAP::Entry::dump
+
+Change 232 on 1998/11/06 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Search
+	- Fix "Can't use an undefined value as an ARRAY reference" error message
+
+Change 230 on 1998/11/05 by <gbarr@pobox.com> (Graham Barr)
+
+	Fix warnings about keys in => lists
+
+Change 226 on 1998/11/04 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Entry
+	- Allow ->delete with no arges to set changetype to 'delete'
+	
+	Doc updates
+
+Change 225 on 1998/10/31 by <gbarr@pobox.com> (Graham Barr)
+
+	Update changelog
+
 Change 224 on 1998/10/31 by <gbarr@pobox.com> (Graham Barr)
 
 	Increment VERSION

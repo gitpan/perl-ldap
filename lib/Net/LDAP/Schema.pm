@@ -334,6 +334,9 @@ sub name         { scalar(_get_value($_[0],'NAME')) }
 sub description  { scalar(_get_value($_[0],'DESC')) }
 sub single_value { scalar(_get_value($_[0],'SINGLE-VALUE')) }
 
+sub must        { _get_value($_[0],'MUST') }
+sub may         { _get_value($_[0],'MAY') }
+
 package Net::LDAP::Schema::attribute;
 
 BEGIN {
@@ -345,12 +348,29 @@ sub syntax_oid  { scalar(_get_value($_[0],'SYNTAX')) }
 sub description { scalar(_get_value($_[0],'DESC')) }
 sub superior    { scalar(_get_value($_[0],'SUP')) }
 
-sub must        { _get_value($_[0],'SUP') }
-sub may         { _get_value($_[0],'SUP') }
-
 sub syntax {
     my $oid = _get_value($_[0],'SYNTAX') or return;
     Net::LDAP::Schema->syntax($oid);
+}
+
+@schema2asn = (
+  'SYNTAX'		=> "WITH SYNTAX",
+  'OBSOLETE'		=> "OBSOLETE",
+  'SUP'			=> "SUBTYPE OF",
+  'EQUALITY'		=> "EQUALITY MATCHING RULE",
+  'ORDERING'		=> "ORDERING MATCHING RULE",
+  'SUBSTR'		=> "SUBSTRINGS MATCHING RULE",
+  'NOUSERMODIFICATION'	=> "NO USER MODIFICATION",
+  'USAGE'		=> "USAGE",
+  'COLLECTIVE'		=> "COLLECTIVE",
+  'SINGLE-VALUE'	=> "SINGLE VALUE"
+);
+
+sub asn {
+  my $self = shift;
+  my $asn =  exists $self->{'NAME'} ? $self->{'NAME'} : "noname";
+  $asn .= " ATTRIBUTE ::= {\n";
+  $asn .= "}\n";
 }
 
 1;

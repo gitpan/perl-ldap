@@ -5,6 +5,7 @@
 package Net::LDAP::Message;
 
 use Net::LDAP::BER;
+use Net::LDAP::Constant qw(LDAP_SUCCESS);
 use strict;
 use vars qw($VERSION);
 
@@ -51,7 +52,9 @@ sub mesg_id {
 sub code {
   my $self = shift;
 
-  exists $self->{Code} || $self->sync
+  $self->sync unless exists $self->{Code};
+
+  exists $self->{Code}
     ? $self->{Code}
     : undef
 }
@@ -65,7 +68,9 @@ sub done {
 sub dn {
   my $self = shift;
 
-  exists $self->{DN} || $self->sync
+  $self->sync unless exists $self->{Code};
+
+  exists $self->{DN}
     ? $self->{DN}
     : undef
 }
@@ -73,33 +78,42 @@ sub dn {
 sub referrals {
   my $self = shift;
 
-  return ()
-    unless exists $self->{Referral} || $self->sync;
+  $self->sync unless exists $self->{Code};
 
-  @{$self->{Referral}}
+  exists $self->{Referral}
+    ? @{$self->{Referral}}
+    : ();
 }
 
 sub error {
   my $self = shift;
 
-  exists $self->{Error} || $self->sync
+  $self->sync unless exists $self->{Code};
+
+  exists $self->{Error}
     ? $self->{Error}
     : undef
+}
+
+sub set_error {
+  my $self = shift;
+  ($self->{Code},$self->{Error}) = ($_[0]+0, "$_[1]");
+  $self;
 }
 
 sub sync {
   my $self = shift;
   my $ldap = $self->{Parent};
-
-  return $self
-    if exists $self->{Code};
+  my $err;
 
   until(exists $self->{Code}) {
-    $ldap->sync($self->mesg_id) or
-      return; # $self->associate(prior Error($ldap));
+    $err = $ldap->sync($self->mesg_id) or next;
+    $self->set_error($err,"Protocol Error")
+      unless exists $self->{Code};
+    return $err;
   }
 
-  $self;
+  LDAP_SUCCESS;
 }
 
 sub decode {
@@ -162,7 +176,9 @@ sub abandon {
 sub saslref {
   my $self = shift;
 
-  exists $self->{Sasl} || $self->sync
+  $self->sync unless exists $self->{Code};
+
+  exists $self->{Sasl}
     ? $self->{Sasl}
     : undef
 }

@@ -11,9 +11,16 @@ use URI::Escape qw(uri_escape uri_unescape);
 
 use vars qw(@ISA $VERSION);
 
-$VERSION = "1.00";
+$VERSION = "1.01";
 
-@ISA = qw(URI::URL::_generic);
+if( $URI::URL::VERSION < 5.0) {
+  @ISA = qw(URI::URL::_generic);
+}
+else {
+  require URI::_server;
+  @ISA = qw(URI::_server);
+  @URI::ldap::ISA = qw(URI::URL::ldap);
+}
 
 sub default_port { 389 }
 

@@ -9,6 +9,8 @@ use vars qw(@ISA);
 use Net::LDAP::Message;
 use Net::LDAP::Entry;
 use Net::LDAP::Filter;
+use Net::LDAP::BER qw(RES_SEARCH_ENTRY RES_SEARCH_REF);
+use Net::LDAP::Constant qw(LDAP_SUCCESS);
 
 @ISA = qw(Net::LDAP::Message);
 
@@ -19,7 +21,9 @@ sub first_entry { # compat
 
 sub next_entry { # compat
   my $self = shift;
-  $self->entry($self->{'CurrentEntry'} + 1);
+  $self->entry( defined $self->{'CurrentEntry'}
+		? $self->{'CurrentEntry'} + 1
+		: 0);
 }
 
 sub result_tag { 'RES_SEARCH_RESULT' }
@@ -28,21 +32,28 @@ sub decode {
   my $self = shift;
   my $data = shift;
 
+  my $tag = $data->tag;
   my $seq;
 
-  if ($data->decode(RES_SEARCH_ENTRY => \$seq)) {
+  if ($tag == RES_SEARCH_ENTRY) {
     my $entry = Net::LDAP::Entry->new;
+
+    $data->decode(RES_SEARCH_ENTRY => \$seq);
     $entry->decode($seq);
-    push(@{$self->{'Entries'}}, $entry);
+
+    push(@{$self->{'Entries'} ||= []}, $entry);
 
     $self->{Callback}->($self,$entry)
       if (defined $self->{Callback});
 
     return $self;
   }
-  elsif ($data->decode(RES_SEARCH_REF => \$seq)) {
+  elsif ($tag == RES_SEARCH_REF) {
     my $ref = Net::LDAP::Reference->new;
+
+    $data->decode(RES_SEARCH_REF => \$seq);
     $ref->decode($seq);
+
     push(@{$self->{'Reference'} ||= []}, $ref->references);
 
     $self->{Callback}->($self,$ref)
@@ -64,9 +75,9 @@ sub entry {
 
   # There could be multiple response to a search request
   # but only the last will set {Code}
-  until (exists $self->{Code} || @{$entries} > $index) {
+  until (exists $self->{Code} || (@{$entries} > $index)) {
     return
-      unless $ldap->sync($self->mesg_id);
+      unless $ldap->_recvresp($self->mesg_id) == LDAP_SUCCESS;
   }
 
   return
@@ -82,17 +93,24 @@ sub all_entries { goto &entries } # compat
 sub entries {
   my $self = shift;
 
-  return ()
-    unless $self->sync;
+  $self->sync unless exists $self->{Code};
 
-  @{$self->{'Entries'}}
+  @{$self->{'Entries'} || []}
+}
+
+sub count {
+  my $self = shift;
+  scalar entries($self);
 }
 
 sub sorted {
   my $self = shift;
   my @at;
 
-  return unless $self->sync && ref($self->{'Entries'});
+  $self->sync unless exists $self->{Code};
+
+  return unless exists $self->{'Entries'} && ref($self->{'Entries'});
+
   return @{$self->{'Entries'}} unless @{$self->{'Entries'}} > 1;
 
   if (@_) {
@@ -120,10 +138,17 @@ sub sorted {
 sub references {
   my $self = shift;
 
-  return ()
-    unless $self->sync;
+  $self->sync unless exists $self->{Code};
 
-  @{$self->{'Reference'}}
+  return unless exists $self->{'Reference'} && ref($self->{'Reference'});
+
+  @{$self->{'Reference'} || []}
+}
+
+sub as_struct {
+  my $self = shift;
+  my %result = map { ( $_->dn, $_->{'attrs'} ) } entries($self);
+  return \%result;
 }
 
 package Net::LDAP::Reference;
