@@ -71,8 +71,11 @@ sub start_server {
 }
 
 sub kill_server {
-  kill 9, $pid if $pid;
-  undef $pid;
+  if ($pid) {
+    kill 9, $pid;
+    sleep 1;
+    undef $pid;
+  }
 }
 
 END {
@@ -93,9 +96,10 @@ sub compare_ldif {
   my($test,$mesg,$test_num,@sort) = @_;
 
   if ($mesg->code) {
-    print "not ok",$test_num++,"\n";
-    print "not ok",$test_num++,"\n";
-    print "not ok",$test_num++,"\n";
+    print $mesg->error,"\n";
+    print "not ok ",$test_num++,"\n";
+    print "not ok ",$test_num++,"\n";
+    print "not ok ",$test_num++,"\n";
     return 3;
   }
   print "ok ",$test_num++,"\n";
@@ -120,6 +124,16 @@ sub compare_ldif {
   compare("$TEMPDIR/${test}-out.ldif","data/${test}-cmp.ldif") && print "not ";
   print "ok ",$test_num++,"\n";
   3;
+}
+
+require File::Compare;
+
+sub compare($$) {
+  local(*FH1,*FH2);
+  not( open(FH1,"<".$_[0])
+       && open(FH2,"<".$_[1])
+       && 0 == File::Compare::compare(*FH1,*FH2, -s FH1)
+  );
 }
 
 1;

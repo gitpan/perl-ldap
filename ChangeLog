@@ -1,3 +1,22 @@
+Change 314 on 1999/06/27 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Filter
+	- now supports both V2 and V3 escaping
+
+Change 313 on 1999/06/12 by <gbarr@pobox.com> (Graham Barr)
+
+	Make tests more portable by not using binmode when
+	output file is compared with the correct output file.
+
+Change 312 on 1999/06/12 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Constant
+	- Remove support for old constant names, user must now use LDAP_*
+
+Change 302 on 1999/04/18 by <gbarr@pobox.com> (Graham Barr)
+
+	Release 0.11
+
 Change 301 on 1999/04/18 by <gbarr@pobox.com> (Graham Barr)
 
 	Documentation typo fixes

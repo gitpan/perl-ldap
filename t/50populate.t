@@ -5,8 +5,6 @@ BEGIN {
   start_server();
 }
 
-use File::Compare qw(compare);
-
 print "1..44\n";
 
 $ldap = client();

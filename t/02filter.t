@@ -72,15 +72,15 @@ use Net::LDAP::Filter;
        'a169a021a209a3070402636e040161a3090402636e0403626172a3090402636e0403666f6fa021a209a3070402636e040162a3090402636e0403626172a3090402636e0403666f6fa021a209a3070402636e040163a3090402636e0403626172a3090402636e0403666f6f' ],
      );
 
-print "1..", scalar(@tests), "\n";
+print "1..", 2*scalar(@tests), "\n";
 my $testno = 0;
 my $testref;
 foreach $testref (@tests) {
     my($filter, $binary) = @$testref;
     $binary = pack("H*", $binary);
     $testno ++;
+    print "# ",$filter,"\n";
     $filt = new Net::LDAP::Filter $filter;
-    $filt -> print;
     if ($filt ->ber->buffer ne $binary) {
 	print "got    ", unpack("H*", $filt ->ber->buffer), "\n";
 	print "wanted ", unpack("H*", $binary), "\n";
@@ -88,5 +88,12 @@ foreach $testref (@tests) {
 	print "not ok $testno\n";
 	next;
     }
+    print "ok $testno\n";
+    $testno ++;
+    my $str = $filt->as_string;
+    $filter = "($filter)" unless $filter =~ /^\(/;
+    $filter =~ s/ \(/\(/g;
+    print "# ", $str,"\n";
+    print "not " unless $str eq $filter;
     print "ok $testno\n";
 }

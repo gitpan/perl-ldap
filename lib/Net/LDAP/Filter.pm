@@ -1,16 +1,45 @@
-# Copyright (c) 1998-1999 Graham Barr <gbarr@pobox.com>. All rights reserved.
-# This program is free software; you can redistribute it and/or
-# modify it under the same terms as Perl itself.
 
 package Net::LDAP::Filter;
 
-use Net::LDAP::BER;
+use Net::LDAP::BER ();
 use strict;
 use vars qw($VERSION);
 
-no strict 'subs';
+$VERSION = "0.10";
 
-$VERSION = "0.07";
+# filter       = "(" filtercomp ")"
+# filtercomp   = and / or / not / item
+# and          = "&" filterlist
+# or           = "|" filterlist
+# not          = "!" filter
+# filterlist   = 1*filter
+# item         = simple / present / substring / extensible
+# simple       = attr filtertype value
+# filtertype   = equal / approx / greater / less
+# equal        = "="
+# approx       = "~="
+# greater      = ">="
+# less         = "<="
+# extensible   = attr [":dn"] [":" matchingrule] ":=" value
+#                / [":dn"] ":" matchingrule ":=" value
+# present      = attr "=*"
+# substring    = attr "=" [initial] any [final]
+# initial      = value
+# any          = "*" *(value "*")
+# final        = value
+# attr         = AttributeDescription from Section 4.1.5 of [1]
+# matchingrule = MatchingRuleId from Section 4.1.9 of [1]
+# value        = AttributeValue from Section 4.1.6 of [1]
+# 
+# Special Character encodings
+# ---------------------------
+#    *               \2a, \*
+#    (               \28, \(
+#    )               \29, \)
+#    \               \5c, \\
+#    NUL             \00
+
+my $ErrStr;
 
 sub new {
   my $self = shift;
@@ -25,348 +54,178 @@ sub new {
   $me;
 }
 
-my %filter_lookup = qw(
+my($Attr)  = qw{  [-;.:\d\w]*[-;\d\w] };
+my($Op)    = qw{  [:~<>]?=            };
+my($Value) = qw{  (?:\\.|[^\\()]+)*   };
+
+my %Op = qw(
   &   FILTER_AND
   |   FILTER_OR
   !   FILTER_NOT
   =   FILTER_EQ
-  =~  FILTER_APPROX
   ~=  FILTER_APPROX
   >=  FILTER_GE
   <=  FILTER_LE
   :=  FILTER_EXTENSIBLE
 );
 
-my %infix_lookup = qw(
-  &   FILTER_AND
-  and FILTER_AND
-  AND FILTER_AND
-  |   FILTER_OR
-  or  FILTER_OR
-  OR  FILTER_OR
-  !   FILTER_NOT
-  NOT FILTER_NOT
-  not FILTER_NOT
-);
+my %Rop = reverse %Op;
 
+# Unescape
+#   \xx where xx is a 2-digit hex number
+#   \y  where y is one of ( ) \ *
+
+sub errstr { $ErrStr }
+
+sub _unescape {
+  $_[0] =~ s/
+	     \\([\da-fA-F]{2}|.)
+	    /
+	     length($1) == 1
+	       ? $1
+	       : chr(hex($1))
+	    /soxeg;
+  $_[0];
+}
+
+sub _escape { $_[0] =~ s/([\\\(\)\*\0])/sprintf("\\%02x",ord($1))/sge; }
+
+sub _encode {
+  my($attr,$op,$val) = @_;
+
+  # An extensible match
+
+  if ($op eq ':=') {
+
+    # attr must be in the form type:dn:1.2.3.4
+    unless ($attr =~ /^([-;\d\w]*)(:dn)?(:([.\d]+))?/) {
+      $ErrStr = "Bad attribute $attr";
+      return undef;
+    }
+    my($type,$dn,$rule) = ($1,$2,$4);
+
+    return (
+      FILTER_EXTENSIBLE => [
+	OPTIONAL => [ EXTENSIBLE_RULE => $rule ],
+	OPTIONAL => [ EXTENSIBLE_TYPE => $type ],
+	EXTENSIBLE_VALUE => _unescape($val),
+	EXTENSIBLE_DN    => $dn
+      ]
+    );
+  }
+
+  # If the op is = and contains one or more * not
+  # preceeded by \ then do partial matches
+
+  if ($op eq '=' && $val =~ /^(?:(?:\\\*|[^*])*)\*/o) {
+    my $n = [];
+    my $type = 'SUBSTR_INITIAL';
+
+    while ($val =~ s/^((?:\\\*|[^*])*)\*+//) {
+      push(@$n, $type, _unescape("$1"))         # $1 is readonly, copy it
+	if length $1;
+
+      $type = 'SUBSTR_ANY';
+    }
+
+    push(@$n, 'SUBSTR_FINAL', _unescape($val))
+      if length $val;
+
+    return (
+      FILTER_SUBSTRS => [
+	STRING   => $attr,
+	SEQUENCE => $n
+      ]
+    );
+  }
+
+  # Well we must have an operator and no un-escaped *'s on the RHS
+
+  return (
+    $Op{$op} => [
+      STRING => $attr,
+      STRING => _unescape($val)
+    ]
+  );
+}
 
 sub parse {
   my $self   = shift;
   my $filter = shift;
 
-  my @st = ();   # stack
-  my $f = $self; # top level filter element
-  my $filter_orig = $filter;
+  my @stack = ();   # stack
+  my $cur   = $self;
 
-  @$f = ();
+  undef $ErrStr;
+  @$cur = ();
 
-    $filter =~ s/^\s*//; 
+  # Algorithm depends on /^\(/;
+  $filter =~ s/^\s*//;
+
   $filter = "(" . $filter . ")"
     unless $filter =~ /^\(/;
 
   while (length($filter)) {
+
+    # Process the start of  (& (...)(...))
+
     if ($filter =~ s/^\(\s*([&|!])\s*//) {
-      my $n = [ ];  # new list to hold filter elements
-      push(@$f,$filter_lookup{$1}, $n);
-      push(@st,$f);  # push current list on the stack
-      $f = $n;  
+      my $n = [];                   # new list to hold filter elements
+
+      push(@$cur, $Op{$1}, $n);
+      push(@stack,$cur);            # push current list on the stack
+
+      $cur = $n;
+      next;
     }
-    elsif ($filter =~ s/^\)\s*//o) {
-      $f = pop @st;
+
+    # Process the end of  (& (...)(...))
+
+    if ($filter =~ s/^\)\s*//o) {
+      $cur = pop @stack;
+      last unless @stack;
+      next;
     }
-    elsif ($filter =~ s/^\(\s*([-;\d\w]+)=\*\)\s*//o) {
-      push(@$f, FILTER_PRESENT => $1);
-    }
-    elsif ($filter =~ s/^\(\s*([-;.:\d\w]*[-;\d\w])\s*([:~<>]?=)\s*(([^()]|\\[()])*)\s*\)\s*//o) {
-      my($attr,$op,$val) = ($1,$2,$3);
-      if ($op eq ':=') {
-        return # bad filter
-	  unless $attr =~ /^([-;\d\w]*)(:dn)?(:([.\d]+))?/;
-	my($type,$dn,$rule) = ($1,$2,$4);
-        push(@$f, FILTER_EXTENSIBLE => [
-			OPTIONAL => [ EXTENSIBLE_RULE => $rule ],
-			OPTIONAL => [ EXTENSIBLE_TYPE => $type ],
-			EXTENSIBLE_VALUE => $val,
-			EXTENSIBLE_DN    => $dn
-		  ]);
-      }
-      elsif ($op eq '=' && $val =~ /^(([^*]|\\\*)*)\*/o) {
-        my $n = [];
-        my $seenstar = 0;
-
-        while ($val =~ s/^(([^*]|\\\*)*)\*//) {
-          my $t = $seenstar++
-                ? 'SUBSTR_ANY'
-                : 'SUBSTR_INITIAL';
-	  if (length $1 ) {
-	    my $vv = $1;
-	    $vv =~ s/\\([\da-fA-F]{2})/chr(hex($1))/sge;
-            push(@$n,$t,$vv);
-	  }
-        }
-	if (length $val) {
-	  $val =~ s/\\([\da-fA-F]{2})/chr(hex($1))/sge;
-          push(@$n,'SUBSTR_FINAL',$val);
-	}
-
-        push(@$f,
-          FILTER_SUBSTRS => [
-            STRING   => $attr,
-            SEQUENCE => $n
-          ]
-        );
-      }
-      else {
-	$val =~ s/\\([\da-fA-F]{2})/chr(hex($1))/sge;
-        push(@$f,
-          $filter_lookup{$op}, [
-            STRING => $attr,
-            STRING => $val
-          ]
-        );
-      }
-    }
-    else {
-      return; # "expecting !|& or attribute name at $filter ... "Bad filter string '$filter_orig'"
-    }
-    last unless @st;
-  }
-
-  return  #  " unablanced parenthisies near $filter "Bad filter string '$filter_orig'"
-    if length $filter;
-
-    $self;
-  }
-  
-sub infix_parse {
-  my $self   = shift;
-  my $infix = shift;
-
-  my @st = ();   # stack
-  my $f = []; # top level filter element
-  my $infix_orig = $infix;
-  my $cop = '';   # current op
-
-    my ($at, $op, $val);
-
-  $infix = "(" . $infix . ")";
     
-  while ( length($infix) ) {
-    if ( $infix =~ s/^\(//o ) {  # open parenthesis
-      my $n = [ ];  # new list to hold filter elements
-      push(@$f, '', $n);  # fill op in when we know it
-      push(@st,$f);      # push current list on the stack
-      $f = $n;
-      $cop = '';
-    } elsif ( $infix =~ s/^\)//o ) { # close parenthesis
-      $f = pop @st;
-      if ( $cop eq '' )  {   # redundant ()
-        if (defined $f->[1]) {
-          $f = $f->[1];
-        } else {  # error -- empty ()
-          return;
-        }
-    }
-    $cop = ${$st[-1]}[0] if @st;
-  } elsif ( $infix =~ s/^([-;.\w:]*[^-;\w])\s*([:~<>]?=)\s*(['"]|[^() ]+)//o) {
+    # present is a special case (attr=*)
 
-    ($at, $op, $val) = ($1, $2, $3);
-            
-    if ($val eq "'" || $val eq '"' ) {  # handle quoted strings
-      $infix =~ s/^([^$val]*)$val//;
-      $val = $1;
-      if (! defined $val) {   # error.. unmatched qoute
-        return;
-      }
+    if ($filter =~ s/^\(\s*($Attr)=\*\)\s*//o) {
+      push(@$cur, FILTER_PRESENT => $1);
+      next;
     }
-    if ($op eq '=' && $val =~ /^(([^*]|\\\*)*)\*/o) {  # match substrings
-      my $n = [];
-      my $seenstar = 0;
 
-      while ($val =~ s/^(([^*]|\\\*)*)\*//) {
-        my $t = $seenstar++
-            ? 'SUBSTR_ANY'
-            : 'SUBSTR_INITIAL';
-        if (length $1) {
-	  my $vv = $1;
-	  $vv =~ s/\\([\da-fA-F]{2})/chr(hex($1))/sge;
-          push(@$n,$t,$vv);
-	}
-      }
-      if (length $val) {
-        $val =~ s/\\([\da-fA-F]{2})/chr(hex($1))/sge;
-        push(@$n,'SUBSTR_FINAL',$val)
-      }
+    # process (attr op string)
 
-      push(@$f, 
-           FILTER_SUBSTRS => [
-                    STRING   => $at,
-                    SEQUENCE => $n
-                    ]
-        );
-      } else {
-	$val =~ s/\\([\da-fA-F]{2})/chr(hex($1))/sge;
-        push(@$f, $filter_lookup{$op}, [
-                    STRING => $at,
-                    STRING => $val
-                        ]
-                );
-      }   
-      if ($cop eq FILTER_NOT) {   # not is unary -- pop this element
-        $f = pop @st;
-        $cop = ${$st[-1]}[0];
-      }
-    } elsif (  $infix =~ s/^\s*(and|AND|or|OR|[|&])\s*// ) {
-      ($op ) = $1;
-      if (@$f == 0) {  # error .....
-        print "Error -- condition must preceed $op\n";
-        return;
-      }
-      if (($op = $infix_lookup{$op}) ne $cop ) {
-        if ( $cop eq '' ) { # first element
-          $cop = $op;
-          ${$st[-1]}[0] = $op;
-        } elsif ( $op eq FILTER_AND) { # AND has higher precedence than OR -- push on to stack
-          my $n = [ ];  # new list to hold filter elements
-          push (@$n, splice(@$f, -2));  
-          push(@$f, FILTER_AND, $n);
-          $cop = FILTER_AND;
-          push(@st,$f);  # push current list on the stack
-          $f = $n;  
-        } else {  # lower precedence
-          $f = pop @st;
-          my $n = [];
-          push(@$n, FILTER_OR, $f);
-          push(@st, $n);
-          $cop = FILTER_OR;
-        }
-      }  # else same op as before -- do nothing
-    } elsif ( my ($op ) =  $infix =~ s/^\s*(not|NOT)\s+|\s*(!)\s*// ) {
-      my $n = [ ];  # new list to hold filter elements
-      push(@$f, FILTER_NOT, $n);  # fill op in when we know it
-      push(@st,$f);      # push current list on the stack
-      $f = $n;
-      $cop = FILTER_NOT;
-    } elsif ( $infix =  s/^(\w+)=\*\s*//o) {
-      push(@$f, FILTER_PRESENT => $1);
-    } else {   # error ....
-            return;
+    if ($filter =~ s/^\(\s*($Attr)\s*($Op)($Value)\)\s*//o) {
+      push(@$cur, _encode($1,$2,$3));
+      next;
     }
+
+    # If we get here then there is an error in the filter string
+    # so exit loop with data in $filter
+    last;
   }
-  @$self = @$f;
+
+  if (length $filter) {
+    # If we have anything left in the filter, then there is a problem
+    $ErrStr = "Bad filter, error before " . substr($filter,0,20);
+    return undef;
+  }
+
+  $self;
 }
 
 sub ber {
   my $self = shift;
   my $ber = new Net::LDAP::BER();
 
-  return # $self->associate( prior Error $ber )
+  return undef
     unless $ber->encode( @$self );
 
   $ber;
 }
 
-sub and {
-  my $class = ref($_[0]) || shift;
-  $class->binop('FILTER_AND' => @_);
-}
-
-sub or {
-  my $class = ref($_[0]) || shift;
-  $class->binop('FILTER_OR' => @_);
-}
-
-sub not {
-  my $class = ref($_[0]) || shift;
-  my $self = bless [ 'FILTER_NOT', shift], $class;
-  $self;
-}
-
-sub equal {
-  my $self = shift;
-  my $class = ref($self) || $self;
-  $class->cmpop('FILTER_EQ' => @_);
-}
-
-sub approx {
-  my $self = shift;
-  my $class = ref($self) || $self;
-  $class->cmpop('FILTER_APPROX' => @_);
-}
-
-sub greater_or_equal {
-  my $self = shift;
-  my $class = ref($self) || $self;
-  $class->cmpop('FILTER_GE' => @_);
-}
-
-sub less_or_equal {
-  my $self = shift;
-  my $class = ref($self) || $self;
-  $class->cmpop('FILTER_LE' => @_);
-}
-
-sub binop {
-  my $class = shift;
-  my $op = shift;
-  my $self = bless [ $op, []], $class;
-  my $subop;
-  foreach $subop (@_) {
-    if ($subop->[0] eq $op) {
-      push(@{$self->[1]}, @{$subop->[1]});
-    }
-    else {
-      push(@{$self->[1]}, @$subop);
-    }
-  }
-  $self;
-}
-
-sub cmpop {
-  my $class = shift;
-  my $op = shift;
-  my $attr = shift;
-  my $arg = shift;
-
-  my $self;
-
-  if ($arg eq '*') {
-    $self = [ FILTER_PRESENT => $attr ];
-  }
-  elsif ($op eq 'FILTER_EQ' && $arg =~ /^(([^*]|\\\*)*)\*/o) {
-    my $n = [];
-    my $seenstar = 0;
-
-    while ($arg =~ s/^(([^*]|\\\*)*)\*//) {
-      my $t = $seenstar++
-            ? 'SUBSTR_ANY'
-            : 'SUBSTR_INITIAL';
-      push(@$n,$t,$1)
-        if length $1;
-    }
-    push(@$n,'SUBSTR_FINAL',$arg)
-      if length $arg;
-
-    $self = [
-      FILTER_SUBSTRS => [
-        STRING   => $attr,
-        SEQUENCE => $n
-      ]
-    ];
-  }
-  else {
-    $self = [
-      $op, [
-        STRING => $attr,
-        STRING => $arg
-      ]
-    ];
-  }
-
-  bless $self, $class;
-}
-
-sub print {  #for debugging ...
+sub print {
   my $self = shift;
   no strict 'refs'; # select may return a GLOB name
   my $fh = @_ ? shift : select;
@@ -374,16 +233,7 @@ sub print {  #for debugging ...
   print $fh $self->as_string,"\n";
 }
 
-sub as_string {
-  my $self = shift;
-  _string(@$self);
-}
-
-my %prefix = qw(
-    FILTER_AND    &
-    FILTER_OR     |
-    FILTER_NOT    !
-);
+sub as_string { _string(@{$_[0]}) }
 
 sub _string {    # prints things of the form (<op> (<list>) ... )
   my @self = @_;
@@ -391,58 +241,76 @@ sub _string {    # prints things of the form (<op> (<list>) ... )
   my $str = "";
 
   for ($i=0; $i <= $#self; $i+=2) {  # List of ( operator, list ... )
-    if ($prefix{$self[$i]}) {  
-      $str .= "( $prefix{$self[$i]}" . _string(@{$self[$i+1]}) . ")";
+    my $op = $Rop{$self[$i]} || '';
+    if ($op =~ /^[&!|]$/) {  
+      $str .= "($op" . _string(@{$self[$i+1]}) . ")";
     } else {
-      $str .= _string_infix($self[$i], $self[$i+1]);
+      $str .= _string_infix(@self[$i,$i+1],$op);
     }
   }
   $str;
 }
 
-my %infix = qw(
-    FILTER_EQ        =
-    FILTER_APPROX    =~
-    FILTER_GE        >=
-    FILTER_LE        <=
-);
-
 sub _string_infix {    #  prints infix items of the form ( <attrib> <op> <val> )
-  my ( $tag, $items) = @_;
-  my $str = "";
+  my($tag, $items, $op) = @_;
 
-  if ($tag eq FILTER_SUBSTRS) {
-    $str = "( $items->[1] = ";
+  # An EXTENSIBLE match
+
+  if ($op eq ':=') {
+    my($rule,$type,$val,$dn) = ($items->[1][1],$items->[3][1],$items->[5],$items->[7]);
+
+    $val =~ s/([\\\(\)\*\0])/sprintf("\\%02x",ord($1))/sge;
+
+    return join("",
+         '(',
+	   ($type ? ($type)     : ()),
+	   ($dn   ? (':dn')     : ()),
+	   ($rule ? (':',$rule) : ()),
+	   ':=',
+	   $val,
+	 ')');
+
+  }
+
+  # ~= >= <= or simple =
+
+  if (length $op) {
+    my $val = $items->[3];
+
+    $val =~ s/([\\\(\)\*\0])/sprintf("\\%02x",ord($1))/sge;
+
+    return "($items->[1]$op$val)";
+  }
+
+  # PRESENT
+
+  if ($tag eq 'FILTER_PRESENT') {
+    return "($items=*)";
+  }
+
+  # SUBSTRS
+
+  if ($tag eq 'FILTER_SUBSTRS') {
+    my @bits = ( '(', $items->[1], '=');
     my $substrs = $items->[3];
     my $substr;
-    $str .= '*' if $substrs->[0] ne SUBSTR_INITIAL;
+
+    push(@bits, '*')
+        if $substrs->[0] ne 'SUBSTR_INITIAL';
+
     for( $substr=0; $substr < $#{$substrs}; $substr += 2) {
-      my $tmp = $substrs->[$substr+1];
-      $tmp =~ s/([\\\(\)\*\0])/sprintf("\\%02x",ord($1))/sge;
-      $str .= "$tmp";
-      if ( $substrs->[$substr] ne SUBSTR_FINAL ) {
-        $str .= '*' ;
-      } else {
-        $str .= ' '
-      }
+      my $val = $substrs->[$substr+1];
+
+      $val =~ s/([\\\(\)\*\0])/sprintf("\\%02x",ord($1))/sge;
+
+      push(@bits,
+           $val,
+	   $substrs->[$substr] ne 'SUBSTR_FINAL' ? '*' : ());
     }
-    $str .= ")";
-  } elsif ($tag eq FILTER_EXTENSIBLE) {
-    my($rule,$type,$val,$dn) = ($items->[1][1],$items->[3][1],$items->[5],$items->[7]);
-    $val =~ s/([\\\(\)\*\0])/sprintf("\\%02x",ord($1))/sge;
-    $str .= "("
-            . ($type ? $type : "")
-	    . ($dn   ? ":dn" : "")
-	    . ($rule ? ":$rule" : "")
-	    . ":= $val)";
-  } elsif ($tag eq FILTER_PRESENT) {
-    $str .= "($items=*) ";
-  }else {
-    my $tmp = $items->[3];
-    $tmp =~ s/([\\\(\)\*\0])/sprintf("\\%02x",ord($1))/sge;
-    $str .= "($items->[1] $infix{$tag} $tmp) ";
+    return join("",@bits,")");
   }
-  $str;
+
+  return "";
 }
 
 1;

@@ -6,28 +6,8 @@ package Net::LDAP::Constant;
 
 use Exporter ();
 
-@ISA       = qw(Exporter);
-
-##
-## Compatability
-##
-
-my $sub;
-foreach $sub (grep /^LDAP_/, keys %{'Net::LDAP::Constant::'}) {
-    my $new;
-    ($new = $sub) =~ s/^LDAP_/ldap/;
-    *{$new} = \&{$sub};
-}
-
-sub export_fail {
-    require Carp;
-    Carp::carp("Depricated use of ldapCONSTANT, use LDAP_CONSTANT")
-	if $^W;
-    ();  
-}
-
-@EXPORT_OK   = ( grep /^(LDAP_|ldap[A-Z])/, keys %{'Net::LDAP::Constant::'} );
-@EXPORT_FAIL = ( grep /^ldap[A-Z]/, keys %{'Net::LDAP::Constant::'} );
+@ISA         = qw(Exporter);
+@EXPORT_OK   = ( grep /^LDAP_/, keys %{'Net::LDAP::Constant::'} );
 %EXPORT_TAGS = ( 'all' => \@EXPORT_OK );
 
 ##

@@ -7,8 +7,6 @@ BEGIN {
 
 my $i = 4;
 
-use File::Compare qw(compare);
-
 
 print "1..53\n";
 

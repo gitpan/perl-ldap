@@ -4,7 +4,6 @@ BEGIN {
   require "t/common.pl";
 }
 
-use File::Compare qw(compare);
 
 print "1..2\n";
 

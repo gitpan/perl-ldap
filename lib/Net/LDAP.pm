@@ -20,7 +20,7 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 			   LDAP_LOCAL_ERROR
 			);
 
-$VERSION = "0.11";
+$VERSION = "0.12";
 
 $LDAP_VERSION = 2;      # default LDAP protocol version
 
