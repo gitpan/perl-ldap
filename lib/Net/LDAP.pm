@@ -22,9 +22,9 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 			   LDAP_INAPPROPRIATE_AUTH
 			);
 
-$VERSION 	= "0.26";
+$VERSION 	= "0.27";
 @ISA     	= qw(Net::LDAP::Extra);
-$LDAP_VERSION 	= 2;      # default LDAP protocol version
+$LDAP_VERSION 	= 3;      # default LDAP protocol version
 
 # Net::LDAP::Extra will only exist is someone use's the module. But we need
 # to ensure the package stash exists or perl will complain that we inherit
@@ -97,7 +97,7 @@ sub new {
   my $obj  = bless {}, $type;
 
   foreach my $h (ref($host) ? @$host : ($host)) {
-    if ($obj->_connect($host, $arg)) {
+    if ($obj->_connect($h, $arg)) {
       $obj->{net_ldap_host} = $h;
       last;
     }
@@ -124,10 +124,11 @@ sub _connect {
   my ($ldap, $host, $arg) = @_;
 
   $ldap->{net_ldap_socket} = IO::Socket::INET->new(
-    PeerAddr => $host,
-    PeerPort => $arg->{port} || '389',
-    Proto    => 'tcp',
-    Timeout  => defined $arg->{timeout}
+    PeerAddr   => $host,
+    PeerPort   => $arg->{port} || '389',
+    Proto      => 'tcp',
+    MultiHomed => $arg->{multihomed},
+    Timeout    => defined $arg->{timeout}
 		 ? $arg->{timeout}
 		 : 120
   );

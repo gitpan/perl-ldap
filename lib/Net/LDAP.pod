@@ -60,6 +60,10 @@ protocol.
 Creates a new B<Net::LDAP> object and opens a connection to the named host.
 OPTIONS is a list of key-value pairs, valid options are :-
 
+C<HOST> may also be a reference to an array of hosts to try. Each will
+be tried in order until a connection is made. Only when all have
+failed will the result of C<undef> be returned.
+
 =over 4
 
 =item port
@@ -70,6 +74,11 @@ Port to connect to on the remote server.
 
 Timeout passed to L<IO::Socket> when connecting the remote server.
 (Default: 120)
+
+=item multihomed
+
+Will be passed to L<IO::Socket> as the C<MultiHomed> parameter
+when connecting to the remote server
 
 =item debug
 
@@ -894,6 +903,6 @@ terms as Perl itself.
 
 =for html <hr>
 
-I<$Id: LDAP.pod,v 1.16 2002/06/03 15:35:52 gbarr Exp $>
+I<$Id: LDAP.pod,v 1.18 2003/01/27 14:19:39 gbarr Exp $>
 
 =cut

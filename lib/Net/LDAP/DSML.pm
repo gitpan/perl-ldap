@@ -1,17 +1,17 @@
 package Net::LDAP::DSML;
 
 #
-# $Id: DSML.pm,v 1.14 2002/05/29 02:47:37 charden Exp $
+# $Id: DSML.pm,v 1.17 2002/09/11 12:49:55 gbarr Exp $
 # 
 
 use strict;
-use vars qw(@ISA);
+use vars qw(@ISA $VERSION);
 use Carp;
 use XML::SAX::Base;
 use Net::LDAP::Entry;
 
 @ISA = qw(XML::SAX::Base);
-
+$VERSION = "0.11";
 
 # OO purists will hate this :)
 my %schema_typemap = qw(
@@ -412,10 +412,19 @@ sub write_entry {
 	@data{qw(Name LocalName)} = qw(dsml:value value);
       }
 
+      my %chdata;
       foreach my $val (@{$attr->{vals}}) {
-	%attr = ();
+	if ($val =~ /(^[ :]|[\x00-\x1f\x7f-\xff])/) {
+	  require MIME::Base64;
+	  $chdata{Data} = MIME::Base64::encode($val,"");
+	  %attr = ( '{}encoding' => { Value => 'base64', Name => "encoding"} );
+	}
+	else {
+	  $chdata{Data} = $val;
+	  %attr = ();
+	}
 	$handler->start_element(\%data);
-	$handler->characters({ Data => $val } );
+	$handler->characters(\%chdata);
 	%attr = ();
 	$handler->end_element(\%data);
       }
@@ -516,6 +525,8 @@ sub write_schema {
       $handler->characters({Data => $syn});
       $handler->end_element(\%data);
     }
+    @data{qw(Name LocalName)} = qw(dsml:attribute-type attribute-type);
+    $handler->end_element(\%data);
   }
 
   foreach my $oc ($schema->all_objectclasses) {
@@ -650,6 +661,7 @@ sub DESTROY {}
 
 sub AUTOLOAD {
   (my $meth = $AUTOLOAD) =~ s/^.*:://;
+  no strict 'refs';
   *{$meth} = sub { shift->{handler}->$meth(@_) };
   goto &$meth;
 }
