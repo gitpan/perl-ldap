@@ -1,5 +1,4 @@
-# $Id: Paged.pm,v 1.5 2003/05/07 11:51:34 chrisridd Exp $
-# Copyright (c) 2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# Copyright (c) 2000-2004 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
@@ -107,7 +106,7 @@ Net::LDAP::Control::Paged - LDAPv3 Paged results control object
 
 =head1 DESCRIPTION
 
-C<Net::LDAP::Control::Paged> provides an interface for the creation and manipulatrion
+C<Net::LDAP::Control::Paged> provides an interface for the creation and manipulation
 of objects that represent the C<pagedResultsControl> as described by RFC-2696.
 
 =head1 CONSTRUCTOR ARGUMENTS
@@ -120,7 +119,7 @@ L<Net::LDAP::Control> the following are provided.
 =item cookie
 
 The value to use as the cookie. This is not normally set when an object is
-created, but is set from the cookie value returned bu the server. This associates
+created, but is set from the cookie value returned by the server. This associates
 a search with a previous search, so the server knows to return the page
 of entries following the entries it returned the previous time.
 
@@ -153,13 +152,9 @@ E<lt>perl-ldap@perl.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2000 Graham Barr. All rights reserved. This program is
+Copyright (c) 2000-2004 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
-
-=for html <hr>
-
-I<$Id: Paged.pm,v 1.5 2003/05/07 11:51:34 chrisridd Exp $>
 
 =cut
 

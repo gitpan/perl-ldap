@@ -1,4 +1,4 @@
-# Copyright (c) 1997-2003 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# Copyright (c) 1997-2004 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
@@ -9,7 +9,7 @@ use Net::LDAP::ASN qw(LDAPEntry);
 use Net::LDAP::Constant qw(LDAP_LOCAL_ERROR);
 use vars qw($VERSION);
 
-$VERSION = "0.21";
+$VERSION = "0.22";
 
 sub new {
   my $self = shift;
@@ -229,24 +229,27 @@ sub delete {
 sub update {
   my $self = shift;
   my $ldap = shift;
+  my %opt = @_;
   my $mesg;
-  my $cb = sub { $self->changetype('modify') unless $_[0]->code };
+  my $user_cb = delete $opt{callback};
+  my $cb = sub { $self->changetype('modify') unless $_[0]->code;
+                 $user_cb->(@_) if $user_cb };
 
   if ($self->{'changetype'} eq 'add') {
-    $mesg = $ldap->add($self, 'callback' => $cb);
+    $mesg = $ldap->add($self, 'callback' => $cb, %opt);
   }
   elsif ($self->{'changetype'} eq 'delete') {
-    $mesg = $ldap->delete($self, 'callback' => $cb);
+    $mesg = $ldap->delete($self, 'callback' => $cb, %opt);
   }
   elsif ($self->{'changetype'} =~ /modr?dn/) {
     my @args = (newrdn => $self->get_value('newrdn'),
                 deleteoldrdn => $self->get_value('deleteoldrdn'));
     my $newsuperior = $self->get_value('newsuperior');
     push(@args, newsuperior => $newsuperior) if $newsuperior;
-    $mesg = $ldap->moddn($self, @args, 'callback' => $cb);
+    $mesg = $ldap->moddn($self, @args, 'callback' => $cb, %opt);
   }
   elsif (@{$self->{'changes'}}) {
-    $mesg = $ldap->modify($self, 'changes' => $self->{'changes'}, 'callback' => $cb);
+    $mesg = $ldap->modify($self, 'changes' => $self->{'changes'}, 'callback' => $cb, %opt);
   }
   else {
     require Net::LDAP::Message;
@@ -262,10 +265,12 @@ sub update {
 
 sub dump {
   my $self = shift;
+  no strict 'refs'; # select may return a GLOB name
+  my $fh = @_ ? shift : select;
 
   my $asn = $self->{asn};
-  print "-" x 72,"\n";
-  print "dn:",$asn->{objectName},"\n\n" if $asn->{objectName};
+  print $fh "-" x 72,"\n";
+  print $fh "dn:",$asn->{objectName},"\n\n" if $asn->{objectName};
 
   my($attr,$val);
   my $l = 0;
@@ -278,14 +283,14 @@ sub dump {
 
   foreach $attr (@{$asn->{attributes}}) {
     $val = $attr->{vals};
-    printf "%${l}s: ", $attr->{type};
+    printf $fh "%${l}s: ", $attr->{type};
     my($i,$v);
     $i = 0;
     foreach $v (@$val) {
-      print $spc if $i++;
-      print $v;
+      print $fh $spc if $i++;
+      print $fh $v;
     }
-    print "\n";
+    print $fh "\n";
   }
 }
 

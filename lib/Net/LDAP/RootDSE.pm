@@ -1,4 +1,4 @@
-# Copyright (c) 2003 Chris Ridd <chris.ridd@isode.com> and
+# Copyright (c) 2003-2004 Chris Ridd <chris.ridd@isode.com> and
 # Graham Barr <gbarr@pobox.com>. All rights reserved.  This program is
 # free software; you can redistribute it and/or modify it under the
 # same terms as Perl itself.
@@ -12,6 +12,7 @@ $VERSION = "0.01";
 
 use strict;
 
+sub supported_feature        { _supported_feature( @_, 'supportedFeatures'       ) }
 sub supported_extension      { _supported_feature( @_, 'supportedExtension'      ) }
 sub supported_version        { _supported_feature( @_, 'supportedLDAPVersion'    ) }
 sub supported_control        { _supported_feature( @_, 'supportedControl'        ) }
@@ -59,6 +60,11 @@ C<get_value> is identical to L<Net::LDAP::Entry/get_value>
 Returns true if the server supports all of the specified
 extension OIDs
 
+=item supported_feature ( OID_LIST )
+
+Returns true if the server supports all of the specified
+feature OIDs
+
 =item supported_version ( VERSION_LIST )
 
 Returns true if the server supports all of the specified
@@ -87,6 +93,8 @@ Graham Barr E<lt>gbarr@pobox.comE<gt>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2003, Chris Ridd and Graham Barr. All rights reserved. This
+Copyright (c) 2003-2004, Chris Ridd and Graham Barr. All rights reserved. This
 library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
+
+=cut

@@ -1,4 +1,4 @@
-# Copyright (c) 1997-2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# Copyright (c) 1997-2004 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
@@ -12,7 +12,7 @@ use Net::LDAP::Filter;
 use Net::LDAP::Constant qw(LDAP_SUCCESS LDAP_DECODING_ERROR);
 
 @ISA = qw(Net::LDAP::Message);
-$VERSION = "0.09";
+$VERSION = "0.10";
 
 
 sub first_entry { # compat
@@ -37,6 +37,7 @@ sub decode {
     if exists $result->{protocolOp}{searchResDone};
 
   my $data;
+  @{$self}{qw(controls ctrl_hash)} = ($result->{controls}, undef);
 
   if ($data = delete $result->{protocolOp}{searchResEntry}) {
 

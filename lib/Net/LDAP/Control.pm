@@ -1,5 +1,4 @@
-# $Id: Control.pm,v 1.8 2003/05/08 12:52:16 gbarr Exp $
-# Copyright (c) 1999-2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# Copyright (c) 1999-2004 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
@@ -15,9 +14,12 @@ use Net::LDAP::Constant qw(
   LDAP_CONTROL_VLVRESPONSE
   LDAP_CONTROL_PAGED
   LDAP_CONTROL_PROXYAUTHENTICATION
+  LDAP_CONTROL_MANAGEDSAIT
+  LDAP_CONTROL_PERSISTENTSEARCH
+  LDAP_CONTROL_ENTRYCHANGE
 );
 
-$VERSION = "0.04";
+$VERSION = "0.05";
 
 my %Pkg2Type = (
 
@@ -32,9 +34,9 @@ my %Pkg2Type = (
   'Net::LDAP::Control::ProxyAuth'	=> LDAP_CONTROL_PROXYAUTHENTICATION,
 
 
-  #LDAP_CONTROL_MANAGEDSAIT
-  #LDAP_CONTROL_PERSISTENTSEARCH
-  #LDAP_CONTROL_ENTRYCHANGE
+  'Net::LDAP::Control::ManageDsaIT'	=> LDAP_CONTROL_MANAGEDSAIT,
+  'Net::LDAP::Control::PersistentSearch'	=> LDAP_CONTROL_PERSISTENTSEARCH,
+  'Net::LDAP::Control::EntryChange'	=> LDAP_CONTROL_ENTRYCHANGE,
   #
   #LDAP_CONTROL_PWEXPIRED
   #LDAP_CONTROL_PWEXPIRING
@@ -158,7 +160,7 @@ C<Net::LDAP::Control> is a base-class for LDAPv3 control objects.
 
 =over 4
 
-=item new ARGS
+=item new ( ARGS )
 
 ARGS is a list of name/value pairs, valid arguments are.
 
@@ -175,7 +177,7 @@ is inappropriate for the requested operation then the server will ignore
 the control and perform the requested operation as if the control was
 not given.
 
-If absent, FALSE is assume.
+If absent, FALSE is assumed.
 
 =item type
 
@@ -197,7 +199,7 @@ to the particular control.
 
 =back
 
-=item from_asn ASN
+=item from_asn ( ASN )
 
 ASN is a HASH reference, normally extracted from a PDU. It will contain
 a C<type> element and optionally C<critical> and C<value> elements. On
@@ -220,17 +222,17 @@ but may also be called with arguments to set new values.
 
 =over 4
 
-=item error
+=item error ()
 
 If there has been an error returns a description of the error, otherwise it will
 return C<undef>
 
-=item init
+=item init ()
 
 C<init> will be called as the last step in both contructors. What it does will depend
 on the sub-class. It must always return the object.
 
-=item register OID
+=item register ( OID )
 
 C<register> is provided for sub-class implementors. It should be called as a class method
 on a sub-class of Net::LDAP::Control with the OID that the class will handle. Net::LDAP::Control
@@ -257,7 +259,7 @@ blessed into the package which was registered to handle the OID in the ASN.
 
 =back
 
-=item to_asn
+=item ( to_asn )
 
 Returns a structure suitable for passing to Convert::ASN1 for
 encoding. This method will be called by L<Net::LDAP> when the
@@ -267,7 +269,7 @@ The base class implementation of this method will call the C<value> method
 without arguments to allow a sub-class to encode it's value. Sub-classes
 should not need to override this method.
 
-=item valid
+=item valid ()
 
 Returns true if the object is valid and can be encoded. The default implementation
 for this method is to return TRUE if there is no error, but sub-classes may override that.
@@ -287,12 +289,8 @@ E<lt>perl-ldap@perl.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999-2000 Graham Barr. All rights reserved. This program is
+Copyright (c) 1999-2004 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
-
-=for html <hr>
-
-I<$Id: Control.pm,v 1.8 2003/05/08 12:52:16 gbarr Exp $>
 
 =cut

@@ -1,4 +1,4 @@
-# Copyright (c) 1997-2000 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# Copyright (c) 1997-2004 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
@@ -9,7 +9,7 @@ use SelectSaver;
 require Net::LDAP::Entry;
 use vars qw($VERSION);
 
-$VERSION = "0.14";
+$VERSION = "0.15";
 
 my %mode = qw(w > r < a >>);
 
@@ -52,6 +52,7 @@ sub new {
 
   $opt{'lowercase'} ||= 0;
   $opt{'change'} ||= 0;
+  $opt{'sort'} ||= 0;
 
   my $self = {
     changetype => "modify",
@@ -65,6 +66,12 @@ sub new {
     write_count => ($mode eq 'a' and tell($fh) > 0) ? 1 : 0,
   };
 
+  # fetch glob for URL type attributes (one per LDIF object)
+  if ($mode eq "r") {
+    require Symbol;
+    $self->{_attr_fh} = Symbol::gensym();
+  }
+
   bless $self, $pkg;
 }
   
@@ -75,17 +82,20 @@ sub _read_lines {
   {
     local $/ = "";
     my $fh = $self->{'fh'};
-    my $ln = $self->{_next_lines} || scalar <$fh>;
-    unless ($ln) {
-       $self->{_next_lines} = '';
-       $self->{_current_lines} = '';
-       $self->eof(1);
-       return;
-    }
-    $ln =~ s/\n //sg;
-    $ln =~ s/^#.*\n//mg;
-    chomp($ln);
-    $self->{_current_lines} = $ln;
+    my $ln;
+    do {	# allow comments separated by blank lines
+      $ln = $self->{_next_lines} || scalar <$fh>;
+      unless ($ln) {
+         $self->{_next_lines} = '';
+         $self->{_current_lines} = '';
+         $self->eof(1);
+         return;
+      }
+      $ln =~ s/\n //sg;
+      $ln =~ s/^#.*\n//mg;
+      chomp($ln);
+      $self->{_current_lines} = $ln;
+    } until ($self->{_current_lines} || $self->eof());
     chomp(@ldif = split(/^/, $ln));
     do {
       $ln = scalar <$fh> || '';
@@ -101,6 +111,34 @@ sub _read_lines {
 }
 
 
+# read attribute value from URL (currently only file: URLs)
+sub _read_url_attribute {
+  my $self = shift;
+  my $url = shift;
+  my @ldif = @_;
+  my $line;
+
+  if ($url =~ s/^file:(?:\/\/)?//) {
+    my $fh = $self->{_attr_fh};
+    unless (open($fh, '<', $url)) {
+      $self->_error("can't open $line: $!", @ldif);
+      return;
+    }
+    binmode($fh);
+    { # slurp in whole file at once
+      local $/;
+      $line = <$fh>;
+    }
+    close($fh);
+  } else {
+    $self->_error("unsupported URL type", @ldif);
+    return;
+  }
+
+  $line;
+}
+
+
 # _read_one() is deprecated and will be removed
 # in a future version
 *_read_one = \&_read_entry; 
@@ -111,8 +149,13 @@ sub _read_entry {
   $self->_clear_error();
   
   @ldif = $self->_read_lines;
-  return unless @ldif;
-  shift @ldif if @ldif && $ldif[0] !~ /\D/;
+
+  unless (@ldif) {	# empty records are errors if not at eof
+    $self->_error("illegal empty LDIF entry")  if (!$self->eof());
+    return;
+  }
+  # What does that mean ???
+  #shift @ldif if @ldif && $ldif[0] !~ /\D/;
 
   if (@ldif and $ldif[0] =~ /^version:\s+(\d+)/) {
     $self->{version} = $1;
@@ -182,6 +225,8 @@ sub _read_entry {
         }
  
         $line =~ s/^([-;\w]+):\s*// and $attr = $1;
+
+        # base64 encoded attribute: decode it
         if ($line =~ s/^:\s*//) {
           eval { require MIME::Base64 };
           if ($@) {
@@ -189,6 +234,11 @@ sub _read_entry {
             return;
           }
           $line = MIME::Base64::decode($line);
+        }
+        # url attribute: read in file:// url, fail on others
+        elsif ($line =~ s/^\<\s*(.*?)\s*$/$1/) {
+          $line = $self->_read_url_attribute($line, @ldif);
+          return  if !defined($line);
         }
  
         if( defined($modattr) && $attr ne $modattr ) {
@@ -219,6 +269,7 @@ sub _read_entry {
     foreach $line (@ldif) {
       $line =~ s/^([-;\w]+):\s*// && ($attr = $1) or next;
   
+      # base64 encoded attribute: decode it
       if ($line =~ s/^:\s*//) {
         eval { require MIME::Base64 };
         if ($@) {
@@ -226,6 +277,11 @@ sub _read_entry {
           return;
         }
         $line = MIME::Base64::decode($line);
+      }
+      # url attribute: read in file:// url, fail on others
+      elsif ($line =~ s/^\<\s*(.*?)\s*$/$1/) {
+        $line = $self->_read_url_attribute($line, @ldif);
+        return  if !defined($line);
       }
   
       if ($attr eq $last) {
@@ -292,6 +348,7 @@ sub _wrap {
 sub _write_attr {
   my($attr,$val,$wrap,$lower) = @_;
   my $v;
+  my $res = 1;	# result value
   foreach $v (@$val) {
     my $ln = $lower ? lc $attr : $attr;
     if ($v =~ /(^[ :]|[\x00-\x1f\x7f-\xff])/) {
@@ -301,17 +358,28 @@ sub _write_attr {
     else {
       $ln .= ": " . $v;
     }
-    print _wrap($ln,$wrap),"\n";
+    $res &&= print _wrap($ln,$wrap),"\n";
   }
+  $res;
+}
+
+# helper function to compare attribute names (sort objectClass first)
+sub _cmpAttrs {
+  ($a =~ /^objectclass$/io)
+  ? -1 : (($b =~ /^objectclass$/io) ? 1 : ($a cmp $b));
 }
 
 sub _write_attrs {
-  my($entry,$wrap,$lower) = @_;
+  my($entry,$wrap,$lower,$sort) = @_;
+  my @attributes = $entry->attributes();
   my $attr;
-  foreach $attr ($entry->attributes) {
+  my $res = 1;	# result value
+  @attributes = sort _cmpAttrs @attributes  if ($sort);
+  foreach $attr (@attributes) {
     my $val = $entry->get_value($attr, asref => 1);
-    _write_attr($attr,$val,$wrap,$lower);
+    $res &&= _write_attr($attr,$val,$wrap,$lower);
   }
+  $res;
 }
 
 sub _write_dn {
@@ -340,16 +408,24 @@ sub _write_dn {
 sub write {
   my $self = shift;
 
-  $self->{change} = 0;
-  $self->write_entry(@_);
+  $self->_write_entry(0, @_);
 }
 
 sub write_entry {
   my $self = shift;
+
+  $self->_write_entry($self->{change}, @_);
+}
+
+# internal helper: write entry in different format depending on 1st arg
+sub _write_entry {
+  my $self = shift;
+  my $change = shift;
   my $entry;
-  my $change = $self->{change};
   my $wrap = int($self->{'wrap'});
   my $lower = $self->{'lowercase'};
+  my $sort = $self->{'sort'};
+  my $res = 1;	# result value
   local($\,$,); # output field and record separators
 
   unless ($self->{'fh'}) {
@@ -362,6 +438,7 @@ sub write_entry {
   foreach $entry (@_) {
     unless (ref $entry) {
        $self->_error("Entry '$entry' is not a valid Net::LDAP::Entry object.");
+       $res = 0;
        next;
     }
 
@@ -373,28 +450,29 @@ sub write_entry {
       next if $type eq 'modify' and !@changes;
 
       if ($self->{write_count}++) {
-	print "\n";
+	$res &&= print "\n";
       }
       else {
-        print "version: $self->{version}\n\n" if defined $self->{version};
+        $res &&= print "version: $self->{version}\n\n"
+          if defined $self->{version};
       }
-      _write_dn($entry->dn,$self->{'encode'},$wrap);
+      $res &&= _write_dn($entry->dn,$self->{'encode'},$wrap);
 
-      print "changetype: $type\n";
+      $res &&= print "changetype: $type\n";
 
       if ($type eq 'delete') {
         next;
       }
       elsif ($type eq 'add') {
-        _write_attrs($entry,$wrap,$lower);
+        $res &&= _write_attrs($entry,$wrap,$lower,$sort);
         next;
       }
       elsif ($type =~ /modr?dn/o) {
         my $deleteoldrdn = $entry->get_value('deleteoldrdn') || 0;
-        print _write_attr('newrdn',$entry->get_value('newrdn', asref => 1),$wrap,$lower);
-        print 'deleteoldrdn: ', $deleteoldrdn,"\n";
+        $res &&= print _write_attr('newrdn',$entry->get_value('newrdn', asref => 1),$wrap,$lower);
+        $res &&= print 'deleteoldrdn: ', $deleteoldrdn,"\n";
         my $ns = $entry->get_value('newsuperior', asref => 1);
-        print _write_attr('newsuperior',$ns,$wrap,$lower) if defined $ns;
+        $res &&= print _write_attr('newsuperior',$ns,$wrap,$lower) if defined $ns;
         next;
       }
 
@@ -406,28 +484,29 @@ sub write_entry {
         }
         my $i = 0;
         while ($i < @$chg) {
-	  print "-\n" if $dash++;
+	  $res &&= print "-\n" if $dash++;
           my $attr = $chg->[$i++];
           my $val = $chg->[$i++];
-          print $type,": ",$attr,"\n";
-          _write_attr($attr,$val,$wrap,$lower);
+          $res &&= print $type,": ",$attr,"\n";
+          $res &&= _write_attr($attr,$val,$wrap,$lower);
         }
       }
     }
 
     else {
       if ($self->{write_count}++) {
-	print "\n";
+	$res &&= print "\n";
       }
       else {
-        print "version: $self->{version}\n\n" if defined $self->{version};
+        $res &&= print "version: $self->{version}\n\n"
+          if defined $self->{version};
       }
-      _write_dn($entry->dn,$self->{'encode'},$wrap);
-      _write_attrs($entry,$wrap,$lower);
+      $res &&= _write_dn($entry->dn,$self->{'encode'},$wrap);
+      $res &&= _write_attrs($entry,$wrap,$lower,$sort);
     }
   }
 
-  1;
+  $res;
 }
 
 # read_cmd() is deprecated in favor of read_entry() 
@@ -452,20 +531,20 @@ sub read_cmd {
 sub write_cmd {
   my $self = shift;
 
-  $self->{change} = 1;
-  $self->write_entry(@_);
+  $self->_write_entry(1, @_);
 }
 
 sub done {
   my $self = shift;
+  my $res = 1;	# result value
   if ($self->{fh}) {
      if ($self->{opened_fh}) {
-       close $self->{fh};
+       $res = close $self->{fh};
        undef $self->{opened_fh};
      }
      delete $self->{fh};
   }
-  1;
+  $res;
 }
 
 my %onerror = (

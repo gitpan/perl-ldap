@@ -17,7 +17,7 @@ Net::LDAP - Lightweight Directory Access Protocol
  
  $mesg->code && die $mesg->error;
  
- foreach $entry ($mesg->all_entries) { $entry->dump; }
+ foreach $entry ($mesg->entries) { $entry->dump; }
  
  $mesg = $ldap->unbind;   # take down session
  
@@ -93,6 +93,11 @@ Timeout passed to L<IO::Socket> when connecting the remote server.
 
 Will be passed to L<IO::Socket> as the C<MultiHomed> parameter
 when connecting to the remote server
+
+=item localaddr =E<gt> HOST
+
+Will be passed to L<IO::Socket> as the C<LocalAddr> parameter, which
+sets the client's IP address (as opposed to the server's IP address.)
 
 =item debug =E<gt> N
 
@@ -754,6 +759,7 @@ If not specified, then the following attributes will be requested
   namingContexts
   altServer
   supportedExtension
+  supportedFeatures
   supportedControl
   supportedSASLMechanisms
   supportedLDAPVersion
@@ -914,12 +920,8 @@ Graham Barr E<lt>gbarr@pobox.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1997-2003 Graham Barr. All rights reserved. This program is
+Copyright (c) 1997-2004 Graham Barr. All rights reserved. This program is
 free software; you can redistribute it and/or modify it under the same
 terms as Perl itself.
-
-=for html <hr>
-
-I<$Id: LDAP.pod,v 1.35 2003/11/10 18:31:04 chrisridd Exp $>
 
 =cut
