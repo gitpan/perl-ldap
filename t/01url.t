@@ -2,12 +2,7 @@
 
 BEGIN {
   eval {
-    require URI::URL;
-    $pkg = "URI::URL";
-  }
-  or eval {
-    require URI;
-    $pkg = "URI";
+    require URI::ldap;
   }
   or do {
     print "1..0\n";
@@ -17,9 +12,7 @@ BEGIN {
 
 print "1..5\n";
 
-use URI::ldap;
-
-$url = $pkg->new("ldap://host/dn=base?cn,sn?sub?objectClass=*");
+$url = URI->new("ldap://host/dn=base?cn,sn?sub?attr=*");
 
 print "not " unless $url->host eq "host";
 print "ok 1\n";
@@ -33,6 +26,6 @@ print "ok 3\n";
 print "not " unless $url->scope eq "sub";
 print "ok 4\n";
 
-print "not " unless $url->filter eq "objectClass=*";
+print "not " unless $url->filter eq "attr=*";
 print "ok 5\n";
 

@@ -1,3 +1,22 @@
+Change 320 on 1999/08/11 by <gbarr@pobox.com> (Graham Barr)
+
+	Added contrib directory with ismember.pl and printMembers.pl
+
+Change 319 on 1999/08/08 by <gbarr@pobox.com> (Graham Barr)
+
+	URI::URL::ldap, URI::ldap
+	- deleted from distribution
+	
+	Net::LDAP::Util
+	- Added missing package statement
+	
+	Net::LDAP::LDIF
+	- Fix for DN which are base64 encoded
+
+Change 315 on 1999/06/27 by <gbarr@pobox.com> (Graham Barr)
+
+	Release 0.12
+
 Change 314 on 1999/06/27 by <gbarr@pobox.com> (Graham Barr)
 
 	Net::LDAP::Filter

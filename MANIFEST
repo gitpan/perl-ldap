@@ -47,8 +47,6 @@ lib/Net/LDAP/Schema/oid7.pm
 lib/Net/LDAP/Search.pm
 lib/Net/LDAP/Search.pod
 lib/Net/LDAP/Util.pm
-lib/URI/URL/ldap.pm
-lib/URI/ldap.pm
 t/00ldif-entry.t
 t/01url.t
 t/02filter.t
@@ -56,3 +54,7 @@ t/50populate.t
 t/51search.t
 t/52modify.t
 t/common.pl
+contrib/isMember.pl
+contrib/isMember.readme
+contrib/printMembers.pl
+contrib/printMembers.readme

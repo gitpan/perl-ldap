@@ -4,13 +4,14 @@
 
 package Net::LDAP::LDIF;
 
-use IO::File;
 use strict;
 use SelectSaver;
 require Net::LDAP::Entry;
 use vars qw($VERSION);
 
-$VERSION = "0.03";
+$VERSION = "0.04";
+
+my %mode = qw(w > r < a >>);
 
 sub new {
   my $pkg = shift;
@@ -32,7 +33,10 @@ sub new {
       }
     }
     else {
-      $fh = IO::File->new($file,$mode) or return;
+      require Symbol;
+      $fh = Symbol::gensym();
+      my $open = ($mode{$mode} || "<") . $file;
+      open($fh,$open) or return;
     }
   }
 
@@ -63,9 +67,15 @@ sub _read_one {
   }
   shift @ldif if @ldif && $ldif[0] !~ /\D/;
 
-  return unless @ldif > 1 && $ldif[0] =~ s/^dn: //;
+  return unless @ldif > 1 && $ldif[0] =~ s/^dn:(:?) //;
 
   my $dn = shift @ldif;
+
+  if (length($1)) {
+    require MIME::Base64;
+    $dn = MIME::Base64::decode($dn);
+  }
+
   my @attr;
   my $last = "";
   my $vals = [];
@@ -73,10 +83,12 @@ sub _read_one {
   my $attr;
   foreach $line (@ldif) {
     $line =~ s/^([-;\w]+):\s*// && ($attr = $1) or next;
-    if($line =~ s/^:\s*//) {
+
+    if ($line =~ s/^:\s*//) {
       require MIME::Base64;
       $line = MIME::Base64::decode($line);
     }
+
     if ($attr eq $last) {
       push @$vals, $line;
       next;
@@ -122,8 +134,7 @@ sub _write_attr {
     my $ln = $attr;
     if ($v =~ /(^[ :]|[\x00-\x1f\x7f-\xff])/) {
       require MIME::Base64;
-      $ln .= ":: " . MIME::Base64::encode($v);
-      $ln =~ s/\n//sog;
+      $ln .= ":: " . MIME::Base64::encode($v,"");
     }
     else {
       $ln .= ": " . $v;
@@ -153,7 +164,15 @@ sub write {
   my $fh = $self->{'fh'};
   foreach $entry (@_) {
     print "\n" if tell($self->{'fh'});
-    my $dn = "dn: " . $entry->dn;
+    my $dn = $entry->dn;
+
+    if ($dn =~ /(^[ :]|[\x00-\x1f\x7f-\xff])/) {
+      require MIME::Base64;
+      $dn = "dn:: " . MIME::Base64::encode($dn,"");
+    }
+    else {
+      $dn = "dn: " . $dn;
+    }
 
     print _wrap($dn,$wrap),"\n";
     _write_attrs($entry,$wrap);
@@ -189,9 +208,15 @@ sub _read_one_cmd {
     chomp(@ldif = split(/^/, $ln));
   }
   shift @ldif if @ldif && $ldif[0] !~ /\D/;
-  return unless @ldif > 1 && $ldif[0] =~ s/^dn: //;
+  return unless @ldif > 1 && $ldif[0] =~ s/^dn:(:?) //;
 
   my $dn = shift @ldif;
+
+  if (length($1)) {
+    require MIME::Base64;
+    $dn = MIME::Base64::decode($dn);
+  }
+
   my $entry = Net::LDAP::Entry->new;
   $entry->dn($dn);
 

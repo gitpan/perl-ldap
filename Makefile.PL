@@ -53,9 +53,8 @@ check_module('Convert::BER',1.23) or print <<"EDQ","\n";
 Convert::BER version 1.23 or later is essential for perl-ldap
 EDQ
 
-check_module('URI::URL',1.18) or print <<"EDQ","\n";
-URI::URL is part of the libwww-perl distribution and is needed to
-parse LDAP URLs
+check_module('URI',1.02) && check_module('URI::ldap',1.10) or print <<"EDQ","\n";
+URI::ldap is needed if you want to parse LDAP URLs
 EDQ
 
 check_module('Digest::MD5') or print <<"EDQ","\n";

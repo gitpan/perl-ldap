@@ -51,14 +51,14 @@ sub start_server {
   close(CONFI);
   close(CONFO);
 
+  rmtree($TESTDB) if ( -d $TESTDB );
+  mkdir($TESTDB,0777);
+  die "$TESTDB is not a directory" unless -d $TESTDB;
+
+  my $log = $TEMPDIR . "/" . basename($0,'.t');
+
   unless ($pid = fork) {
     die "fork: $!" unless defined $pid;
-
-    rmtree($TESTDB) if ( -d $TESTDB );
-    mkdir($TESTDB,0777);
-    die "$TESTDB is not a directory" unless -d $TESTDB;
-
-    my $log = $TEMPDIR . "/" . basename($0,'.t');
 
     open(STDERR,">$log");
     open(STDOUT,">&STDERR");
@@ -73,7 +73,7 @@ sub start_server {
 sub kill_server {
   if ($pid) {
     kill 9, $pid;
-    sleep 1;
+    sleep 2;
     undef $pid;
   }
 }
