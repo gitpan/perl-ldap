@@ -1,3 +1,61 @@
+Change 265 on 1999/03/18 by <gbarr@pobox.com> (Graham Barr)
+
+	Release 0.10
+
+Change 260 on 1999/03/16 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Constant
+	- Added :all tag and documented
+
+Change 259 on 1999/03/16 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP
+	- Update POD not to show bad examples
+
+Change 258 on 1999/03/16 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Search
+	- added ->pop_entry and ->shift_entry to allow removal of entries
+	  from the internal list
+	- Added docs
+	
+	URI::URL::ldap, URI::ldap
+	- Now supports both new and old URI::* API's
+
+Change 257 on 1999/03/16 by <gbarr@pobox.com> (Graham Barr)
+
+	Updated te one example
+
+Change 256 on 1999/03/16 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Util
+	- Added new module, currently contains subs for error code <-> text
+	  translation
+
+Change 255 on 1999/03/16 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP
+	- The ->delete method was sending the controls outside the PDU
+
+Change 244 on 1999/01/18 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Filter
+	- Changed pattern for the attribute name from (\w+) to ([^\s\n=]+)
+
+Change 243 on 1999/01/18 by <gbarr@pobox.com> (Graham Barr)
+
+	Net::LDAP::Search
+	- Fix quoting warning for earlier perls
+
+Change 242 on 1999/01/16 by <gbarr@pobox.com> (Graham Barr)
+
+	- Update ldapsearch script and add ldapmodrdn and ldapdelete scripts
+	- Net::LDAP::Search fix bug in reference decode
+
+Change 239 on 1998/12/23 by <gbarr@pobox.com> (Graham Barr)
+
+	Release 0.09
+
 Change 238 on 1998/12/23 by <gbarr@pobox.com> (Graham Barr)
 
 	- fixed typos in Authen::SASL::CRAM_MD5 &  Net::LDAP::Extension

@@ -10,7 +10,7 @@ use vars qw($VERSION);
 
 no strict 'subs';
 
-$VERSION = "0.02";
+$VERSION = "0.03";
 
 sub new {
   my $self = shift;
@@ -73,10 +73,10 @@ sub parse {
     elsif ($filter =~ s/^\)\s*//o) {
       $f = pop @st;
     }
-    elsif ($filter =~ s/^\(\s*(\w+)=\*\)\s*//o) {
+    elsif ($filter =~ s/^\(\s*([^\s\n=]+)=\*\)\s*//o) {
       push(@$f, FILTER_PRESENT => $1);
     }
-    elsif ($filter =~ s/^\(\s*(\w+)\s*(=|~=|>=|<=)\s*(([^()]|\\[()])+)\s*\)\s*//o) {
+    elsif ($filter =~ s/^\(\s*([^\s\n=]+)\s*(=|~=|>=|<=)\s*(([^()]|\\[()])+)\s*\)\s*//o) {
       my($attr,$op,$val) = ($1,$2,$3);
       if ($op eq '=' && $val =~ /^(([^*]|\\\*)*)\*/o) {
         my $n = [];
@@ -150,7 +150,7 @@ sub infix_parse {
         }
     }
     $cop = ${$st[-1]}[0] if @st;
-  } elsif ( $infix =~ s/^(\w+)\s*(=|~=|>=|<=)\s*(['"]|[^() ]+)//o) {
+  } elsif ( $infix =~ s/^([^\s\n=]+)\s*(=|~=|>=|<=)\s*(['"]|[^() ]+)//o) {
 
     ($at, $op, $val) = ($1, $2, $3);
             

@@ -2,7 +2,12 @@
 
 BEGIN {
   eval {
-    require LWP;
+    require URI::URL;
+    $pkg = "URI::URL";
+  }
+  or eval {
+    require URI;
+    $pkg = "URI";
   }
   or do {
     print "1..0\n";
@@ -12,9 +17,9 @@ BEGIN {
 
 print "1..5\n";
 
-use URI::URL::ldap;
+use URI::ldap;
 
-$url = URI::URL->new("ldap://host/dn=base?cn,sn?sub?objectClass=*");
+$url = $pkg->new("ldap://host/dn=base?cn,sn?sub?objectClass=*");
 
 print "not " unless $url->host eq "host";
 print "ok 1\n";

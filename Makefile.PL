@@ -72,7 +72,7 @@ EDQ
 
 #--- Write the Makefile ---
 
-my %PL_FILES = map { ($a = $_) =~ s/\.PL// ? ($_,$a) : () } glob('bin/*');
+my %PL_FILES = map { ($a = $_) =~ s/\.PL// ? ($_,$a) : () } glob('bin/*.PL');
 
 WriteMakefile(
   VERSION_FROM => $VERSION_FROM,

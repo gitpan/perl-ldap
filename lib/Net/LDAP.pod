@@ -6,34 +6,38 @@ Net::LDAP -- Lightweight Directory Access Protocol
 
  use Net::LDAP;
 
- $ldap = new Net::LDAP('ldap.bigfoot.com');
+ $ldap = Net::LDAP->new('ldap.bigfoot.com') or die "$@";
 
  $ldap->bind ;    # an anonymous bind
 
  $mesg = $ldap->search (  # perform a search
                         base   => "c=US",
                         filter => "(&(sn=Barr) (o=Texas Instruments))"
-                       ) or die $@;
+                       );
+
+ $mesg->code && die $mesg->error;
 
  foreach $entry ($mesg->all_entries) { $entry->dump; }
 
  $ldap->unbind;   # take down session
  
  
- $ldap = new Net::LDAP('ldap.umich.edu');
+ $ldap = Net::LDAP->new('ldap.umich.edu');
  
  $ldap->bind (   # bind to a directory with dn and password
               dn       => 'cn=root, o=University of Michigan, c=us',
               password => 'secret'
-             ) || die $@;
+             );
 
 
- $ldap->add ( dn   => 'cn = Barbara Jensen, o=University of Michigan, c=us',
+ $result = $ldap->add (
+              dn   => 'cn = Barbara Jensen, o=University of Michigan, c=us',
               attr => [ 'cn'   => ['Barbara Jensen', 'Barbs Jensen'],
                         'sn    => 'Jensen',
                         'mail' => 'b.jensen@umich.edu'
                       ]
-            ) || warn "failed to add entry" ;
+            );
+  $result->code && warn "failed to add entry: ", $result->error ;
 
 
 =head1 DESCRIPTION

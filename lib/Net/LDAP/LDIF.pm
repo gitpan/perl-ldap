@@ -10,7 +10,7 @@ use SelectSaver;
 require Net::LDAP::Entry;
 use vars qw($VERSION);
 
-$VERSION = "0.02";
+$VERSION = "0.03";
 
 sub new {
   my $pkg = shift;
@@ -72,7 +72,7 @@ sub _read_one {
   my $line;
   my $attr;
   foreach $line (@ldif) {
-    $line =~ s/^(\w+):\s*// && ($attr = $1) or next;
+    $line =~ s/^([;\w]+):\s*// && ($attr = $1) or next;
     if($line =~ s/^:\s*//) {
       require MIME::Base64;
       $line = MIME::Base64::decode($line);

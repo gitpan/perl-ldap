@@ -22,19 +22,7 @@ Net::LDAP::Entry -- An LDAP entry object
 
 =head1 DESCRIPTION
 
-C<Net::LDAP::Entry> is a representation of an entry on an LDAP server. A
-C<Net::LDAP::Entry> object is typically created as a result of a search
-on an LDAP server or by reading from an LDIF file with L<Net::LDAP::LDIF>
-
 =head1 CONSTRUCTOR
-
-=over 4
-
-=item new
-
-The constructor for C<Net::LDAP::Entry> does not take any arguments.
-
-=back
 
 =head1 METHODS
 
@@ -42,80 +30,19 @@ The constructor for C<Net::LDAP::Entry> does not take any arguments.
 
 =item add ( ATTR => VALUE [, ATTR2 => VALUE2 ... ] )
 
-Add attribute values to the entry. C<VALUE> may be a reference to an array
-if multiple values are to be added.
-
 =item replace ( ATTR => VALUE [, ATTR2 => VALUE2 ... ] )
 
-Replace all existing values for C<ATTR> with C<VALUE>. C<VALUE> may be
-a reference to an array of multiple values. If C<VALUE> is a reference
-to an empty array the the attribute C<ATTR> will be deleted.
-
-=item delete ( )
-
-=item delete ( ATTR )
-
-=item delete ( ATTR => VALUE [, ATTR2 => VALUE2 ... ] )
-
-If just C<ATTR> is specified then then all values for the given attribute
-will be deleted. If C<VALUE> is given then only the specified value is
-deleted. C<VALUE> may be a reference to an array of values if more than one
-value for the same attribute is to be deleted.
-
-If delete is called with no arguments, then the L<changetype|/changetype>
-of the entry will be set to C<delete> and a subsequent call to
-L<update|/update ( [ CLIENT ] )> will cause the entry to be deleted
-from the server
+=item delete ( ATTR [, ATTR2 ... ] )
 
 =item dn ( [ DN ] )
 
-Get or set the C<DN> for the entry.
+=item update ( [ CLIENT ] )
 
-=item update ( CLIENT )
-
-C<update> will send the required commands to the server so that any
-C<add>,C<replace>,C<delete> methods that were performed on the object
-are replicated on the server. The result depends on the current
-changetype of the entry.
-
-=over 8
-
-=item add
-
-An L<add|Net::LDAP/add( DN [,OPTIONS ])> request will be sent to C<CLIENT>
-with the current contents of the object.
-
-=item modify
-
-A L<modify|Net::LDAP/modify( DN [, OPTIONS])> request will be sent to
-C<CLIENT>, duplicating any prior C<add>,C<replace> and C<delete> methods
-that have been called on the object.
-
-=item delete
-
-A L<delete|Net::LDAP/delete( DN [, OPTIONS])> request will be sent to
-the C<CLIENT> with the current C<DN> of the object.
-
-=back
-
+This method is not implemented yet.
 
 =item attributes
 
-Returns a list of all the know attributes the entry has. This will either
-be a list of all the attibutes that were requested by a search request
-or all the attributes that were read from an LDIF file.
-
 =item get ( ATTR )
-
-Returns a list of values for the attribute C<ATTR>
-
-=item changetype ( [ TYPE ] )
-
-C<TYPE> may be one of C<add>, C<modify>, C<delete>. Calling without an argument
-will return the current changetype.
-
-The changetype affect what happens when L<update|/update ( [ CLIENT ] )>
-is called.
 
 =back
 

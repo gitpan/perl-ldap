@@ -23,14 +23,29 @@ $Config{startperl}
 # In the following, perl variables are not expanded during extraction.
 
 print OUT <<'!NO!SUBS!';
-
-# Clone of umich ldapsearch program
+# -*- perl -*-
+# Nearly complete clone of Umich ldapsearch program
 #
-# Written by Chris Ridd <c.ridd@isode.com>
+# c.ridd@isode.com
+#
+# $Id: myldapsearch,v 1.3 1999/01/11 08:33:34 cjr Exp $
+#
+# $Log: myldapsearch,v $
+# Revision 1.3  1999/01/11 08:33:34  cjr
+# Revised for 0.09 API
+#
+# Revision 1.2  1998/10/20 08:38:43  cjr
+# Add support for binary values (base64 encoding and the -B option)
+#
+# Revision 1.1  1998/10/19 15:14:15  cjr
+# Initial revision
+#
 
 use strict;
 use Carp;
 use Net::LDAP;
+use URI::URL::ldap;
+use Net::LDAP::LDIF;
 use vars qw($opt_n $opt_v $opt_t $opt_u $opt_A $opt_B $opt_L $opt_R $opt_d
 	    $opt_F $opt_S $opt_f $opt_b $opt_b $opt_s $opt_a $opt_l $opt_z
 	    $opt_D $opt_w $opt_h $opt_p $opt_3);
@@ -40,88 +55,89 @@ use Getopt::Std;
 my %scopes = ( 'base' => 0, 'one' => 1, 'sub' => '2' );
 my %derefs = ( 'never' => 0, 'search' => 1, 'find' => 2, 'always' => 3 );
 
-	   
-#my $usage = <<EOF
-#Usage: $0 [options] filter [attributes...]
-#where:
-#    filter      RFC-1558 compliant LDAP search filter
-#    attributes  whitespace-separated list of attributes to retrieve
-#                (if no attribute list is given, all are retrieved)
-#options:
-#    -n          show what would be done but don\'t actually search
-#    -v          run in verbose mode (diagnostics to standard output)
-#    -t          write values to files in /tmp
-#    -u          include User Friendly entry names in the output
-#    -A          retrieve attribute names only (no values)
-#    -B          do not suppress printing of non-ASCII values
-#    -L          print entries in LDIF format (-B is implied)
-#    -R          do not automatically follow referrals
-#    -d level    set LDAP debugging level to \'level\'
-#    -F sep      print `sep' instead of \'=\' between attribute names and values
-#    -S attr     sort the results by attribute \'attr\'
-#    -f file     perform sequence of searches listed in \'file\'
-#    -b basedn   base dn for search
-#    -s scope    one of base, one, or sub (search scope)
-#    -a deref    one of never, always, search, or find (alias dereferencing)
-#    -l time lim time limit (in seconds) for search
-#    -z size lim size limit (in entries) for search
-#    -D binddn   bind dn
-#    -w passwd   bind passwd (for simple authentication)
-#    -h host     ldap server
-#    -p port     port on ldap server
-#    -3          connect using LDAPv3, otherwise use LDAPv2
-#EOF
-#  ;
+# We only print attributes that we know are text
+# This stuff is in lieu of a workable Schema module
+my @textsyntax = qw(
+		    # RFC 2251
+		    modifiersName modifyTimestamp
+		    creatorsName createTimestamp
 
-die <<__USAGE__
-Usage: $0 [options] filter [attributes...]
-where:
-    filter      RFC 2254 compliant LDAP search filter
-    attributes  whitespace-separated list of attributes to retrieve
-                (if no attribute list is given, all are retrieved)
-options:
-    -n          show what would be done but don\'t actually search
-    -v          run in verbose mode (diagnostics to standard output)
-*   -t          write values to files in /tmp
-*   -u          include User Friendly entry names in the output
-    -A          retrieve attribute names only (no values)
-*   -B          do not suppress printing of non-ASCII values
-    -L          print entries in LDIF format (-B is implied)
-    -R          do not automatically follow referrals
-    -d level    set LDAP debugging level to \'level\'
-    -F sep      print `sep' instead of \'=\' between attribute names and values
-*   -S attr     sort the results by attribute \'attr\'
-*   -f file     perform sequence of searches listed in \'file\'
-    -b basedn   base dn for search
-    -s scope    one of base, one, or sub (search scope)
-    -a deref    one of never, always, search, or find (alias dereferencing)
-    -l time lim time limit (in seconds) for search
-    -z size lim size limit (in entries) for search
-    -D binddn   bind dn
-    -w passwd   bind passwd (for simple authentication)
-    -h host     ldap server
-    -p port     port on ldap server
-    -3          connect using LDAPv3, otherwise use LDAPv2
-__USAGE__
-  unless @ARGV;
+		    # RFC 2256
+		    objectClass aliasedObjectName knowledgeInformation cn sn
+		    serialNumber c l st street o ou title description
+		    searchGuide businessCategory postalAddress postalCode
+		    postOfficeBox physicalDeliveryOfficeName telephoneNumber
+		    telexNumber teletexTerminalIdentifier
+		    facsimileTelephoneNumber x121Address
+		    internationaliSDNNumber registeredAddress
+		    destinationIndicator preferredDeliveryMethod
+		    presentationAddress supportedApplicationContext member
+		    owner roleOccupant seeAlso userPassword name givenName
+		    initials generationQualifier x500UniqueIdentifier
+		    dnQualifier enhancedSearchGuide protocolInformation
+		    distinguishedName uniqueMember houseIdentifier dmdName
+
+		    # RFC 1274
+		    mail rfc822Mailbox
+
+		    # RFC 2079
+		    labeledURI
+		    
+		    # Definitions from other schemas goes here...
+		    collectivePostalAddress collectiveTelephoneNumber
+		    collectiveFacsimileTelephoneNumber
+		    supportedLDAPVersion
+		  );
+
+my %istext; # keys are canonicalised attribute names.
+foreach (@textsyntax) { $istext{lc($_)} = 1; };
+
+die "Usage: $0 [options] filter [attributes...]\
+where:\
+    filter      RFC 2254 compliant LDAP search filter\
+    attributes  whitespace-separated list of attributes to retrieve\
+                (if no attribute list is given, all are retrieved)\
+options:\
+    -n          show what would be done but don\'t actually search\
+    -v          run in verbose mode (diagnostics to standard output)\
+    -A          retrieve attribute names only (no values)\
+    -B          do not suppress printing of non-ASCII values\
+    -L          print entries in LDIF format (-B is implied)\
+    -R          do not automatically follow referrals\
+    -d level    set LDAP debugging level to \'level\'\
+    -F sep      print `sep' instead of \'=\' between attribute names and values\
+    -b basedn   base dn for search\
+    -s scope    one of base, one, or sub (search scope)\
+    -a deref    one of never, always, search, or find (alias dereferencing)\
+    -l time lim time limit (in seconds) for search\
+    -z size lim size limit (in entries) for search\
+    -D binddn   bind dn\
+    -w passwd   bind passwd (for simple authentication)\
+    -h host     ldap server\
+    -p port     port on ldap server\
+    -3          connect using LDAPv3, otherwise use LDAPv2\n" unless @ARGV;
 
 getopts('nvtuABLRd:F:S:f:b:s:a:l:z:D:w:h:p:3');
 
+die "$0: arguments -t -u -S and -f are not supported yet" if ($opt_t ||
+							      $opt_u ||
+							      $opt_S ||
+							      $opt_f);
+# Default the host to a known good LDAP server
 $opt_h = 'nameflow.dante.net' unless $opt_h;
 $opt_F = '=' unless $opt_F;
 
-die "unknown scope $opt_s" if $opt_s && !defined($scopes{$opt_s});
-die "unknown deref $opt_a" if $opt_a && !defined($derefs{$opt_a});
+die "$0: unknown scope $opt_s\n" if $opt_s && !defined($scopes{$opt_s});
+die "$0: unknown deref $opt_a\n" if $opt_a && !defined($derefs{$opt_a});
 
-my $filter = shift || die "missing filter";
-
-my $ldap;
+my $filter = shift || die "$0: missing filter\n";
 
 # We are expecting to get back referrals from the search. Each referral may
 # lead to more referrals being returned, etc etc.
 #
-# So we handle this by looping through a list of referrals, popping the top
-# one each time, but possibly adding extra ones inside the loop.
+# So we handle this by looping through a list of referrals, taking the top
+# one each time, but possibly adding extra ones inside the loop. We prime the
+# list of referrals by making a 'referral' from the command line args.
 #
 # The loop body does the open, bind, search, unbind and close.
 #
@@ -129,46 +145,38 @@ my $ldap;
 # other server, unless the referral indicates it should. This prevents you
 # revealing your password (etc) to random servers.
 
-my $initial = "ldap://$opt_h" . ($opt_p ? ":$opt_p" : "") . "/" . mangle($opt_b);
+my $initial = URI::URL::ldap->new;
+$initial->host($opt_h);
+$initial->dn($opt_b);
+$initial->port($opt_p) if $opt_p;
+my %exts;
+$exts{bindname} = $opt_D if $opt_D;
+$exts{bindpassword} = $opt_w if $opt_w;
+$initial->extensions(%exts);
 
-$initial .= '?'; # No attrs
-$initial .= '?'; # No scope
-$initial .= '?'; # No filter
-$initial .= '?bindname=' . mangle($opt_D) if $opt_D;
-$initial .= '?bindpassword=' . mangle($opt_w) if $opt_w;
+my @urls = ($initial->as_string);
 
-my @referrals = ($initial);
-
+my $ldif = Net::LDAP::LDIF->new if $opt_L;
 my $first_record = 1;
 
-while (@referrals) {
-    my $url = pop @referrals;
-    my ($host,$port,$ref) = $url =~ /ldap:\/\/([^\/:]+):?(\d*)\/(.*)/i;
-    my ($newbase,$newattrs,$newscope,$newfilter,@exts) = split '\?', $ref;
+while (@urls) {
+    my $url = URI::URL::ldap->new(shift @urls);
+    my %exts = $url->extensions;
+    my $ldap;
     my %openargs;
     my %bindargs;
     my %searchargs;
-    map {
-	;
-      EXTENSION: {
-	    /!?bindname=(.*)/ and
-	      $bindargs{dn} = demangle($1), last EXTENSION;
-	    /!?bindpassword=(.*)/ and
-	      $bindargs{password} = demangle($1), last EXTENSION;
-	}
-    } @exts;
 
-    $openargs{port} = $port if $port;
+    $bindargs{dn} = $exts{bindname} if $exts{bindname};
+    $bindargs{password} = $exts{bindpassword} if $exts{bindpassword};
+
+    $openargs{port} = $url->port if $url->port;
     $openargs{debug} = $opt_d if $opt_d;
 
-    if ($opt_n || $opt_v) {
-	my @t = ("'$host'");
-	map { push @t, "$_ => '$openargs{$_}'"; } keys(%openargs);
-	print "open(", join(", ", @t), ")\n";
-    };
+    dumpargs("new", $url->host, \%openargs) if ($opt_n || $opt_v);
 
     unless ($opt_n) {
-	$ldap = new Net::LDAP($host,
+	$ldap = new Net::LDAP($url->host,
 			      %openargs) or die $@;
     }
 
@@ -176,88 +184,82 @@ while (@referrals) {
 # Bind as the desired version, falling back if required to v2
 #
 
-    my $bind_version = ($opt_3 ? 3 : 2);
+    $bindargs{version} = $opt_3 ? 3 : 2;
 
-    if ($bind_version == 3) {
-	if ($opt_n || $opt_v) {
-	    print "bind(";
-	    map { print "$_ => \'$bindargs{$_}\', " } keys(%bindargs);
-	    print "version => 3)\n";
-	}
+    if ($bindargs{version} == 3) {
+	dumpargs("bind", undef, \%bindargs) if ($opt_n || $opt_v);
 	unless ($opt_n) {
-	    $ldap->bind(%bindargs,
-			version => 3) or $bind_version = 2;
+	    $ldap->bind(%bindargs) or $bindargs{version} = 2;
 	}
     }
 
-    if ($bind_version == 2) {
-	if ($opt_n || $opt_v) {
-	    print "bind(";
-	    map { print "$_ => \'$bindargs{$_}\', " } keys(%bindargs);
-	    print "version => 2)\n";
-	}
+    if ($bindargs{version} == 2) {
+	dumpargs("bind", undef, \%bindargs) if ($opt_n || $opt_v);
 	unless ($opt_n) {
-	    $ldap->bind(%bindargs,
-			version => 2) or die $@;
+	    $ldap->bind(%bindargs) or die $@;
 	}
     }
 
     # Set search arguments
     $searchargs{base} = $opt_b if $opt_b;
-    $searchargs{base} = demangle($newbase) if $newbase;
+    $searchargs{base} = $url->dn if $url->dn;
     $searchargs{scope} = $opt_s if $opt_s;
-    $searchargs{scope} = $newscope if $newscope;
+    $searchargs{scope} = $url->scope if $url->scope;
     $searchargs{scope} = $scopes{$searchargs{scope}} if $searchargs{scope};
     $searchargs{deref} = $derefs{$opt_a} if $opt_a;
     $searchargs{sizelimit} = $opt_z if $opt_z;
     $searchargs{timelimit} = $opt_l if $opt_l;
-    $searchargs{typesonly} = 1 if $opt_t; # typesOnly
+    $searchargs{attrsonly} = 1 if $opt_t; # typesOnly
     $searchargs{filter} = $filter;
     $searchargs{attrs} = [ @ARGV ];
 
-    if ($opt_n || $opt_v) {
-	my @t;
-	# Works poorly for attrs array
-	map { push @t, "$_ => '$searchargs{$_}'"; } keys(%searchargs);
-	print "search(", join(", ", @t), ")\n";
-    }
+    dumpargs("search", undef, \%searchargs) if ($opt_n || $opt_v);
 
+    # Print results
+    # Hm, this is harder work than the actual search!
     unless ($opt_n) {
 	my $results = $ldap->search(%searchargs) or die $@;
 
-	map {
-	    if ($first_record) {
-		print "version: 1\n" if ($opt_L);
+	my @entries = $results->entries;
+	if ($opt_L) {
+	    $ldif->write(@entries);
+	} else {
+	    my $entry;
+	    foreach $entry (@entries) {
+		print "\n" unless $first_record;
 		$first_record = 0;
-	    } else {
-		print "\n";
-	    }
-	    if ($opt_L) {
-		my @t = $_->ldif;
-		pop @t;
-		print @t;
-	    } else {
-		my $entry = *$_;
-		print "$$entry\n";
-		my ($attr,$val);
-		while (($attr,$val) = each %{$entry}) {
-		    map {
-			print "$attr$opt_F$_\n";
-		    } @{$val};
-		}
-	    }
-	} $results->all_entries;
+		my ($attr, $val);
+		# Print in a pseudo EDB format
+		# Not a useful format, but it shows how to get to the
+		# attributes and values in an entry
+		print $entry->dn,"\n";
+		foreach $attr ($entry->attributes) {
+		    my $is_printable = $istext{lc($attr)};
+		    foreach $val ($entry->get($attr)) {
+			print "$attr$opt_F";
+			if ($opt_B || $is_printable) {
+			    print "$val\n";
+			} else {
+			    print "(binary value)\n";
+			}
+		    } # foreach value
+		} # foreach attribute
+	    } # foreach entry
+	} # EDB format
 
-	my @refs = $results->referral;
+	# Check for any referrals
+	my @refs = $results->referrals;
 	if ($opt_v && @refs) {
 	    map { print "Referral to: $_\n" } @refs;
 	}
-	push @referrals, @refs unless $opt_R;
-	my @conts = $results->all_references;
+	push @urls, @refs unless $opt_R;
+
+	# Check for any search continuation references
+	my @conts = $results->references;
 	if ($opt_v && @conts) {
 	    map { print "Continue at: $_\n" } @conts;
 	}
-        push @referrals, @conts unless $opt_R;
+        push @urls, @conts unless $opt_R;
     }
     
     if ($opt_n || $opt_v) {
@@ -266,32 +268,22 @@ while (@referrals) {
     unless ($opt_n) {
 	$ldap->unbind() or die $@;
     }
+} # foreach URL
 
-#    if ($opt_n) {
-#	print "destroy()\n";
-#    } else {
-#	$ldap->destroy() or die $@;
-#    }
+sub dumpargs {
+    my ($cmd,$s,$rh) = @_;
+    my @t;
+    push @t, "'$s'" if $s;
+    map {
+	my $value = $$rh{$_};
+	if (ref($value) eq 'ARRAY') {
+	    push @t, "$_ => [" . join(", ", @$value) . "]";
+	} else {
+	    push @t, "$_ => '$value'";
+	}
+    } keys(%$rh);
+    print "$cmd(", join(", ", @t), ")\n";
 }
-
-# Some routines to perform URL mangling and demangling
-
-sub mangle($) {
-    my $v = shift;
-    
-    $v =~ s/ /\+/g;
-    $v =~ s/([,=\?])/sprintf("%%%2x",ord($1))/eig;
-    return $v;
-}
-
-sub demangle($) {
-    my $v = shift;
-
-    $v =~ s/\+/ /g;
-    $v =~ s/%([\dA-f]{1,2})/pack("C",hex($1))/eig;
-    return $v;
-}
-	     
 !NO!SUBS!
 
 close OUT or die "Can't close $script: $!";

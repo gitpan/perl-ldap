@@ -3,6 +3,8 @@ MANIFEST
 Makefile.PL
 README
 TODO
+bin/ldapdelete.PL
+bin/ldapmodrdn.PL
 bin/ldapsearch.PL
 data/00-cmp2.ldif
 data/00-in.ldif
@@ -36,7 +38,9 @@ lib/Net/LDAP/Schema.pm
 lib/Net/LDAP/Schema/oid7.pm
 lib/Net/LDAP/Search.pm
 lib/Net/LDAP/Search.pod
+lib/Net/LDAP/Util.pm
 lib/URI/URL/ldap.pm
+lib/URI/ldap.pm
 t/00ldif-entry.t
 t/01url.t
 t/50populate.t

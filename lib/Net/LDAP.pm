@@ -4,8 +4,6 @@
 
 package Net::LDAP;
 
-#use 5.004;
-
 use IO::Socket;
 use IO::Select;
 use strict;
@@ -22,7 +20,7 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 			   LDAP_LOCAL_ERROR
 			);
 
-$VERSION = "0.09";
+$VERSION = "0.10";
 
 $LDAP_VERSION = 2;      # default LDAP protocol version
 
@@ -138,7 +136,7 @@ sub unbind {
   my $ldap = shift;
   my $arg = &_options;
 
-  my $mesg = new Net::LDAP::Unbind($ldap,$arg);
+  my $mesg = Net::LDAP::Unbind->new($ldap,$arg);
 
   $mesg->ber->encode(
     SEQUENCE => [
@@ -167,7 +165,7 @@ sub bind {
 
   $ldap->version($arg->{'version'}) if exists $arg->{'version'};
 
-  my $mesg = new Net::LDAP::Bind($ldap,$arg);
+  my $mesg = Net::LDAP::Bind->new($ldap,$arg);
   my $version = $ldap->version;
 
   my %ptype = qw(
@@ -238,7 +236,7 @@ sub search {
 
   require Net::LDAP::Search;
 
-  my $mesg = new Net::LDAP::Search->new($ldap,$arg);
+  my $mesg = Net::LDAP::Search->new($ldap,$arg);
 
   my $base      = $arg->{'base'} || "";
   my $scope     = 2;
@@ -261,7 +259,7 @@ sub search {
 
   unless (ref($filter)) {
     require Net::LDAP::Filter;
-    $filter = new Net::LDAP::Filter($filter)
+    $filter = Net::LDAP::Filter->new($filter)
       or return $mesg->set_error(LDAP_FILTER_ERROR,"$@");
   }
 
@@ -428,9 +426,11 @@ sub delete {
   $mesg->ber->encode(
     SEQUENCE => [
       INTEGER    => $mesg->mesg_id,
-      REQ_DELETE => $dn
-    ],
-    OPTIONAL => [ BER => $ctrl ]
+      REQ_DELETE => $dn,
+      OPTIONAL => [
+        BER => $ctrl
+      ]
+    ]
   ) or return $mesg->set_error(LDAP_ENCODING_ERROR,"$@");
 
   $ldap->_sendmesg($mesg);
@@ -621,7 +621,7 @@ sub _recvresp {
   my $what = shift;
 
   do {
-    my $ber = new Net::LDAP::BER();
+    my $ber = Net::LDAP::BER->new();
 
     $ber->read($ldap->socket) or
       return LDAP_OPERATIONS_ERROR;

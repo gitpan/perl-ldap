@@ -5,7 +5,7 @@
 package Net::LDAP::Search;
 
 use strict;
-use vars qw(@ISA);
+use vars qw(@ISA $VERSION);
 use Net::LDAP::Message;
 use Net::LDAP::Entry;
 use Net::LDAP::Filter;
@@ -13,6 +13,7 @@ use Net::LDAP::BER qw(RES_SEARCH_ENTRY RES_SEARCH_REF);
 use Net::LDAP::Constant qw(LDAP_SUCCESS);
 
 @ISA = qw(Net::LDAP::Message);
+$VERSION = "0.02";
 
 sub first_entry { # compat
   my $self = shift;
@@ -38,7 +39,7 @@ sub decode {
   if ($tag == RES_SEARCH_ENTRY) {
     my $entry = Net::LDAP::Entry->new;
 
-    $data->decode(RES_SEARCH_ENTRY => \$seq);
+    $data->decode('RES_SEARCH_ENTRY' => \$seq);
     $entry->decode($seq);
 
     push(@{$self->{'Entries'} ||= []}, $entry);
@@ -51,7 +52,7 @@ sub decode {
   elsif ($tag == RES_SEARCH_REF) {
     my $ref = Net::LDAP::Reference->new;
 
-    $data->decode(RES_SEARCH_REF => \$seq);
+    $data->decode('RES_SEARCH_REF' => \$seq);
     $ref->decode($seq);
 
     push(@{$self->{'Reference'} ||= []}, $ref->references);
@@ -101,6 +102,18 @@ sub entries {
 sub count {
   my $self = shift;
   scalar entries($self);
+}
+
+sub shift_entry {
+  my $self = shift;
+
+  entry($self, 0) ? shift @{$self->{'Entries'}} : undef;
+}
+
+sub pop_entry {
+  my $self = shift;
+
+  entry($self, 0) ? pop @{$self->{'Entries'}} : undef;
 }
 
 sub sorted {
@@ -161,11 +174,14 @@ sub new {
 sub decode {
   my $self = shift;
   my $ber = shift;
+  my @array;
 
+  # Cannot just use $self here as Convert::BER does if(ref($arg) eq 'ARRAY')
   $ber->decode(
-    STRING => $self
+    STRING => \@array
   ) or return;
 
+  @$self = @array;
   $self;
 }
 

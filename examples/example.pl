@@ -1,9 +1,11 @@
-#!/usr/local/bin/nperl
+#!/usr/bin/nperl
+
+# This is a very simple example, hopefully I will get more soon.
+# For more complex examples see the scripts in the bin directory
 
 use lib '.';
 use blib qw(../ber);
 use Net::LDAP;
-use IO::Select;
 
 #ldap.switchboard.com
 #ldap.whowhere.com
@@ -12,12 +14,12 @@ use IO::Select;
 #ldap.bigfoot.com
 
 $ldap = Net::LDAP->new('ldap.switchboard.com',
-		DN => "",
-		Password => "",
-		Port => 389,
-		Debug => 3,
+		port => 389,
+		debug => 3,
 	) or
 	die $@;
+
+$ldap->bind();
 
 for $filter (
 	'(sn=Barr)',

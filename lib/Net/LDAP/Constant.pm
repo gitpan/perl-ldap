@@ -1,4 +1,4 @@
-# Copyright (c) 1998 Graham Barr <gbarr@pobox.com>. All rights reserved.
+# Copyright (c) 1998-1999 Graham Barr <gbarr@pobox.com>. All rights reserved.
 # This program is free software; you can redistribute it and/or
 # modify it under the same terms as Perl itself.
 
@@ -28,6 +28,7 @@ sub export_fail {
 
 @EXPORT_OK   = ( grep /^(LDAP_|ldap[A-Z])/, keys %{'Net::LDAP::Constant::'} );
 @EXPORT_FAIL = ( grep /^ldap[A-Z]/, keys %{'Net::LDAP::Constant::'} );
+%EXPORT_TAGS = ( 'all' => \@EXPORT_OK );
 
 ##
 ## The constants
