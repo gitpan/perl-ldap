@@ -37,6 +37,7 @@ data/slapd-conf.in
 data/slapd.at.conf
 data/slapd.oc.conf
 data/slapd2-conf.in
+inc/Extutils/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AutoInstall.pm
 inc/Module/Install/Base.pm
