@@ -12,7 +12,7 @@
 # module and the PERL TK module.
 # Both modules are available from the CPAN.org system.
 #
-# $Id: tklkup,v 1.8 2001/06/16 03:57:24 charden Exp $
+# $Id: tklkup,v 1.13 2001/08/24 03:03:55 charden Exp $
 #
 # Purpose: This program is designed to retrieve data from a LDAP
 #          directory and display on the graphical user interface
@@ -21,6 +21,35 @@
 #
 # Revisions:
 # $Log: tklkup,v $
+# Revision 1.13  2001/08/24 03:03:55  charden
+#
+# Added code to set the environment variable HOME if it is not set.
+# ActiveState perl does not seem to have this variable set up like the
+# Unix version of perl.
+#
+# Revision 1.12  2001/08/24 02:43:36  charden
+#
+# Change the way a Unix or Microsoft system is detected.  Used the
+# Perl special variable that knows what platform the perl code was
+# compiled on.
+#
+# Revision 1.11  2001/08/12 02:13:16  charden
+#
+# Added the Filter attribute and change ldap filter creation code to
+# not change the filter data when the Filter attribute is selected.
+# Added documentation to pod about this change.
+#
+# Revision 1.10  2001/08/05 04:06:09  charden
+#
+# Change several lines of code so that Carp and warn would not
+# throw un-initialized variable warnings.
+#
+# Revision 1.9  2001/07/29 18:54:12  charden
+#
+# Corrected major stupid error on defining hashes Global and schemaHash.
+# Change the way that forking of tklkup takes place, will now only fork on
+# HPUX, Sun, and Linux.  It should not fork on Windows systems.
+#
 # Revision 1.8  2001/06/16 03:57:24  charden
 # Made attribute jpegPhoto detection case insenitive.
 # Corrected error in window creation in subroutine ERROR.
@@ -106,7 +135,7 @@ use Tk::Label;
 # Global variables, wish I did not have to use them
 # but Tk forces me to.
 #
-my %Global     = {};
+my %Global = ();
 
 $Global{'jpeg'}   = 1;
 eval { use Tk::JPEG; }; 
@@ -118,7 +147,7 @@ $Global{'histWindow'}   = undef();
 $Global{'portWindow'}   = undef();
 $Global{'bindWindow'}   = undef();
 
-my %schemaHash = {};
+my %schemaHash = ();
 
 &init_schemaHash;
 
@@ -139,6 +168,8 @@ $Global{'CORE_SERVER'} = "";
 $Global{'sclear'} = 0;
 $Global{'limit'}  = 30;
 $Global{'port'}   = 389;
+$Global{'platform'} = ($^O eq 'MSWin32') ? $^O : 'unix' ;
+
 my $sbbframe;
 my @base       = ();
 my $base       = "";
@@ -166,7 +197,7 @@ my $debug  = $opt_d ? 1 : 0;
 # (That sounds nasty)
 #
 
-if ( !$debug ) {
+if ( !$debug && $Global{'platform'} eq 'unix' ) {
 
         FORK: {
 
@@ -214,6 +245,15 @@ my @server    = ();
 #
 # Check for dot file, use it to configure program.
 #
+
+#
+#  Active State Perl does not always set ENV HOME.
+#
+
+if ( !$ENV{"HOME"} )
+{
+ $ENV{"HOME"} = "./";
+}
 
 my $dotfile = $ENV{"HOME"} . "/.tklkup";
 
@@ -396,6 +436,8 @@ if ( $#attribute < 1 )
 @attribute = qw/ uid sn cn rfc822mailbox telephonenumber
                  facsimiletelephonenumber gidnumber uidnumber/;
 }
+
+push(@attribute,"Filter");  # put roll your on filter at the end
 
 #
 # Create Main Window
@@ -1108,12 +1150,12 @@ foreach ( @$ocs)
 
       @item = $schemaHash{'schema'}->item( $oid, $value );
       $value =~ tr/a-z/A-Z/;
-      if ( defined(@item) && $item[0] == 1 )
+      if ( @item && $item[0] eq '1' )
       {
          $list->insert("end", "\t$value\n");
          next;
       }
-      if ( defined(@item) && $#item >= 0 )
+      if ( defined(@item) )
       {
          if ( $value eq 'MAY' || $value eq 'MUST' )
          {
@@ -1360,7 +1402,7 @@ $Global{'schemaWindow'} = undef();
 sub schema 
 {
 my $mesg;
-my $error;
+my $error = 0;
 
 $schemaHash{'obj'} = {};
 $schemaHash{'tree'} = {};
@@ -1834,12 +1876,12 @@ $Global{'hlist'} = $Global{'histWindow'}->Scrolled('HList',
 
                   @item = $schema->item( $oid, $value );
                   $value =~ tr/a-z/A-Z/;
-                  if ( defined(@item) && $item[0] == 1 )
+                  if ( @item && $item[0] eq '1' )
                   {
                      $Global{'list'}->insert("end", "$value\n");
                      next;
                   }
-                  if ( defined(@item) && $#item >= 0 )
+                  if ( defined(@item) )
                   {
                      if ( $value eq 'MAY' || $value eq 'MUST' )
                      {
@@ -2085,8 +2127,14 @@ my $att_wanted = [ "*",
 #
 # Set Filter options.
 # 
-
+if (  $Global{'info'} eq "Filter" )
+{
+$match = $Global{'adata'};
+}
+else
+{
 $match = "(" . $Global{'info'} . '=' . $Global{'adata'} . ")";
+}
 
 $error = 0;  # initialize error flag.
 
@@ -2645,7 +2693,11 @@ hand, attribute, server, limit, and port.
                  to match their needs.
 
  attribute -> attribute upon which the data search will be
-              based.  One attribute per line.
+              based.  One attribute per line.  There is one
+              additional attribute that is always listed without
+              any action by the user; Filter.  This attribute
+              allows the user to enter the I<COMPLETE> filter
+              that will used to search for data.  
 
  server -> name of the directory server that you wish
            to conduct the data search. 
@@ -2724,6 +2776,12 @@ to point to your file pathname of perl.
 When executed tklkup will display a window on your
 computer.  The graphical user interface, GUI, has 
 several sections to it.  
+
+If tklkup is run on a HPUX, Sun, or Linux system the 
+tklkup process will fork and run in background mode.
+If tklkup is run in debug mode or on a system that is not
+listed above it will I<NOT> fork and will run in in 
+foreground mode.
 
 I<Exit> button.  At the top of the GUI is the "Exit"
 button.  When a mouse click is done on the "Exit" button 
@@ -2812,7 +2870,11 @@ If the root dse entry can not be obtained then an error message
 window will be displayed.
 
 The I<ATTRIBUTE DATA> text box is where the user will enter 
-the data to be searched for.
+the data to be searched for.  The program will automatically
+put the beginning and ending parenthesis around the data.
+If the I<Filter> attribute is selected this is where the 
+I<COMPLETE> filter is entered, the program will not modify this
+string in any way.
 
 The I<DIRECTORY PORT> button will activate a window 
 that is separate from the main window.  

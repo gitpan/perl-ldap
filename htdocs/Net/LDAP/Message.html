@@ -39,7 +39,7 @@ Net::LDAP::Message - Message response from LDAP server
 <H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
 <P>
 <STRONG>Net::LDAP::Message</STRONG> is a base class for the objects returned by the
-<A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A> methods
+<A HREF="../../Net/LDAP.html">Net::LDAP</A> methods
 <A HREF="../../Net/LDAP.html#item_abandon">item_abandon</A>,
 <A HREF="../../Net/LDAP.html#item_add">item_add</A>,
 <A HREF="../../Net/LDAP.html#item_bind">item_bind</A>,
@@ -51,10 +51,10 @@ Net::LDAP::Message - Message response from LDAP server
 <A HREF="../../Net/LDAP.html#item_unbind">item_unbind</A>.
 
 <P>
-The sub-class <A HREF="../../Net/LDAP/Search|Net/LDAP/Search.html">Net::LDAP::Search|Net::LDAP::Search</A> returned by <A HREF="../../Net/LDAP.html#item_search">item_search</A> also defines many methods.
+The sub-class <A HREF="../../Net/LDAP/Search.html">Net::LDAP::Search</A> returned by <A HREF="../../Net/LDAP.html#item_search">item_search</A> also defines many methods.
 
 <P>
-If the <A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A> object is in async mode then all these methods, except
+If the <A HREF="../../Net/LDAP.html">Net::LDAP</A> object is in async mode then all these methods, except
 <A HREF="#item_done">done</A>, will cause a wait until the request is completed.
 
 <P>
@@ -64,7 +64,8 @@ If the <A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A> object is 
 <DT><STRONG><A NAME="item_code">code</A></STRONG><DD>
 <P>
 The code value in the result message from the server. Normally for a
-success zero will be returned. <A HREF="../../Constants|Net/LDAP/Constant.html">Constants|Net::LDAP::Constant</A> for the result codes can be imported from the <A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A> module.
+success zero will be returned. Constants for the result codes can be
+imported from the <A HREF="../../Net/LDAP.html">Net::LDAP</A> or <A HREF="../../Net/LDAP/Constant.html">Net::LDAP::Constant</A> module.
 
 <DT><STRONG><A NAME="item_control">control [ OID ]</A></STRONG><DD>
 <P>
@@ -111,10 +112,10 @@ Wait for the server to complete the request.
 <HR>
 <H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
 <P>
-<A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A>,
-<A HREF="../../Net/LDAP/Search|Net/LDAP/Search.html">Net::LDAP::Search|Net::LDAP::Search</A>,
-<A HREF="../../Net/LDAP/Constant|Net/LDAP/Constant.html">Net::LDAP::Constant|Net::LDAP::Constant</A>,
-<A HREF="../../Net/LDAP/Util|Net/LDAP/Util.html">Net::LDAP::Util|Net::LDAP::Util</A>
+<A HREF="../../Net/LDAP.html">Net::LDAP</A>,
+<A HREF="../../Net/LDAP/Search.html">Net::LDAP::Search</A>,
+<A HREF="../../Net/LDAP/Constant.html">Net::LDAP::Constant</A>,
+<A HREF="../../Net/LDAP/Util.html">Net::LDAP::Util</A>
 
 
 
@@ -149,7 +150,7 @@ terms as Perl itself.
 <hr>
 
 <P>
-<EM>$Id: Message.pod,v 1.4 2000/09/12 09:17:09 gbarr Exp $</EM>
+<EM>$Id: Message.pod,v 1.5 2001/08/24 19:31:14 gbarr Exp $</EM>
 
 
 

@@ -111,7 +111,7 @@ draft-ietf-ldapext-ldapv3-vlv-03.txt.
 
 <P>
 When using a Virtual List View control in a search, it must be accompanied
-by a sort control. See <A HREF="../../../Net/LDAP/Control/Sort|Net/LDAP/Control/Sort.html">Net::LDAP::Control::Sort|Net::LDAP::Control::Sort</A>
+by a sort control. See <A HREF="../../../Net/LDAP/Control/Sort.html">Net::LDAP::Control::Sort</A>
 
 
 
@@ -120,7 +120,7 @@ by a sort control. See <A HREF="../../../Net/LDAP/Control/Sort|Net/LDAP/Control/
 <H1><A NAME="CONSTRUCTOR_ARGUMENTS">CONSTRUCTOR ARGUMENTS</A></H1>
 <P>
 In addition to the constructor arguments described in
-<A HREF="../../../Net/LDAP/Control|Net/LDAP/Control.html">Net::LDAP::Control|Net::LDAP::Control</A> the following are provided.
+<A HREF="../../../Net/LDAP/Control.html">Net::LDAP::Control</A> the following are provided.
 
 <DL>
 <DT><STRONG><A NAME="item_after">after</A></STRONG><DD>
@@ -161,7 +161,7 @@ Set the offset of the target entry.
 <HR>
 <H2><A NAME="METHODS">METHODS</A></H2>
 <P>
-As with <A HREF="../../../Net/LDAP/Control|Net/LDAP/Control.html">Net::LDAP::Control|Net::LDAP::Control</A> each constructor argument described above is also avaliable as a method on
+As with <A HREF="../../../Net/LDAP/Control.html">Net::LDAP::Control</A> each constructor argument described above is also avaliable as a method on
 the object which will return the current value for the attribute if called
 without an argument, and set a new value for the attribute if called with
 an argument.
@@ -181,7 +181,7 @@ and <A HREF="#item_after">after</A> attributes so that the target entry is the l
 <DT><STRONG><A NAME="item_response">response VLV_RESPONSE</A></STRONG><DD>
 <P>
 Set the attributes in the control as per VLV_RESPONSE. VLV_RESPONSE should
-be a control of type <A HREF="../../../Net/LDAP/Control/VLVResponse|Net/LDAP/Control/VLVResponse.html">Net::LDAP::Control::VLVResponse|Net::LDAP::Control::VLVResponse</A> returned from the server. <A HREF="#item_response">response</A> will populate the <A HREF="#item_context">context</A>, <A HREF="#item_offset">offset</A> and <A HREF="#item_content">content</A>
+be a control of type <A HREF="../../../Net/LDAP/Control/VLVResponse.html">Net::LDAP::Control::VLVResponse</A> returned from the server. <A HREF="#item_response">response</A> will populate the <A HREF="#item_context">context</A>, <A HREF="#item_offset">offset</A> and <A HREF="#item_content">content</A>
 attibutes of the control with the values from VLV_RESPONSE. Because this
 sets the
 <A HREF="#item_offset">offset</A> attribute, any previous setting of the <A HREF="#item_assert">assert</A> attribute will be forgotten.
@@ -215,10 +215,10 @@ attributes to the the target entry is the first entry in the page.
 <HR>
 <H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
 <P>
-<A HREF="../../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A>,
-<A HREF="../../../Net/LDAP/Control|Net/LDAP/Control.html">Net::LDAP::Control|Net::LDAP::Control</A>,
-<A HREF="../../../Net/LDAP/Control/Sort|Net/LDAP/Control/Sort.html">Net::LDAP::Control::Sort|Net::LDAP::Control::Sort</A>,
-<A HREF="../../../Net/LDAP/Control/VLVResponse|Net/LDAP/Control/VLVResponse.html">Net::LDAP::Control::VLVResponse|Net::LDAP::Control::VLVResponse</A>
+<A HREF="../../../Net/LDAP.html">Net::LDAP</A>,
+<A HREF="../../../Net/LDAP/Control.html">Net::LDAP::Control</A>,
+<A HREF="../../../Net/LDAP/Control/Sort.html">Net::LDAP::Control::Sort</A>,
+<A HREF="../../../Net/LDAP/Control/VLVResponse.html">Net::LDAP::Control::VLVResponse</A>
 
 
 
@@ -245,7 +245,7 @@ Perl itself.
 <hr>
 
 <P>
-<EM>$Id: VLV.pm,v 1.4 2001/06/11 16:20:32 gbarr Exp $</EM>
+<EM>$Id: VLV.pm,v 1.5 2001/08/24 19:31:14 gbarr Exp $</EM>
 
 
 

@@ -84,7 +84,7 @@ use is in the result of a search to the directory server.
 The other is where a new object is created locally and then a single
 command is sent to the directory server to add, modify or replace an entry.
 Entries for this purpose can also be created by reading an LDIF file with
-the <A HREF="../../Net/LDAP/LDIF|Net/LDAP/LDIF.html">Net::LDAP::LDIF|Net::LDAP::LDIF</A> module.
+the <A HREF="../../Net/LDAP/LDIF.html">Net::LDAP::LDIF</A> module.
 
 <P>
 <HR>
@@ -285,22 +285,22 @@ add, replace or delete since the last call to changetype or update was
 made.
 
 <P>
-This method <STRONG>cannot</STRONG> be used to modify the DN of the entry on the server, for that see the <CODE>moddn</CODE> method in <A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A>.
+This method <STRONG>cannot</STRONG> be used to modify the DN of the entry on the server, for that see the <CODE>moddn</CODE> method in <A HREF="../../Net/LDAP.html">Net::LDAP</A>.
 
 <P>
 CLIENT is a <CODE>Net::LDAP</CODE> object where the update will be sent to.
 
 <P>
 The result will be an object of type
-<A HREF="../../Net/LDAP/Message|Net/LDAP/Message.html">Net::LDAP::Message|Net::LDAP::Message</A> as returned by the add, modify or delete method called on CLIENT.
+<A HREF="../../Net/LDAP/Message.html">Net::LDAP::Message</A> as returned by the add, modify or delete method called on CLIENT.
 
 </DL>
 <P>
 <HR>
 <H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
 <P>
-<A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A>,
-<A HREF="../../Net/LDAP/LDIF|Net/LDAP/LDIF.html">Net::LDAP::LDIF|Net::LDAP::LDIF</A>
+<A HREF="../../Net/LDAP.html">Net::LDAP</A>,
+<A HREF="../../Net/LDAP/LDIF.html">Net::LDAP::LDIF</A>
 
 
 
@@ -327,7 +327,7 @@ terms as Perl itself.
 <hr>
 
 <P>
-<EM>$Id: Entry.pod,v 1.6 2001/01/29 21:09:37 gbarr Exp $</EM>
+<EM>$Id: Entry.pod,v 1.7 2001/08/24 19:31:14 gbarr Exp $</EM>
 
 
 

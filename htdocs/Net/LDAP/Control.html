@@ -153,7 +153,7 @@ blessed into the package which was registered to handle the OID in the ASN.
 <DT><STRONG><A NAME="item_to_asn">to_asn</A></STRONG><DD>
 <P>
 Returns a structure suitable for passing to Convert::ASN1 for encoding.
-This method will be called by <A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A> when the control is used.
+This method will be called by <A HREF="../../Net/LDAP.html">Net::LDAP</A> when the control is used.
 
 <P>
 The base class implementation of this method will call the <A HREF="#item_value">value</A> method without arguments to allow a sub-class to encode it's value.
@@ -170,7 +170,7 @@ sub-classes may override that.
 <HR>
 <H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
 <P>
-<A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A>
+<A HREF="../../Net/LDAP.html">Net::LDAP</A>
 
 
 
@@ -197,7 +197,7 @@ terms as Perl itself.
 <hr>
 
 <P>
-<EM>$Id: Control.pm,v 1.5 2001/04/10 16:30:27 gbarr Exp $</EM>
+<EM>$Id: Control.pm,v 1.6 2001/08/24 19:31:14 gbarr Exp $</EM>
 
 
 

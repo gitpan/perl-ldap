@@ -103,7 +103,7 @@ Port to connect to on the remote server.
 
 <DT><STRONG><A NAME="item_timeout">timeout</A></STRONG><DD>
 <P>
-Timeout passed to <A HREF="../IO/Socket|IO/Socket.html">IO::Socket|IO::Socket</A> when connecting the remote server. (Default: 120)
+Timeout passed to <A HREF="../IO/Socket.html">IO::Socket</A> when connecting the remote server. (Default: 120)
 
 <DT><STRONG><A NAME="item_debug">debug</A></STRONG><DD>
 <P>
@@ -174,14 +174,14 @@ fashion, for example
 </PRE>
 <P>
 The return value from these methods is an object derived from the
-<A HREF="../Net/LDAP/Message|Net/LDAP/Message.html">Net::LDAP::Message|Net::LDAP::Message</A> class. The methods of this class allow you to examine the status of
+<A HREF="../Net/LDAP/Message.html">Net::LDAP::Message</A> class. The methods of this class allow you to examine the status of
 request.
 
 <DL>
 <DT><STRONG><A NAME="item_abandon">abandon ( ID [, OPTIONS ] )</A></STRONG><DD>
 <P>
 Request server to abandon a request. The id to abandon may be passed as the
-first parameter or as part of the options list. The <STRONG>ID</STRONG> may be a number or a object which is a sub-class of <A HREF="../Net/LDAP/Message|Net/LDAP/Message.html">Net::LDAP::Message|Net::LDAP::Message</A>, returned from a previous method call.
+first parameter or as part of the options list. The <STRONG>ID</STRONG> may be a number or a object which is a sub-class of <A HREF="../Net/LDAP/Message.html">Net::LDAP::Message</A>, returned from a previous method call.
 
 <DL>
 <DT><STRONG><A NAME="item_id">id</A></STRONG><DD>
@@ -210,7 +210,7 @@ See <A HREF="#CALLBACKS">CALLBACKS</A> below
 <DT><STRONG><A NAME="item_add">add ( DN [, OPTIONS ] )</A></STRONG><DD>
 <P>
 Add an entry to the directory. The <STRONG>DN</STRONG> argument can be either a
-<A HREF="../Net/LDAP/Entry|Net/LDAP/Entry.html">Net::LDAP::Entry|Net::LDAP::Entry</A> object or a string.
+<A HREF="../Net/LDAP/Entry.html">Net::LDAP::Entry</A> object or a string.
 
 <DL>
 <DT><STRONG><A NAME="item_dn">dn</A></STRONG><DD>
@@ -224,7 +224,7 @@ with multiple values can be added as either multiple entries or the value
 could be a reference to a list of values.
 
 <P>
-This argument is not used if <STRONG>DN</STRONG> is a <A HREF="../Net/LDAP/Entry|Net/LDAP/Entry.html">Net::LDAP::Entry|Net::LDAP::Entry</A> object.
+This argument is not used if <STRONG>DN</STRONG> is a <A HREF="../Net/LDAP/Entry.html">Net::LDAP::Entry</A> object.
 
 <DT><STRONG>control</STRONG><DD>
 <P>
@@ -297,7 +297,7 @@ Bind using Kerberos V4.2 <STRONG><EM>not supported</EM></STRONG>.
 
 <DT><STRONG><A NAME="item_sasl">sasl</A></STRONG><DD>
 <P>
-Bind using a SASL mechanism. The argument given should be a sub-class of <A HREF="../Authen/SASL|Authen/SASL.html">Authen::SASL|Authen::SASL</A>.
+Bind using a SASL mechanism. The argument given should be a sub-class of <A HREF="../Authen/SASL.html">Authen::SASL</A>.
 
 </DL>
 <P>
@@ -315,7 +315,7 @@ Bind using a SASL mechanism. The argument given should be a sub-class of <A HREF
 </PRE>
 <DT><STRONG><A NAME="item_compare">compare ( DN, OPTIONS )</A></STRONG><DD>
 <P>
-Perform a comparison on the server.  <STRONG>DN</STRONG> is the DN which the comparison is to be performed. <STRONG>DN</STRONG> May be a string or a <A HREF="../Net/LDAP/Entry|Net/LDAP/Entry.html">Net::LDAP::Entry|Net::LDAP::Entry</A>
+Perform a comparison on the server.  <STRONG>DN</STRONG> is the DN which the comparison is to be performed. <STRONG>DN</STRONG> May be a string or a <A HREF="../Net/LDAP/Entry.html">Net::LDAP::Entry</A>
 object.
 
 <DL>
@@ -353,7 +353,7 @@ See <A HREF="#CALLBACKS">CALLBACKS</A> below.
 </PRE>
 <DT><STRONG><A NAME="item_delete">delete ( DN [, OPTIONS ] )</A></STRONG><DD>
 <P>
-Delete <STRONG>DN</STRONG> from the server. <STRONG>DN</STRONG> May be a string or a <A HREF="../Net/LDAP/Entry|Net/LDAP/Entry.html">Net::LDAP::Entry|Net::LDAP::Entry</A>
+Delete <STRONG>DN</STRONG> from the server. <STRONG>DN</STRONG> May be a string or a <A HREF="../Net/LDAP/Entry.html">Net::LDAP::Entry</A>
 object.
 
 <DL>
@@ -381,7 +381,7 @@ See <A HREF="#CALLBACKS">CALLBACKS</A> below.
 <DT><STRONG><A NAME="item_moddn">moddn ( DN, OPTIONS )</A></STRONG><DD>
 <P>
 Modify the DN for <STRONG>DN</STRONG> on the server. <STRONG>DN</STRONG> May be a string or a
-<A HREF="../Net/LDAP/Entry|Net/LDAP/Entry.html">Net::LDAP::Entry|Net::LDAP::Entry</A> object.
+<A HREF="../Net/LDAP/Entry.html">Net::LDAP::Entry</A> object.
 
 <DL>
 <DT><STRONG>dn</STRONG><DD>
@@ -420,7 +420,7 @@ See <A HREF="#CALLBACKS">CALLBACKS</A> below.
 <DT><STRONG><A NAME="item_modify">modify ( DN, OPTIONS )</A></STRONG><DD>
 <P>
 Modify the contents of <STRONG>DN</STRONG> on the server. <STRONG>DN</STRONG> May be a string or a
-<A HREF="../Net/LDAP/Entry|Net/LDAP/Entry.html">Net::LDAP::Entry|Net::LDAP::Entry</A> object.
+<A HREF="../Net/LDAP/Entry.html">Net::LDAP::Entry</A> object.
 
 <DL>
 <DT><STRONG>dn</STRONG><DD>
@@ -501,7 +501,7 @@ See <A HREF="#CALLBACKS">CALLBACKS</A> below.
 The root_dse method retrieves information from the server's rootDSE entry.
 
 <P>
-The result is an object of class <A HREF="../Net/LDAP/Search|Net/LDAP/Search.html">Net::LDAP::Search|Net::LDAP::Search</A>.
+The result is an object of class <A HREF="../Net/LDAP/Search.html">Net::LDAP::Search</A>.
 
 <P>
 <STRONG>Example</STRONG>
@@ -521,7 +521,7 @@ Request that a schema search be performed. This can be used to read schema
 information.
 
 <P>
-The result is an object of class <A HREF="../Net/LDAP/Schema|Net/LDAP/Schema.html">Net::LDAP::Schema|Net::LDAP::Schema</A>. Read this documentation for further information about methods that can be
+The result is an object of class <A HREF="../Net/LDAP/Schema.html">Net::LDAP::Schema</A>. Read this documentation for further information about methods that can be
 preformed with this object.
 
 <DL>
@@ -550,7 +550,7 @@ from a single entry, from entries immediately below a particular entry, or
 a whole subtree of entries.
 
 <P>
-The result is an object of class <A HREF="../Net/LDAP/Search|Net/LDAP/Search.html">Net::LDAP::Search|Net::LDAP::Search</A>.
+The result is an object of class <A HREF="../Net/LDAP/Search.html">Net::LDAP::Search</A>.
 
 <DL>
 <DT><STRONG><A NAME="item_base">base</A></STRONG><DD>
@@ -630,7 +630,7 @@ return both attribute types and values.
 <P>
 A filter that defines the conditions an entry in the directory must meet in
 order for it to be returned by the search. This may be a string or a
-<A HREF="../Net/LDAP/Filter|Net/LDAP/Filter.html">Net::LDAP::Filter|Net::LDAP::Filter</A> object. See <A HREF="../Net/LDAP/Filter|Net/LDAP/Filter.html">Net::LDAP::Filter|Net::LDAP::Filter</A> for a defintion of the filter format.
+<A HREF="../Net/LDAP/Filter.html">Net::LDAP::Filter</A> object. See <A HREF="../Net/LDAP/Filter.html">Net::LDAP::Filter</A> for a defintion of the filter format.
 
 <DT><STRONG>attrs</STRONG><DD>
 <P>
@@ -714,7 +714,7 @@ Calling this method will synchronize the client with the server. It will
 not return until all requests have been completed, or id <STRONG>MESG</STRONG> is given it will return when <STRONG>MESG</STRONG> has been completed.
 
 <P>
-Returns an error code defined in <A HREF="../Net/LDAP/Constant|Net/LDAP/Constant.html">Net::LDAP::Constant|Net::LDAP::Constant</A>.
+Returns an error code defined in <A HREF="../Net/LDAP/Constant.html">Net::LDAP::Constant</A>.
 
 <DT><STRONG><A NAME="item_start_tls">start_tls ( [ OPTIONS ] )</A></STRONG><DD>
 <P>
@@ -834,37 +834,37 @@ received from the server as a response to the request sent.
 
 <P>
 When the subroutine is called the first argument will be the
-<A HREF="../Net/LDAP/Message|Net/LDAP/Message.html">Net::LDAP::Message|Net::LDAP::Message</A> object which was returned from the method.
+<A HREF="../Net/LDAP/Message.html">Net::LDAP::Message</A> object which was returned from the method.
 
 <P>
 If the request is a search then multiple packets can be received from the
 server. Each entry is received as a separate packet. For each of these the
-subroutine will be called with a <A HREF="../Net/LDAP/Entry|Net/LDAP/Entry.html">Net::LDAP::Entry|Net::LDAP::Entry</A> object as the second argument.
+subroutine will be called with a <A HREF="../Net/LDAP/Entry.html">Net::LDAP::Entry</A> object as the second argument.
 
 <P>
 During a search the server may also send a list of references. When such a
 list is received then the subroutine will be called with a
-<A HREF="../Net/LDAP/Reference|Net/LDAP/Reference.html">Net::LDAP::Reference|Net::LDAP::Reference</A> object as the second argument.
+<A HREF="../Net/LDAP/Reference.html">Net::LDAP::Reference</A> object as the second argument.
 
 <P>
 <HR>
 <H1><A NAME="LDAP_ERROR_CODES">LDAP ERROR CODES</A></H1>
 <P>
 <STRONG>Net::LDAP</STRONG> also exports constants for the error codes that can be received from the
-server, see <A HREF="../Net/LDAP/Constant|Net/LDAP/Constant.html">Net::LDAP::Constant|Net::LDAP::Constant</A>.
+server, see <A HREF="../Net/LDAP/Constant.html">Net::LDAP::Constant</A>.
 
 <P>
 <HR>
 <H1><A NAME="SEE_ALSO">SEE ALSO</A></H1>
 <P>
-<A HREF="../Net/LDAP/Constant|Net/LDAP/Constant.html">Net::LDAP::Constant|Net::LDAP::Constant</A>,
-<A HREF="../Net/LDAP/Control|Net/LDAP/Control.html">Net::LDAP::Control|Net::LDAP::Control</A>,
-<A HREF="../Net/LDAP/Entry|Net/LDAP/Entry.html">Net::LDAP::Entry|Net::LDAP::Entry</A>,
-<A HREF="../Net/LDAP/Filter|Net/LDAP/Filter.html">Net::LDAP::Filter|Net::LDAP::Filter</A>,
-<A HREF="../Net/LDAP/Message|Net/LDAP/Message.html">Net::LDAP::Message|Net::LDAP::Message</A>,
-<A HREF="../Net/LDAP/Reference|Net/LDAP/Reference.html">Net::LDAP::Reference|Net::LDAP::Reference</A>,
-<A HREF="../Net/LDAP/Search|Net/LDAP/Search.html">Net::LDAP::Search|Net::LDAP::Search</A>,
-<A HREF="../Other online documentation|Net/LDAP/RFC.html">Other online documentation|Net::LDAP::RFC</A>
+<A HREF="../Net/LDAP/Constant.html">Net::LDAP::Constant</A>,
+<A HREF="../Net/LDAP/Control.html">Net::LDAP::Control</A>,
+<A HREF="../Net/LDAP/Entry.html">Net::LDAP::Entry</A>,
+<A HREF="../Net/LDAP/Filter.html">Net::LDAP::Filter</A>,
+<A HREF="../Net/LDAP/Message.html">Net::LDAP::Message</A>,
+<A HREF="../Net/LDAP/Reference.html">Net::LDAP::Reference</A>,
+<A HREF="../Net/LDAP/Search.html">Net::LDAP::Search</A>,
+<A HREF="../Net/LDAP/RFC.html">Net::LDAP::RFC</A>
 
 
 
@@ -908,7 +908,7 @@ terms as Perl itself.
 <hr>
 
 <P>
-<EM>$Id: LDAP.pod,v 1.10 2001/07/06 12:17:35 gbarr Exp $</EM>
+<EM>$Id: LDAP.pod,v 1.11 2001/08/24 19:31:14 gbarr Exp $</EM>
 
 
 

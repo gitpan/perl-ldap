@@ -623,7 +623,7 @@ HREF="http://search.cpan.org/search?module=Digest::MD5">http://search.cpan.org/s
 <DT><STRONG><A NAME="item_URI">URI::ldap</A></STRONG><DD>
 <P>
 This module is optional. You only need to install URI::ldap if you are
-going to need to parse ldap referrals. <A HREF="../../Net/LDAP|Net/LDAP.html">Net::LDAP|Net::LDAP</A> does not do this automatically yet, so this module is not used by
+going to need to parse ldap referrals. <A HREF="../../Net/LDAP.html">Net::LDAP</A> does not do this automatically yet, so this module is not used by
 perl-ldap.
 
 <P>
@@ -685,7 +685,7 @@ specified server. Any error message will be available in $@
 <H2><A NAME="How_can_I_tell_when_the_server_r">How can I tell when the server returns an error, bind() always returns
 true ?</A></H2>
 <P>
-Most methods in Net::LDAP return a <A HREF="../../Net/LDAP/Message|Net/LDAP/Message.html">Net::LDAP::Message|Net::LDAP::Message</A> 
+Most methods in Net::LDAP return a <A HREF="../../Net/LDAP/Message.html">Net::LDAP::Message</A> 
 object, or a sub-class of that. This object will hold the results from the
 server, including the result code.
 
@@ -735,14 +735,14 @@ following:
 <P>
 <CODE>$mesg</CODE> is a search object container. It is a reference blessed
 into the
-<A HREF="../../Net/LDAP/Search|Net/LDAP/Search.html">Net::LDAP::Search|Net::LDAP::Search</A> package. By calling methods on this object you can obtain information about
+<A HREF="../../Net/LDAP/Search.html">Net::LDAP::Search</A> package. By calling methods on this object you can obtain information about
 the result and also the individual entries.
 
 <P>
 The first thing to check is if the search was successful. This is done with
 with the method $mesg-&gt;code. This method will return the status code
 that the server returned. A success will yield a zero value, but there are
-other values, some of which could also be considered a success. See <A HREF="../../Net/LDAP/Constant|Net/LDAP/Constant.html">Net::LDAP::Constant|Net::LDAP::Constant</A>
+other values, some of which could also be considered a success. See <A HREF="../../Net/LDAP/Constant.html">Net::LDAP::Constant</A>
 
 
 
@@ -780,7 +780,7 @@ entry in turn. For example
 </PRE>
 <P>
 In each case <CODE>$entry</CODE> is an entry object container. It is a
-reference blessed into the <A HREF="../../Net/LDAP/Entry|Net/LDAP/Entry.html">Net::LDAP::Entry|Net::LDAP::Entry</A> package. By calling methods on this object you can obtain information about
+reference blessed into the <A HREF="../../Net/LDAP/Entry.html">Net::LDAP::Entry</A> package. By calling methods on this object you can obtain information about
 the entry.
 
 <P>
