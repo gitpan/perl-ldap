@@ -9,7 +9,7 @@ use SelectSaver;
 require Net::LDAP::Entry;
 use vars qw($VERSION);
 
-$VERSION = "0.15";
+$VERSION = "0.16";
 
 my %mode = qw(w > r < a >>);
 
@@ -50,9 +50,11 @@ sub new {
   # Default the error handling to die 
   $opt{'onerror'} = 'die' unless exists $opt{'onerror'};
 
+  # sanitize options
   $opt{'lowercase'} ||= 0;
   $opt{'change'} ||= 0;
   $opt{'sort'} ||= 0;
+  $opt{'version'} ||= 0;
 
   my $self = {
     changetype => "modify",
@@ -120,7 +122,7 @@ sub _read_url_attribute {
 
   if ($url =~ s/^file:(?:\/\/)?//) {
     my $fh = $self->{_attr_fh};
-    unless (open($fh, '<', $url)) {
+    unless (open($fh, '<'.$url)) {
       $self->_error("can't open $line: $!", @ldif);
       return;
     }
@@ -158,7 +160,7 @@ sub _read_entry {
   #shift @ldif if @ldif && $ldif[0] !~ /\D/;
 
   if (@ldif and $ldif[0] =~ /^version:\s+(\d+)/) {
-    $self->{version} = $1;
+    $self->{'version'} = $1;
     shift @ldif;
     return $self->_read_entry
       unless @ldif;
@@ -215,6 +217,7 @@ sub _read_entry {
       while(@ldif) {
         my $line = shift @ldif;
         my $attr;
+	my $xattr;
   
         if ($line eq "-") {
           $entry->$modify($lastattr, \@values)
@@ -224,10 +227,11 @@ sub _read_entry {
           last;
         }
  
-        $line =~ s/^([-;\w]+):\s*// and $attr = $1;
+        $line =~ s/^([-;\w]+):([\<\:]?)\s*// and
+	    ($attr, $xattr) = ($1, $2);
 
         # base64 encoded attribute: decode it
-        if ($line =~ s/^:\s*//) {
+        if ($xattr eq ':') {
           eval { require MIME::Base64 };
           if ($@) {
             $self->_error($@, @ldif);
@@ -236,7 +240,7 @@ sub _read_entry {
           $line = MIME::Base64::decode($line);
         }
         # url attribute: read in file:// url, fail on others
-        elsif ($line =~ s/^\<\s*(.*?)\s*$/$1/) {
+        elsif ($xattr eq '<' and $line =~ s/^(.*?)\s*$/$1/) {
           $line = $self->_read_url_attribute($line, @ldif);
           return  if !defined($line);
         }
@@ -266,11 +270,14 @@ sub _read_entry {
     my $vals = [];
     my $line;
     my $attr;
+    my $xattr;
+
     foreach $line (@ldif) {
-      $line =~ s/^([-;\w]+):\s*// && ($attr = $1) or next;
+      $line =~ s/^([-;\w]+):([\<\:]?)\s*// &&
+	  (($attr, $xattr) = ($1, $2)) or next;
   
       # base64 encoded attribute: decode it
-      if ($line =~ s/^:\s*//) {
+      if ($xattr eq ':') {
         eval { require MIME::Base64 };
         if ($@) {
           $self->_error($@, @ldif);
@@ -279,7 +286,7 @@ sub _read_entry {
         $line = MIME::Base64::decode($line);
       }
       # url attribute: read in file:// url, fail on others
-      elsif ($line =~ s/^\<\s*(.*?)\s*$/$1/) {
+      elsif ($xattr eq '<' and $line =~ s/^(.*?)\s*$/$1/) {
         $line = $self->_read_url_attribute($line, @ldif);
         return  if !defined($line);
       }
@@ -351,7 +358,7 @@ sub _write_attr {
   my $res = 1;	# result value
   foreach $v (@$val) {
     my $ln = $lower ? lc $attr : $attr;
-    if ($v =~ /(^[ :]|[\x00-\x1f\x7f-\xff])/) {
+    if ($v =~ /(^[ :<]|[\x00-\x1f\x7f-\xff])/) {
       require MIME::Base64;
       $ln .= ":: " . MIME::Base64::encode($v,"");
     }
@@ -417,6 +424,16 @@ sub write_entry {
   $self->_write_entry($self->{change}, @_);
 }
 
+sub write_version {
+  my $self = shift;
+  my $res = 1;
+  
+  $res &&= print "version: $self->{'version'}\n"
+    if ($self->{'version'} && !$self->{version_written}++);
+  
+  return $res;	    
+}
+
 # internal helper: write entry in different format depending on 1st arg
 sub _write_entry {
   my $self = shift;
@@ -449,13 +466,8 @@ sub _write_entry {
       # Skip entry if there is nothing to write
       next if $type eq 'modify' and !@changes;
 
-      if ($self->{write_count}++) {
-	$res &&= print "\n";
-      }
-      else {
-        $res &&= print "version: $self->{version}\n\n"
-          if defined $self->{version};
-      }
+      $res &&= $self->write_version()  unless $self->{write_count}++;
+      $res &&= print "\n";
       $res &&= _write_dn($entry->dn,$self->{'encode'},$wrap);
 
       $res &&= print "changetype: $type\n";
@@ -469,10 +481,10 @@ sub _write_entry {
       }
       elsif ($type =~ /modr?dn/o) {
         my $deleteoldrdn = $entry->get_value('deleteoldrdn') || 0;
-        $res &&= print _write_attr('newrdn',$entry->get_value('newrdn', asref => 1),$wrap,$lower);
+        $res &&= _write_attr('newrdn',$entry->get_value('newrdn', asref => 1),$wrap,$lower);
         $res &&= print 'deleteoldrdn: ', $deleteoldrdn,"\n";
         my $ns = $entry->get_value('newsuperior', asref => 1);
-        $res &&= print _write_attr('newsuperior',$ns,$wrap,$lower) if defined $ns;
+        $res &&= _write_attr('newsuperior',$ns,$wrap,$lower) if defined $ns;
         next;
       }
 
@@ -484,23 +496,19 @@ sub _write_entry {
         }
         my $i = 0;
         while ($i < @$chg) {
-	  $res &&= print "-\n" if $dash++;
+	  $res &&= print "-\n"  if (!$self->{'version'} && $dash++);
           my $attr = $chg->[$i++];
           my $val = $chg->[$i++];
           $res &&= print $type,": ",$attr,"\n";
           $res &&= _write_attr($attr,$val,$wrap,$lower);
+	  $res &&= print "-\n"  if ($self->{'version'});
         }
       }
     }
 
     else {
-      if ($self->{write_count}++) {
-	$res &&= print "\n";
-      }
-      else {
-        $res &&= print "version: $self->{version}\n\n"
-          if defined $self->{version};
-      }
+      $res &&= $self->write_version()  unless $self->{write_count}++;
+      $res &&= print "\n";
       $res &&= _write_dn($entry->dn,$self->{'encode'},$wrap);
       $res &&= _write_attrs($entry,$wrap,$lower,$sort);
     }
@@ -545,6 +553,12 @@ sub done {
      delete $self->{fh};
   }
   $res;
+}
+
+sub handle {
+  my $self = shift;
+
+  return $self->{fh};
 }
 
 my %onerror = (
@@ -603,8 +617,8 @@ sub current_lines {
 
 sub version {
   my $self = shift;
-  return $self->{version} unless @_;
-  $self->{version} = shift;
+  return $self->{'version'} unless @_;
+  $self->{'version'} = shift || 0;
 }
 
 sub next_lines {

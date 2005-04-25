@@ -4,7 +4,7 @@
 
 package Net::LDAP::Constant;
 
-$VERSION = "0.03";
+$VERSION = "0.04";
 
 use Carp;
 
@@ -449,7 +449,7 @@ The referral hop limit has been exceeded.
 
 =item LDAP_CONTROL_VLVRESPONSE (2.16.840.1.113730.3.4.10)
 
-=item LDAP_CONTROL_PROXYAUTHENTICATION (2.16.840.1.113730.3.4.12)
+=item LDAP_CONTROL_PROXYAUTHENTICATION (2.16.840.1.113730.3.4.18)
 
 =item LDAP_CONTROL_PAGED (1.2.840.113556.1.4.319)
 
@@ -483,6 +483,10 @@ Indicates if the server supports the Start TLS extension (RFC 2830)
 =item LDAP_EXTENSION_PASSWORD_MODIFY (1.3.6.1.4.1.4203.1.11.1)
 
 Indicates that the server supports the Password Modify extension (RFC 3062)
+
+=item LDAP_EXTENSION_WHO_AM_I (1.3.6.1.4.1.4203.1.11.3)
+
+Indicates that the server supports the "Who am I?" extension (draft-zeilenga-ldap-authzid-09)
 
 =back
 

@@ -1,5 +1,5 @@
 #! /usr/bin/perl
-# $Id: ldifdiff.pl,v 1.5 2004/02/09 21:01:46 kartik_subbarao Exp $
+# $Id: ldifdiff.pl,v 3.7 2005/03/15 14:22:45 subbarao Exp $
 
 =head1 NAME
 
@@ -118,7 +118,15 @@ sub cmpEntries
     if ($keyattr =~ /^dn$/i) { 
 		return lc(canonical_dn($a->dn)) cmp lc(canonical_dn($b->dn))
 	}
-    else { return $a->get_value($keyattr) cmp $b->get_value($keyattr) }
+    else { 
+		my $aval = $a->get_value($keyattr);
+		my $bval = $b->get_value($keyattr);
+		if ($ciscmp{$keyattr}) {
+			$aval = lc($aval);
+			$bval = lc($bval);
+		}
+		return $aval cmp $bval;
+	}
 }
 
 
@@ -183,9 +191,8 @@ sub diff
 			delete($targetentry->{changetype});
 			
 			$targetentry->dn($sourceentry->dn);
-			$targetentry->{$rdnattr} = $sourceentry->{$rdnattr}
+			$targetentry->replace($rdnattr, $sourceentry->get_value($rdnattr))
 				if $sourceentry->exists($rdnattr);
-
 		}
 
 		# Check for differences and generate LDIF as appropriate
@@ -231,18 +238,18 @@ sub updateFromEntry
 		my @targetvals = $target->get_value($attr);
 		my (%sourceuniqvals, %targetuniqvals);
 		foreach (@sourcevals) {
-			my $val = $_;
+			my ($origval, $val) = ($_, $_);
 			$val = lc $val if $ciscmp{$lcattr};
 			# Get rid of spaces after non-escaped commas in DN attrs
 			$val =~ s/(?<!\\),\s+/,/g if $dnattrs{$lcattr};
-			$sourceuniqvals{$val} = undef;
+			$sourceuniqvals{$val} = $origval;
 		}
 		foreach (@targetvals) {
-			my $val = $_;
+			my ($origval, $val) = ($_, $_);
 			$val = lc $val if $ciscmp{$lcattr};
 			# Get rid of spaces after non-escaped commas in DN attrs
 			$val =~ s/(?<!\\),\s+/,/g if $dnattrs{$lcattr};
-			$targetuniqvals{$val} = undef;
+			$targetuniqvals{$val} = $origval;
 		}
 		foreach my $val (keys %sourceuniqvals) {
 			if (exists $targetuniqvals{$val}) {
@@ -259,14 +266,9 @@ sub updateFromEntry
 			# For 'shared' attributes (e.g. objectclass) where $source may not 
 			# be a sole authoritative source, we issue separate delete and 
 			# add modifications instead of a single replace.
-			#
-			# Note: this issues deletes/adds for the canonicalized versions of 
-			# values rather than the original values themselves, since the 
-			# canonicalized versions are readily available in a hash, whereas
-			# the original versions are in a linear array.
-			$target->delete($attr => [ keys(%targetuniqvals) ])
+			$target->delete($attr => [ values(%targetuniqvals) ])
 				if keys(%targetuniqvals);
-			$target->add($attr => [ keys(%sourceuniqvals) ])
+			$target->add($attr => [ values(%sourceuniqvals) ])
 				if keys(%sourceuniqvals);
 		}
 		else {

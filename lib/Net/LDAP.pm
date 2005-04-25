@@ -14,6 +14,7 @@ use Net::LDAP::Message;
 use Net::LDAP::ASN qw(LDAPResponse);
 use Net::LDAP::Constant qw(LDAP_SUCCESS
 			   LDAP_OPERATIONS_ERROR
+			   LDAP_SASL_BIND_IN_PROGRESS
 			   LDAP_DECODING_ERROR
 			   LDAP_PROTOCOL_ERROR
 			   LDAP_ENCODING_ERROR
@@ -27,7 +28,7 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 			   LDAP_UNAVAILABLE
 			);
 
-$VERSION 	= "0.32";
+$VERSION 	= "0.33";
 @ISA     	= qw(Tie::StdHash Net::LDAP::Extra);
 $LDAP_VERSION 	= 3;      # default LDAP protocol version
 

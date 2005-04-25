@@ -12,6 +12,7 @@ contrib/ldifsort.pl
 contrib/ldifuniq.pl
 contrib/printMembers.pl
 contrib/README
+contrib/recursive-ldap-delete.pl
 contrib/tklkup
 CREDITS
 data/00-cmp.ldif
@@ -74,6 +75,7 @@ lib/Net/LDAP/Entry.pod
 lib/Net/LDAP/Examples.pod
 lib/Net/LDAP/Extension.pm
 lib/Net/LDAP/Extension/SetPassword.pm
+lib/Net/LDAP/Extension/WhoAmI.pm
 lib/Net/LDAP/Extra.pm
 lib/Net/LDAP/FAQ.pod
 lib/Net/LDAP/Filter.pm
@@ -96,7 +98,6 @@ lib/Net/LDAPS.pm
 Makefile.PL
 MANIFEST
 META.yml
-mkmanf
 README
 SIGNATURE
 t/0-signature.t
