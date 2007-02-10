@@ -28,7 +28,7 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 			   LDAP_UNAVAILABLE
 			);
 
-$VERSION 	= "0.33";
+$VERSION 	= "0.34";
 @ISA     	= qw(Tie::StdHash Net::LDAP::Extra);
 $LDAP_VERSION 	= 3;      # default LDAP protocol version
 
@@ -110,6 +110,7 @@ sub new {
     $h =~ s/%([A-Fa-f0-9]{2})/chr(hex($1))/eg; # unescape
     if (&$meth($obj, $h, $arg)) {
       $obj->{net_ldap_uri} = $uri;
+      $obj->{net_ldap_scheme} = $scheme;
       last;
     }
   }
@@ -119,6 +120,7 @@ sub new {
   $obj->{net_ldap_resp}    = {};
   $obj->{net_ldap_version} = $arg->{version} || $LDAP_VERSION;
   $obj->{net_ldap_async}   = $arg->{async} ? 1 : 0;
+  $obj->{raw} = $arg->{raw}  if ($arg->{raw});
 
   if (defined(my $onerr = $arg->{onerror})) {
     $onerr = $onerror{$onerr} if exists $onerror{$onerr};
@@ -132,10 +134,14 @@ sub new {
 
 sub connect_ldap {
   my ($ldap, $host, $arg) = @_;
+  my $port = $arg->{port} || 389;
+
+  # separate port from host overwriting given/default port
+  $host =~ s/^([^:]+|\[.*\]):(\d+)$/$1/ and $port = $2;
 
   $ldap->{net_ldap_socket} = IO::Socket::INET->new(
     PeerAddr   => $host,
-    PeerPort   => $arg->{port} || '389',
+    PeerPort   => $port,
     LocalAddr  => $arg->{localaddr} || undef,
     Proto      => 'tcp',
     MultiHomed => $arg->{multihomed},
@@ -145,6 +151,7 @@ sub connect_ldap {
   ) or return undef;
   
   $ldap->{net_ldap_host} = $host;
+  $ldap->{net_ldap_port} = $port;
 }
 
 
@@ -153,11 +160,16 @@ my %ssl_verify = qw(none 0 optional 1 require 3);
 
 sub connect_ldaps {
   my ($ldap, $host, $arg) = @_;
+  my $port = $arg->{port} || 636;
+
   require IO::Socket::SSL;
+
+  # separate port from host overwriting given/default port
+  $host =~ s/^([^:]+|\[.*\]):(\d+)$/$1/ and $port = $2;
 
   $ldap->{'net_ldap_socket'} = IO::Socket::SSL->new(
     PeerAddr 	    => $host,
-    PeerPort 	    => $arg->{'port'} || '636',
+    PeerPort 	    => $port,
     LocalAddr       => $arg->{localaddr} || undef,
     Proto    	    => 'tcp',
     Timeout  	    => defined $arg->{'timeout'} ? $arg->{'timeout'} : 120,
@@ -165,6 +177,7 @@ sub connect_ldaps {
   ) or return undef;
 
   $ldap->{net_ldap_host} = $host;
+  $ldap->{net_ldap_port} = $port;
 }
 
 sub _SSL_context_init_args {
@@ -188,6 +201,11 @@ sub _SSL_context_init_args {
       }
   }
 
+  if ($arg->{'checkcrl'} && !$arg->{'capath'}) {
+      require Carp;
+      Carp::croak("Cannot check CRL without having CA certificates");
+  }
+
   if (exists $arg->{'keydecrypt'}) {
       $passwdcb = $arg->{'keydecrypt'};
   }
@@ -198,6 +216,7 @@ sub _SSL_context_init_args {
     SSL_ca_path     => exists  $arg->{'capath'}  ? $arg->{'capath'}  : '',
     SSL_key_file    => $clientcert ? $clientkey : undef,
     SSL_passwd_cb   => $passwdcb,
+    SSL_check_crl   => $arg->{'checkcrl'} ? 1 : 0,
     SSL_use_cert    => $clientcert ? 1 : 0,
     SSL_cert_file   => $clientcert,
     SSL_verify_mode => $verify,
@@ -209,7 +228,7 @@ sub _SSL_context_init_args {
 sub connect_ldapi {
   my ($ldap, $peer, $arg) = @_;
 
-  $peer = $ENV{LDAPI_SOCK} || "/var/lib/ldapi"
+  $peer = $ENV{LDAPI_SOCK} || "/var/run/ldapi"
     unless length $peer;
 
   require IO::Socket::UNIX;
@@ -250,6 +269,25 @@ sub debug {
 
 sub socket {
   $_[0]->{net_ldap_socket};
+}
+
+sub host {
+  my $ldap = shift;
+  ($ldap->{net_ldap_scheme} ne 'ldapi')
+  ? $ldap->{net_ldap_host}
+  : $ldap->{net_ldap_peer};
+}
+
+sub port {
+  $_[0]->{net_ldap_port} || undef;
+}
+
+sub scheme {
+  $_[0]->{net_ldap_scheme};
+}
+
+sub uri {
+  $_[0]->{net_ldap_uri};
 }
 
 
@@ -331,7 +369,13 @@ sub bind {
       if $ldap->{net_ldap_version} < 3;
 
     my $sasl = $passwd;
-    my $sasl_conn = $sasl->client_new("ldap",$ldap->{net_ldap_host});
+    my $sasl_conn = eval {
+      local($SIG{__DIE__});
+      $sasl->client_new("ldap",$ldap->{net_ldap_host});
+    };
+
+    return _error($ldap, $mesg, LDAP_LOCAL_ERROR, "$@")
+      unless defined($sasl_conn);
 
     # Tell SASL the local and server IP addresses
     $sasl_conn->property(
@@ -372,6 +416,9 @@ sub search {
   my $arg  = &_options;
 
   require Net::LDAP::Search;
+
+  $arg->{raw} = $ldap->{raw}
+    if ($ldap->{raw} && !defined($arg->{raw}));
 
   my $mesg = $ldap->message('Net::LDAP::Search' => $arg);
 
@@ -693,7 +740,7 @@ sub sync {
 
   $mid = $mid->mesg_id if ref($mid);
   while (defined($mid) ? exists $table->{$mid} : %$table) {
-    last if $err = $ldap->_recvresp($mid);
+    last if $err = $ldap->process($mid);
   }
 
   $err;
@@ -747,7 +794,7 @@ sub _sendmesg {
     : $mesg;
 }
 
-sub _recvresp {
+sub process {
   my $ldap = shift;
   my $what = shift;
   my $sock = $ldap->socket or return LDAP_SERVER_DOWN;
@@ -800,6 +847,8 @@ sub _recvresp {
 
   return LDAP_SUCCESS;
 }
+
+*_recvresp = \&process; # compat
 
 sub _drop_conn {
   my ($self, $err, $etxt) = @_;
@@ -870,6 +919,7 @@ sub schema {
 		dITContentRules
 		nameForms
 		ldapSyntaxes
+                extendedAttributeInfo
               )],
   );
 

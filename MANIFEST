@@ -13,11 +13,13 @@ contrib/ldifuniq.pl
 contrib/printMembers.pl
 contrib/README
 contrib/recursive-ldap-delete.pl
+contrib/simple-proxy.pl
 contrib/tklkup
 CREDITS
 data/00-cmp.ldif
 data/00-cmp2.ldif
 data/00-in.ldif
+data/05-cmp.dsml
 data/50-cmp.ldif
 data/50-in.ldif
 data/51-in.ldif
@@ -39,6 +41,7 @@ data/slapd.at.conf
 data/slapd.oc.conf
 data/slapd2-conf.in
 inc/ExtUtils/AutoInstall.pm
+inc/Module/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AutoInstall.pm
 inc/Module/Install/Base.pm
@@ -48,7 +51,9 @@ inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
+inc/Module/Install/WriteAll.pm
 inc/Test/Builder.pm
+inc/Test/Builder/Module.pm
 inc/Test/More.pm
 INSTALL
 install-nomake
@@ -80,6 +85,7 @@ lib/Net/LDAP/Extra.pm
 lib/Net/LDAP/FAQ.pod
 lib/Net/LDAP/Filter.pm
 lib/Net/LDAP/Filter.pod
+lib/Net/LDAP/FilterMatch.pm
 lib/Net/LDAP/LDIF.pm
 lib/Net/LDAP/LDIF.pod
 lib/Net/LDAP/Message.pm
@@ -100,12 +106,12 @@ MANIFEST
 META.yml
 README
 SIGNATURE
-t/0-signature.t
 t/00ldif-entry.t
 t/01canon_dn.t
 t/02filter.t
 t/03schema.t
 t/04refloop.t
+t/05dsml.t
 t/50populate.t
 t/51search.t
 t/52modify.t

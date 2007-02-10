@@ -157,6 +157,12 @@ Returns true on success and C<undef> on error.
 Given an argument which is the name or oid of a known objectclass,
 returns the list of names of the immediate superclasses.
 
+=item matchingrule_for_attribute ( NAME, RULE )
+
+Given an attribute name and a matching rule (C<equality>,
+C<substr>, etc), return the actual rule taking into account attribute
+supertypes.
+
 =back
 
 =head1 SEE ALSO
@@ -170,7 +176,7 @@ Graham Barr E<lt>gbarr@pobox.comE<gt>
 John Berthels E<lt>jjb@nexor.co.ukE<gt>
 
 Please report any bugs, or post any suggestions, to the perl-ldap mailing list
-E<lt>perl-ldap-dev@perl.orgE<gt>.
+E<lt>perl-ldap@perl.orgE<gt>.
 
 =head1 COPYRIGHT
 

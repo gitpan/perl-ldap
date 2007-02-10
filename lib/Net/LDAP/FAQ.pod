@@ -58,23 +58,16 @@ You can subscribe to this list by mailing perl-ldap-subscribe@perl.org
 
 Yes, at http://nntp.perl.org/group/perl.ldap
 
-Archives of messages since we switched to using sourceforge can be
+Archives with messages before we switched to using perl.org can be
 found at
 
- http://www.geocrawler.com/lists/3/SourceForge/3482/0/
-
-Please be aware that the geocrawler system munges
-code that is in the email messages.  In particular, 
-apostrophes (') are turned into back ticks (`) and 
-newlines escapes (\n) are removed (and probably other 
-escapes as well).  
+ http://marc.theaimsgroup.com/?l=perl-ldap-dev
 
 There is also an archive of the perl-ldap mailing list at
 
  http://www.xray.mpe.mpg.de/mailing-lists/perl-ldap/
-dd
-which also has messages from before the move to sourceforge.
-The xray archive does not munge email messages.
+
+which also has messages from before the move.
 
 =head2 Is there any online documentation ?
 
@@ -88,7 +81,7 @@ which will have the latest documentation available.
 
 No, but there is a public SVN repository at
 
-  http://svn.mutatus.co.uk
+ http://svn.mutatus.co.uk
 
 =head2 Can I get perl-ldap from the public SVN repository?
 
@@ -106,7 +99,7 @@ You can download it from CPAN by following the release link:
 The 2 lines in the following example should be put together as 
 one continuous line.  Example;
 
- http://search.cpan.org/CPAN/authors/id/G/GB/GBARR/perl-ldap-0.31.tar.gz
+ http://search.cpan.org/CPAN/authors/id/G/GB/GBARR/perl-ldap-0.33.tar.gz
 
 B<WARNING:>  The perl-ldap module is stored on CPAN as a *.gz file.
 Netscape on Windows systems sometimes has a problem storing the module
@@ -173,9 +166,9 @@ The Lightweight Directory Access Protocol is defined in a series of
 Requests For Comments, better known as RFCs. The RFCs can be found on
 the Internet at http://www.ietf.org/ (the master repository) and many
 other places. There's a link to all the LDAP-related RFCs at
-Perl-LDAP's web site, http://perl-ldap.sourceforge.net/rfc.html. Some
-of the more important RFC numbers are RFC 1777 for LDAPv2 and RFC 2251
-as well as RFC3377 for LDAPv3.
+Perl-LDAP's web site, http://ldap.perl.org/rfc.html. Some of the more
+important RFC numbers are RFC 451i0 - 4519 for LDAP (previously called
+LDAPv3) and the historic RFC 1777 for LDAPv2.
 
 =head2 What is a LDAP Directory.
 
@@ -414,11 +407,11 @@ To install the modules that are in the perl-ldap distribution follow the
 same steps that you would for most other distributions found on CPAN, that
 is
 
-   # replace 0.31 with the version you have
+   # replace 0.33 with the version you have
 
-   gunzip perl-ldap-0.31.tar.gz
-   tar xvf perl-ldap-0.31.tar       
-   cd perl-ldap-0.31
+   gunzip perl-ldap-0.33.tar.gz
+   tar xvf perl-ldap-0.33.tar       
+   cd perl-ldap-0.33
 
    perl Makefile.PL
    make
@@ -448,11 +441,11 @@ the system architecture name, in this case it is
 C</usr/local/perl/perl5.005/lib/site_perl/5.005>. The files required
 can then be installed with
 
-   # replace 0.31 with the version you have
+   # replace 0.33 with the version you have
 
-   gunzip perl-ldap-0.31.tar.gz
-   tar xvf perl-ldap-0.31.tar       
-   cd perl-ldap-0.31/lib
+   gunzip perl-ldap-0.33.tar.gz
+   tar xvf perl-ldap-0.33.tar       
+   cd perl-ldap-0.33/lib
 
    cp * /usr/local/perl/perl5.005/lib/site_perl/5.005
 
@@ -514,7 +507,7 @@ You can obtain the latest release from
 
 This module is optional. It also requires a C compiler when installing.
 You only need to install Digest::MD5 if you want to use the SASL
-authentication method.
+DIGEST-MD5 authentication method.
 
 You can obtain the latest release from
   http://search.cpan.org/search?module=Digest::MD5
@@ -543,12 +536,13 @@ If you are using a Linux system, many of the distributions
 have RPM packages that you can install.  Use your favorite
 web search engine to find the package that you need.
 
-=item XML::SAX
+=item XML::SAX and XML::SAX::Writer
 
-If you want to use Net::LDAP::DSML you will need this module.
+If you want to use Net::LDAP::DSML you will need these modules.
 
-You can obtain the latest release from
+You can obtain the latest releases from
   http://search.cpan.org/search?module=XML::SAX 
+  http://search.cpan.org/search?module=XML::SAX::Writer
 
 
 =item ResourcePool::Factory::Net::LDAP
@@ -1003,14 +997,30 @@ There is user contributed software in the contrib directory
 that is supplied with the PERL-LDAP distribution.  This is an
 excellent source of information on how to use the PERL-LDAP module.
 
+=head2 Are there any performance issues with perl-ldap ?
+
+In the vast majority of use cases (one user has suggested 9 out of 10)
+there are no performance issues with perl-ldap.
+
+Where you may wish to use perl-ldap to perform, for example, a very
+large number of queries (e.g. 10,000) in succession you may find a
+noticeable performance difference between perl-ldap and non pure-perl
+modules. This is not because of perl-ldap itself but because of the
+pure-perl Convert::ASN1 module that it depends on.
+
+You should make up your own mind, based upon your own situation
+(performance requirements, hardware etc.) as to whether you should use
+perl-ldap or not. The figures quoted in this answer are only
+indicative, and will differ for different people.
+
 =head2 Can I contribute perl scripts that use perl-ldap
 to the contrib section? 
 
 Any one can submit a perl script that uses perl-ldap for inclusion
 in the contrib section.  Graham Barr will determine if the script
 will be included and will do the initial check in of the script
-to the CVS system on sourceforge.  Graham will make you the 
-owner/developer of the script. 
+to the SVN system on http://svn.mutatus.co.uk.  Graham will make you
+the owner/developer of the script. 
 
 There are a couple of requirements for consideration.
 
@@ -1019,14 +1029,9 @@ in the contrib readme file.
 
 Inside the script will be the pod documentation for the script.
 No auxiliary documentation will be allowed.  For examples of how
-to do this see the tklkup or schema scripts currently in the contrib
-section.
+to do this see the tklkup script currently in the contrib section.
 
-If Graham decides to include your script in the contrib section, you
-must register with sourceforge before your scripts will be put into
-the contrib CVS system.
-
-=head2 Is possible to get a complete entry, DN and attributes 
+=head2 Is it possible to get a complete entry, DN and attributes 
 without specifying the attributes name?
 
 Yes, just specify you want a list of no attributes back. The RFC says 
@@ -1038,10 +1043,17 @@ So in the search method, just set (for LDAPv2):
 		attrs => [ ]
 
 If you are using LDAPv3, you can specify an attribute called "*" 
-instead, which lets you ask for additional (eg operational) attributes 
+instead, which lets you ask for additional (i.g. operational) attributes 
 in the same search.
 
 		attrs => [ "*" ]
+
+To get all operational attributes in a search, some servers allow
+the use of the "+" pseudo attribute. So that with these servers
+
+		attrs => [ "*", "+" ]
+
+will return the most information from the server.		
 
 =head2 How do I put a JPEG photo into a entry in the directory.
 
@@ -1213,7 +1225,7 @@ replace the placeholders.
 
 =head2 Ho do I reset a user's password ...
 
-=head2 Z<>... in most LDAP servers ?
+=head3 Z<>... in most LDAP servers ?
 
 Most LDAP servers use the standard userPassword attribute as the
 attribute to set when you want to change a user's password.
@@ -1289,7 +1301,7 @@ sake error checking is left out):
 
   $ldap->unbind();
 
-=head2 Z<>... in MS Active Directory ?
+=head3 Z<>... in MS Active Directory ?
 
 With Active Directory a user's password is stored in the unicodePwd
 attribute and changed using the regular modify operation.

@@ -17,9 +17,10 @@ use Net::LDAP::Constant qw(
   LDAP_CONTROL_MANAGEDSAIT
   LDAP_CONTROL_PERSISTENTSEARCH
   LDAP_CONTROL_ENTRYCHANGE
+  LDAP_CONTROL_MATCHEDVALUES
 );
 
-$VERSION = "0.05";
+$VERSION = "0.06";
 
 my %Pkg2Type = (
 
@@ -33,10 +34,12 @@ my %Pkg2Type = (
 
   'Net::LDAP::Control::ProxyAuth'	=> LDAP_CONTROL_PROXYAUTHENTICATION,
 
-
   'Net::LDAP::Control::ManageDsaIT'	=> LDAP_CONTROL_MANAGEDSAIT,
+
   'Net::LDAP::Control::PersistentSearch'	=> LDAP_CONTROL_PERSISTENTSEARCH,
   'Net::LDAP::Control::EntryChange'	=> LDAP_CONTROL_ENTRYCHANGE,
+
+  'Net::LDAP::Control::MatchedValues'	=> LDAP_CONTROL_MATCHEDVALUES,
   #
   #LDAP_CONTROL_PWEXPIRED
   #LDAP_CONTROL_PWEXPIRING
@@ -279,6 +282,15 @@ for this method is to return TRUE if there is no error, but sub-classes may over
 =head1 SEE ALSO
 
 L<Net::LDAP>
+L<Net::LDAP::Control::EntryChange>
+L<Net::LDAP::Control::ManageDsaIT>
+L<Net::LDAP::Control::Paged>
+L<Net::LDAP::Control::PersistentSearch>
+L<Net::LDAP::Control::ProxyAuth>
+L<Net::LDAP::Control::Sort>
+L<Net::LDAP::Control::SortResult>
+L<Net::LDAP::Control::VLV>
+L<Net::LDAP::Control::VLVResponse>
 
 =head1 AUTHOR
 

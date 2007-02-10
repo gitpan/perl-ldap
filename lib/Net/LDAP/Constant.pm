@@ -441,6 +441,8 @@ The referral hop limit has been exceeded.
 
 =head2 Control OIDs
 
+=over 4
+
 =item LDAP_CONTROL_SORTREQUEST (1.2.840.113556.1.4.473)
 
 =item LDAP_CONTROL_SORTRESULT (1.2.840.113556.1.4.474)
@@ -457,6 +459,8 @@ The referral hop limit has been exceeded.
 
 =item LDAP_CONTROL_MATCHEDVALS (1.2.826.0.1.3344810.2.2)
 
+=item LDAP_CONTROL_MATCHEDVALUES (1.2.826.0.1.3344810.2.3)
+
 =item LDAP_CONTROL_MANAGEDSAIT (2.16.840.1.113730.3.4.2)
 
 =item LDAP_CONTROL_PERSISTENTSEARCH (2.16.840.1.113730.3.4.3)
@@ -468,6 +472,8 @@ The referral hop limit has been exceeded.
 =item LDAP_CONTROL_PWEXPIRING (2.16.840.1.113730.3.4.5)
 
 =item LDAP_CONTROL_REFERRALS (1.2.840.113556.1.4.616)
+
+=back
 
 =head2 Extension OIDs
 

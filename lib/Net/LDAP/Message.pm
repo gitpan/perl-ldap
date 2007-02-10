@@ -9,7 +9,7 @@ use Net::LDAP::ASN qw(LDAPRequest);
 use strict;
 use vars qw($VERSION);
 
-$VERSION = "1.08";
+$VERSION = "1.09";
 
 my $MsgID = 0;
 
@@ -29,6 +29,7 @@ sub new {
     parent   => $parent,
     mesgid   => NewMesgID(),
     callback => $arg->{callback} || undef,
+    raw      => $arg->{raw} || undef,
   }, $type;
 
   $self;

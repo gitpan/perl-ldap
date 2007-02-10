@@ -5,30 +5,30 @@ Net::LDAP - Lightweight Directory Access Protocol
 =head1 SYNOPSIS
 
  use Net::LDAP;
- 
+
  $ldap = Net::LDAP->new( 'ldap.bigfoot.com' ) or die "$@";
- 
+
  $mesg = $ldap->bind ;    # an anonymous bind
- 
+
  $mesg = $ldap->search( # perform a search
                         base   => "c=US",
                         filter => "(&(sn=Barr) (o=Texas Instruments))"
                       );
- 
+
  $mesg->code && die $mesg->error;
- 
+
  foreach $entry ($mesg->entries) { $entry->dump; }
- 
+
  $mesg = $ldap->unbind;   # take down session
- 
- 
+
+
  $ldap = Net::LDAP->new( 'ldap.umich.edu' );
- 
+
  # bind to a directory with dn and password
  $mesg = $ldap->bind( 'cn=root, o=University of Michigan, c=us',
                       password => 'secret'
                     );
- 
+
  $result = $ldap->add( 'cn=Barbara Jensen, o=University of Michigan, c=US',
                        attr => [
                          'cn'   => ['Barbara Jensen', 'Barbs Jensen'],
@@ -39,7 +39,7 @@ Net::LDAP - Lightweight Directory Access Protocol
                                            'inetOrgPerson' ],
                        ]
                      );
- 
+
  $result->code && warn "failed to add entry: ", $result->error ;
  $mesg = $ldap->unbind;  # take down session
 
@@ -83,6 +83,11 @@ returned.
 =item port =E<gt> N
 
 Port to connect to on the remote server. May be overridden by C<HOST>.
+
+=item scheme =E<gt> 'ldap' | 'ldaps' | 'ldapi'
+
+Connection scheme to use when not using an URI as C<HOST>.
+(Default: ldap)
 
 =item timeout =E<gt> N
 
@@ -140,9 +145,24 @@ Set the protocol version being used (default is LDAPv3). This is
 useful if you want to talk to an old server and therefore have to use
 LDAPv2.
 
+=item raw =E<gt> REGEX
+
+Use REGEX to denote the names of attributes that are to be considered
+binary in search results.
+
+When running on Perl 5.8 and this option is given Net::LDAP converts all
+values of attributes not matching this REGEX into Perl UTF-8 strings
+so that the regular Perl operators (pattern matching, ...) can operate
+as one expects even on strings with international characters.
+
+If this option is not given or the version of Perl Net::LDAP is running on
+is too old strings are encodeed the same as in earlier versions of perl-ldap.
+
+Example: raw =E<gt> qr/(?i:^jpegPhoto|;binary)/
+
 =back
 
-Example
+B<Example>
 
   $ldap = Net::LDAP->new( 'remote.host', async => 1 );
 
@@ -152,7 +172,7 @@ L<start_tls|/start_tls> method for details. Note the default value for
 is 636.
 
 For LDAPI connections, HOST is actually the location of a UNIX domain
-socket to connect to. The default location is '/var/lib/ldapi'.
+socket to connect to. The default location is '/var/run/ldapi'.
 
 =back
 
@@ -429,13 +449,13 @@ See L</CALLBACKS> below.
 B<Example>
 
  $mesg = $ldap->modify( $dn, add => { sn => 'Barr' } );
- 
+
  $mesg = $ldap->modify( $dn, delete => [qw(faxNumber)] );
- 
+
  $mesg = $ldap->modify( $dn, delete => { 'telephoneNumber' => '911' } );
- 
+
  $mesg = $ldap->modify( $dn, replace => { 'mail' => 'gbarr@pobox.com' } );
- 
+
  $mesg = $ldap->modify( $dn,
                         changes => [
                             # add sn=Barr
@@ -582,6 +602,23 @@ See L</CONTROLS> below.
 
 See L</CALLBACKS> below.
 
+=item raw =E<gt> REGEX
+
+Use REGEX to denote the names of attributes that are to be considered
+binary in search results.
+
+When running on Perl 5.8 and this option is given Net::LDAP converts all
+values of attributes not matching this REGEX into Perl UTF-8 strings
+so that the regular Perl operators (pattern matching, ...) can operate
+as one expects even on strings with international characters.
+
+If this option is not given or the version of Perl Net::LDAP is running on
+is too old strings are encodeed the same as in earlier versions of perl-ldap.
+
+The value provided here overwrites the value inherited from the constructor.
+
+Example: raw =E<gt> qr/(?i:^jpegPhoto|;binary)/
+
 =back
 
 B<Example>
@@ -591,7 +628,7 @@ B<Example>
                         scope  => 'sub',
                         filter => '(|(objectclass=rfc822mailgroup)(sn=jones))'
                       );
- 
+
  Net::LDAP::LDIF->new( \*STDOUT,"w" )->write( $mesg->entries );
 
 =item start_tls ( OPTIONS )
@@ -681,6 +718,16 @@ names, use OpenSSL like this in Unix:
     ln -s cacert.pem `openssl x509 -hash -noout < cacert.pem`.0
 
 (assuming that the certificate of the CA is in cacert.pem.)
+
+=item checkcrl =E<gt> 1
+
+If capath has been configured, then it will also be searched for
+certificate revocation lists (CRLs) when verifying the server's
+certificate.
+The CRLs' names must follow the form B<hash>.rB<num> where B<hash>
+is the hash over the issuer's DN and B<num> is a number starting with 0.
+
+See L<IO::Socket::SSL/SSL_check_crl> for further information.
 
 =back
 
@@ -812,10 +859,38 @@ B<Example>
 
 Returns the underlying C<IO::Socket> object being used.
 
+=item host ( )
+
+Returns the host to which he connection was established.
+For LDAPI connections the socket path is returned.
+
+=item port ( )
+
+Returns the the port connected to or C<undef> in case of LDAPI connections.
+
+=item uri ( )
+
+Returns the URI connected to.
+
+As the value returned is that element of the constructor's HOST
+argument with which the connection was established this may or
+may not be a legal URI.
+
+=item scheme ( )
+
+Returns the scheme of the connection. One of I<ldap>, I<ldaps> or I<ldapi>.
+
 =item sync ( MESG )
 
 Wait for a given C<MESG> request to be completed by the server. If no
 C<MESG> is given, then wait for all outstanding requests to be completed.
+
+Returns an error code defined in L<Net::LDAP::Constant>.
+
+=item process ( MESG )
+
+Process any messages that the server has sent, but do not block. If C<MESG>
+is specified then return as soon as C<MESG> has been processed.
 
 Returns an error code defined in L<Net::LDAP::Constant>.
 
@@ -835,6 +910,9 @@ A control is a reference to a HASH and should contain the three
 elements below. If any of the controls are blessed then the
 method C<to_asn> will be called which should return a reference
 to a HASH containing the three elements described below.
+
+For most purposes L<Net::LDAP::Control> objects are the easiest
+way to generate controls.
 
 =over 4
 
@@ -891,7 +969,7 @@ L<Net::LDAP::Search>,
 L<Net::LDAP::RFC>
 
 The homepage for the perl-ldap modules can be found at 
-http://perl-ldap.sourceforge.net/
+http://ldap.perl.org/.
 
 =head1 ACKNOWLEDGEMENTS
 
@@ -903,7 +981,7 @@ testing and contribution of the ldap* command line utilities.
 
 =head1 MAILING LIST
 
-A discussion mailing list is hosted by sourceforge at
+A discussion mailing list is hosted by the Perl Foundation at
 E<lt>perl-ldap@perl.orgE<gt> No subscription is necessary!
 
 =head1 BUGS

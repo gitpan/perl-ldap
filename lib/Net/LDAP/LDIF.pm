@@ -9,7 +9,15 @@ use SelectSaver;
 require Net::LDAP::Entry;
 use vars qw($VERSION);
 
-$VERSION = "0.16";
+use constant CHECK_UTF8 => $] > 5.007;
+
+BEGIN {
+  require Encode
+    if (CHECK_UTF8);
+}  
+
+
+$VERSION = "0.17";
 
 my %mode = qw(w > r < a >>);
 
@@ -64,7 +72,7 @@ sub new {
     fh   => $fh,
     file => "$file",
     opened_fh => $opened_fh,
-    eof => 0,
+    _eof => 0,
     write_count => ($mode eq 'a' and tell($fh) > 0) ? 1 : 0,
   };
 
@@ -79,35 +87,49 @@ sub new {
   
 sub _read_lines {
   my $self = shift;
-  my @ldif;
+  my $fh = $self->{'fh'};
+  my @ldif = ();
+  my $entry = '';
+  my $in_comment = 0;
+  my $entry_completed = 0;
+  my $ln;
 
-  {
-    local $/ = "";
-    my $fh = $self->{'fh'};
-    my $ln;
-    do {	# allow comments separated by blank lines
-      $ln = $self->{_next_lines} || scalar <$fh>;
-      unless ($ln) {
-         $self->{_next_lines} = '';
-         $self->{_current_lines} = '';
-         $self->eof(1);
-         return;
+  return @ldif  if ($self->eof());
+  
+  while (defined($ln = $self->{_buffered_line} || scalar <$fh>)) {
+    delete($self->{_buffered_line});
+    if ($ln =~ /^#/o) {		# ignore 1st line of comments
+      $in_comment = 1;
+    }
+    else {
+      if ($ln =~ /^[ \t]/o) {	# append wrapped line (if not in a comment)
+        $entry .= $ln  if (!$in_comment);
       }
-      $ln =~ s/\n //sg;
-      $ln =~ s/^#.*\n//mg;
-      chomp($ln);
-      $self->{_current_lines} = $ln;
-    } until ($self->{_current_lines} || $self->eof());
-    chomp(@ldif = split(/^/, $ln));
-    do {
-      $ln = scalar <$fh> || '';
-      $self->eof(1) unless $ln;
-      $ln =~ s/\n //sg;
-      $ln =~ s/^#.*\n//mg;
-      chomp($ln);
-      $self->{_next_lines} = $ln;
-    } until ($self->{_next_lines} || $self->eof());
+      else {
+        $in_comment = 0;
+        if ($ln =~ /^\r?\n$/o) {
+          # ignore empty line on start of entry
+          # empty line at non-empty entry indicate entry completion
+          $entry_completed++  if (length($entry));
+	}
+        else {
+	  if ($entry_completed) {
+	    $self->{_buffered_line} = $ln;
+	    last;
+	  }
+	  else {
+            # append non-empty line
+            $entry .= $ln;
+	  }  
+        }	
+      }
+    }
   }
+  $self->eof(1)  if (!defined($ln));
+  $entry =~ s/\r?\n //sgo;	# un-wrap wrapped lines
+  $entry =~ s/\r?\n\t/ /sgo;	# OpenLDAP extension !!!
+  @ldif = split(/^/, $entry);
+  map { s/\r?\n$//; } @ldif;
 
   @ldif;
 }
@@ -156,8 +178,6 @@ sub _read_entry {
     $self->_error("illegal empty LDIF entry")  if (!$self->eof());
     return;
   }
-  # What does that mean ???
-  #shift @ldif if @ldif && $ldif[0] !~ /\D/;
 
   if (@ldif and $ldif[0] =~ /^version:\s+(\d+)/) {
     $self->{'version'} = $1;
@@ -177,7 +197,7 @@ sub _read_entry {
 
   my $dn = shift @ldif;
 
-  if (length($1)) {
+  if (length($1)) {	# $1 is the optional colon from above
     eval { require MIME::Base64 };
     if ($@) {
       $self->_error($@, @ldif);
@@ -187,6 +207,8 @@ sub _read_entry {
   }
 
   my $entry = Net::LDAP::Entry->new;
+  $dn = Encode::decode_utf8($dn)
+    if (CHECK_UTF8 && $self->{raw} && ('dn' !~ /$self->{raw}/));
   $entry->dn($dn);
 
   if ($ldif[0] =~ /^changetype:\s*/) {
@@ -220,8 +242,13 @@ sub _read_entry {
 	my $xattr;
   
         if ($line eq "-") {
-          $entry->$modify($lastattr, \@values)
-            if defined $lastattr;
+          if (defined $lastattr) {
+	    if (CHECK_UTF8 && $self->{raw}) {
+  	      map { $_ = Encode::decode_utf8($_) } @values
+	        if ($lastattr !~ /$self->{raw}/);
+	    }  
+            $entry->$modify($lastattr, \@values);
+	  }  
           undef $lastattr;
           @values = ();
           last;
@@ -251,16 +278,26 @@ sub _read_entry {
         }
 
         if(!defined($lastattr) || $lastattr ne $attr) {
-          $entry->$modify($lastattr, \@values)
-            if defined $lastattr;
+          if (defined $lastattr) {
+	    if (CHECK_UTF8 && $self->{raw}) {
+  	      map { $_ = Encode::decode_utf8($_) } @values
+	        if ($lastattr !~ /$self->{raw}/);
+	    }  
+            $entry->$modify($lastattr, \@values);
+	  }  
           $lastattr = $attr;
           @values = ($line);
           next;
         }
         push @values, $line;
       }
-      $entry->$modify($lastattr, \@values)
-       if defined $lastattr;
+      if (defined $lastattr) {
+        if (CHECK_UTF8 && $self->{raw}) {
+  	  map { $_ = Encode::decode_utf8($_) } @values
+	    if ($lastattr !~ /$self->{raw}/);
+        }  
+        $entry->$modify($lastattr, \@values);
+      }  
     }
   }
 
@@ -291,6 +328,11 @@ sub _read_entry {
         return  if !defined($line);
       }
   
+      if (CHECK_UTF8 && $self->{raw}) {
+        $line = Encode::decode_utf8($line)
+          if ($attr !~ /$self->{raw}/);
+      }
+
       if ($attr eq $last) {
         push @$vals, $line;
         next;
@@ -342,14 +384,13 @@ sub eof {
 }
 
 sub _wrap {
-  if($_[1] > 40) {
-    my $pos = $_[1];
-    while($pos < length($_[0])) {
-      substr($_[0],$pos,0) = "\n ";
-      $pos += $_[1]+1;
-    }
-  }
-  $_[0];
+  my $len=$_[1];
+  return $_[0] if length($_[0]) <= $len;
+  use integer;
+  my $l2 = $len-1;
+  my $x = (length($_[0]) - $len) / $l2;
+  my $extra = (length($_[0]) == ($l2 * $x + $len)) ? "" : "a*";
+  join("\n ",unpack("a$len" . "a$l2" x $x . $extra,$_[0]));
 }
 
 sub _write_attr {
@@ -358,6 +399,9 @@ sub _write_attr {
   my $res = 1;	# result value
   foreach $v (@$val) {
     my $ln = $lower ? lc $attr : $attr;
+
+    $v = Encode::encode_utf8($v)
+      if (CHECK_UTF8 and Encode::is_utf8($v));
     if ($v =~ /(^[ :<]|[\x00-\x1f\x7f-\xff])/) {
       require MIME::Base64;
       $ln .= ":: " . MIME::Base64::encode($v,"");
@@ -391,6 +435,9 @@ sub _write_attrs {
 
 sub _write_dn {
   my($dn,$encode,$wrap) = @_;
+
+  $dn = Encode::encode_utf8($dn)
+    if (CHECK_UTF8 and Encode::is_utf8($dn));
   if ($dn =~ /^[ :<]|[\x00-\x1f\x7f-\xff]/) {
     if ($encode =~ /canonical/i) {
       require Net::LDAP::Util;

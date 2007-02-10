@@ -9,7 +9,15 @@ use Net::LDAP::ASN qw(LDAPEntry);
 use Net::LDAP::Constant qw(LDAP_LOCAL_ERROR);
 use vars qw($VERSION);
 
-$VERSION = "0.22";
+use constant CHECK_UTF8 => $] > 5.007;
+
+BEGIN {
+  require Encode
+    if (CHECK_UTF8);
+}
+
+
+$VERSION = "0.23";
 
 sub new {
   my $self = shift;
@@ -17,7 +25,10 @@ sub new {
 
   my $entry = bless { 'changetype' => 'add', changes => [] }, $type;
 
-  $entry;
+  @_ and $entry->dn( shift );
+  @_ and $entry->add( @_ );
+
+  return $entry;
 }
 
 sub clone {
@@ -55,8 +66,19 @@ sub decode {
   my $self = shift;
   my $result = ref($_[0]) ? shift : $LDAPEntry->decode(shift)
     or return;
+  my %arg = @_;
 
   %{$self} = ( asn => $result, changetype => 'modify', changes => []);
+
+  if (CHECK_UTF8 && $arg{raw}) {
+    $result->{objectName} = Encode::decode_utf8($result->{objectName})
+      if ('dn' !~ /$arg{raw}/);
+  
+    foreach my $elem (@{$self->{asn}{attributes}}) {
+      map { $_ = Encode::decode_utf8($_) } @{$elem->{vals}}
+        if ($elem->{type} !~ /$arg{raw}/);
+    }
+  }
 
   $self;
 }
@@ -118,10 +140,12 @@ sub get_value {
 
 
 sub changetype {
+
   my $self = shift;
   return $self->{'changetype'} unless @_;
   $self->{'changes'} = [];
   $self->{'changetype'} = shift;
+  return $self;
 }
 
 
@@ -132,12 +156,12 @@ sub add {
   my $attrs = $self->{attrs} ||= _build_attrs($self);
 
   while (my($type,$val) = splice(@_,0,2)) {
-    $type = lc $type;
+    my $lc_type = lc $type;
 
-    push @{$self->{asn}{attributes}}, { type => $type, vals => ($attrs->{$type}=[])}
-      unless exists $attrs->{$type};
+    push @{$self->{asn}{attributes}}, { type => $type, vals => ($attrs->{$lc_type}=[])}
+      unless exists $attrs->{$lc_type};
 
-    push @{$attrs->{$type}}, ref($val) ? @$val : $val;
+    push @{$attrs->{$lc_type}}, ref($val) ? @$val : $val;
 
     push @$cmd, $type, [ ref($val) ? @$val : $val ]
       if $cmd;
@@ -145,6 +169,8 @@ sub add {
   }
 
   push(@{$self->{'changes'}}, 'add', $cmd) if $cmd;
+
+  return $self;
 }
 
 
@@ -154,24 +180,24 @@ sub replace {
   my $attrs = $self->{attrs} ||= _build_attrs($self);
 
   while(my($type, $val) = splice(@_,0,2)) {
-    $type = lc $type;
+    my $lc_type = lc $type;
 
     if (defined($val) and (!ref($val) or @$val)) {
 
-      push @{$self->{asn}{attributes}}, { type => $type, vals => ($attrs->{$type}=[])}
-	unless exists $attrs->{$type};
+      push @{$self->{asn}{attributes}}, { type => $type, vals => ($attrs->{$lc_type}=[])}
+	unless exists $attrs->{$lc_type};
 
-      @{$attrs->{$type}} = ref($val) ? @$val : ($val);
+      @{$attrs->{$lc_type}} = ref($val) ? @$val : ($val);
 
       push @$cmd, $type, [ ref($val) ? @$val : $val ]
 	if $cmd;
 
     }
     else {
-      delete $attrs->{$type};
+      delete $attrs->{$lc_type};
 
       @{$self->{asn}{attributes}}
-	= grep { $type ne lc($_->{type}) } @{$self->{asn}{attributes}};
+	= grep { $lc_type ne lc($_->{type}) } @{$self->{asn}{attributes}};
 
       push @$cmd, $type, []
 	if $cmd;
@@ -180,6 +206,8 @@ sub replace {
   }
 
   push(@{$self->{'changes'}}, 'replace', $cmd) if $cmd;
+
+  return $self;
 }
 
 
@@ -195,34 +223,36 @@ sub delete {
   my $attrs = $self->{attrs} ||= _build_attrs($self);
 
   while(my($type,$val) = splice(@_,0,2)) {
-    $type = lc $type;
+    my $lc_type = lc $type;
 
     if (defined($val) and (!ref($val) or @$val)) {
       my %values;
       @values{@$val} = ();
 
-      unless( @{$attrs->{$type}}
-        = grep { !exists $values{$_} } @{$attrs->{$type}})
+      unless( @{$attrs->{$lc_type}}
+        = grep { !exists $values{$_} } @{$attrs->{$lc_type}})
       {
-	delete $attrs->{$type};
+	delete $attrs->{$lc_type};
 	@{$self->{asn}{attributes}}
-	  = grep { $type ne lc($_->{type}) } @{$self->{asn}{attributes}};
+	  = grep { $lc_type ne lc($_->{type}) } @{$self->{asn}{attributes}};
       }
 
       push @$cmd, $type, [ ref($val) ? @$val : $val ]
 	if $cmd;
     }
     else {
-      delete $attrs->{$type};
+      delete $attrs->{$lc_type};
 
       @{$self->{asn}{attributes}}
-	= grep { $type ne lc($_->{type}) } @{$self->{asn}{attributes}};
+	= grep { $lc_type ne lc($_->{type}) } @{$self->{asn}{attributes}};
 
       push @$cmd, $type, [] if $cmd;
     }
   }
 
   push(@{$self->{'changes'}}, 'delete', $cmd) if $cmd;
+
+  return $self;
 }
 
 
