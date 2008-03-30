@@ -40,7 +40,6 @@ data/slapd-conf.in
 data/slapd.at.conf
 data/slapd.oc.conf
 data/slapd2-conf.in
-inc/ExtUtils/AutoInstall.pm
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AutoInstall.pm
@@ -68,6 +67,7 @@ lib/Net/LDAP/Control.pm
 lib/Net/LDAP/Control/EntryChange.pm
 lib/Net/LDAP/Control/ManageDsaIT.pm
 lib/Net/LDAP/Control/Paged.pm
+lib/Net/LDAP/Control/PasswordPolicy.pm
 lib/Net/LDAP/Control/PersistentSearch.pm
 lib/Net/LDAP/Control/ProxyAuth.pm
 lib/Net/LDAP/Control/Sort.pm
