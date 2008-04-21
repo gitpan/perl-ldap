@@ -9,7 +9,7 @@ use Net::LDAP::ASN qw(LDAPRequest);
 use strict;
 use vars qw($VERSION);
 
-$VERSION = "1.09";
+$VERSION = "1.10";
 
 my $MsgID = 0;
 
@@ -110,6 +110,7 @@ sub error_text {
 }
 
 sub error_desc {
+  require Net::LDAP::Util;
   Net::LDAP::Util::ldap_error_desc(shift->code);
 }
 
@@ -189,6 +190,8 @@ sub control {
     my $hash = $self->{ctrl_hash} = {};
     foreach my $asn (@{delete $self->{controls}}) {
       my $ctrl = Net::LDAP::Control->from_asn($asn);
+      $ctrl->{raw} = $self->{parent}->{raw}
+        if ($self->{parent});
       push @{$hash->{$ctrl->type} ||= []}, $ctrl;
     }
   }
