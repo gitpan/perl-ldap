@@ -28,7 +28,7 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 			   LDAP_UNAVAILABLE
 			);
 
-$VERSION 	= "0.36";
+$VERSION 	= "0.37";
 @ISA     	= qw(Tie::StdHash Net::LDAP::Extra);
 $LDAP_VERSION 	= 3;      # default LDAP protocol version
 
@@ -377,9 +377,16 @@ sub bind {
       if $ldap->{net_ldap_version} < 3;
 
     my $sasl = $passwd;
+
+    # If we're talking to a round-robin, the canonical name of
+    # the host we are talking to might not match the name we
+    # requested
+    my $connected_name = $ldap->{net_ldap_socket}->peerhost;
+    $connected_name ||= $ldap->{net_ldap_host};
+
     my $sasl_conn = eval {
       local($SIG{__DIE__});
-      $sasl->client_new("ldap",$ldap->{net_ldap_host});
+      $sasl->client_new("ldap",$connected_name);
     };
 
     return _error($ldap, $mesg, LDAP_LOCAL_ERROR, "$@")
@@ -393,7 +400,7 @@ sub bind {
 
     my $initial = $sasl_conn->client_start;
 
-    return _error($ldap, $mesg, LDAP_LOCAL_ERROR, "$@")
+    return _error($ldap, $mesg, LDAP_LOCAL_ERROR, $sasl_conn->error)
       unless defined($initial);
 
     $passwd = {
@@ -504,7 +511,7 @@ sub add {
 }
 
 
-my %opcode = ( 'add' => 0, 'delete' => 1, 'replace' => 2);
+my %opcode = ( 'add' => 0, 'delete' => 1, 'replace' => 2, 'increment' => 3);
 
 sub modify {
   my $ldap = shift;
@@ -548,7 +555,7 @@ sub modify {
     }
   }
   else {
-    foreach $op (qw(add delete replace)) {
+    foreach $op (qw(add delete replace increment)) {
       next unless exists $arg->{$op};
       my $opt = $arg->{$op};
       my $opcode = $opcode{$op};

@@ -4,7 +4,7 @@
 
 package Net::LDAP::Constant;
 
-$VERSION = "0.06";
+$VERSION = "0.07";
 
 use Carp;
 
@@ -481,6 +481,14 @@ The referral hop limit has been exceeded.
 
 =item LDAP_CONTROL_ASSERTION (1.3.6.1.1.12)
 
+=item LDAP_CONTROL_SYNC (1.3.6.1.4.1.4203.1.9.1.1)
+
+=item LDAP_CONTROL_SYNC_STATE (1.3.6.1.4.1.4203.1.9.1.2)
+
+=item LDAP_CONTROL_SYNC_DONE (1.3.6.1.4.1.4203.1.9.1.3)
+
+=item LDAP_SYNC_INFO (1.3.6.1.4.1.4203.1.9.1.4)
+
 =back
 
 =head2 Control constants
@@ -523,6 +531,42 @@ The previous password was changed too recently.
 
 The new password was used too recently.
 
+=item LDAP_SYNC_NONE (0) [LDAP_CONTROL_SYNC]
+
+=item LDAP_SYNC_REFRESH_ONLY (1) [LDAP_CONTROL_SYNC]
+
+=item LDAP_SYNC_RESERVED (2) [LDAP_CONTROL_SYNC]
+
+=item LDAP_SYNC_REFRESH_AND_PERSIST (3) [LDAP_CONTROL_SYNC]
+
+=item LDAP_SYNC_REFRESH_PRESENTS (0) [LDAP_SYNC_INFO]
+
+=item LDAP_SYNC_REFRESH_DELETES (1) [LDAP_SYNC_INFO]
+
+=item LDAP_TAG_SYNC_NEW_COOKIE (0x80) [LDAP_SYNC_INFO]
+
+=item LDAP_TAG_SYNC_REFRESH_DELETE (0xa1) [LDAP_SYNC_INFO]
+
+=item LDAP_TAG_SYNC_REFRESH_PRESENT (0xa2) [LDAP_SYNC_INFO]
+
+=item LDAP_TAG_SYNC_ID_SET (0xa3) [LDAP_SYNC_INFO]
+
+=item LDAP_TAG_SYNC_COOKIE (0x04) [LDAP_SYNC_INFO]
+
+=item LDAP_TAG_REFRESHDELETES (0x01) [LDAP_SYNC_INFO]
+
+=item LDAP_TAG_REFRESHDONE (0x01) [LDAP_SYNC_INFO]
+
+=item LDAP_TAG_RELOAD_HINT (0x01) [LDAP_CONTROL_SYNC]
+
+=item LDAP_SYNC_PRESENT (0) [LDAP_CONTROL_SYNC_STATE]
+
+=item LDAP_SYNC_ADD (1) [LDAP_CONTROL_SYNC_STATE]
+
+=item LDAP_SYNC_MODIFY (2) [LDAP_CONTROL_SYNC_STATE]
+
+=item LDAP_SYNC_DELETE (3) [LDAP_CONTROL_SYNC_STATE]
+
 =back
 
 =head2 Extension OIDs
@@ -543,6 +587,24 @@ Indicates that the server supports the Password Modify extension (RFC 3062)
 =item LDAP_EXTENSION_WHO_AM_I (1.3.6.1.4.1.4203.1.11.3)
 
 Indicates that the server supports the "Who am I?" extension (draft-zeilenga-ldap-authzid-09)
+
+=back
+
+=head2 Feature OIDs
+
+B<Net::LDAP::Constant> exports constant subroutines for the following LDAP
+feature OIDs.
+
+=over 4
+
+=item LDAP_FEATURE_ALL_OPATTS (1.3.6.1.4.1.4203.1.5.1)
+
+Indicates if the server allows "+" for returning all operational attributes
+(RFC 3673)
+
+=item LDAP_FEATURE_MODIFY_INCREMENT (1.3.6.1.1.14)
+
+Indicates if the server supports the Modify Increment extension (RFC 4525)
 
 =back
 
