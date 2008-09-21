@@ -7,13 +7,13 @@ package Net::LDAP::Extension;
 use vars qw(@ISA $VERSION);
 
 @ISA = qw(Net::LDAP::Message);
-$VERSION = "1.01";
+$VERSION = "1.02";
 
 #fetch the response name
 sub response_name { 
   my $self = shift;
 
-  $self->sync unless exists $self->{Code};
+  $self->sync unless exists $self->{resultCode};
 
   exists $self->{responseName}
     ? $self->{responseName}
@@ -24,7 +24,7 @@ sub response_name {
 sub response {
   my $self = shift;
 
-  $self->sync unless exists $self->{Code};
+  $self->sync unless exists $self->{resultCode};
 
   exists $self->{response}
     ? $self->{response}
