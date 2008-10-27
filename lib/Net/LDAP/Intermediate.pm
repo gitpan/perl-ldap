@@ -11,11 +11,11 @@ use Net::LDAP::Constant qw(
   LDAP_SYNC_INFO
 );
 
-$VERSION = "0.01";
+$VERSION = "0.02";
 
 my %Class2ResponseName = (
 
-  #'Net::LDAP::Intermediate::SyncInfo'		=> LDAP_SYNC_INFO, #disabled as decoding doesn't work
+  'Net::LDAP::Intermediate::SyncInfo'		=> LDAP_SYNC_INFO,
 );
 
 my %ResponseName2Class = reverse %Class2ResponseName;
