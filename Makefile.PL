@@ -2,7 +2,7 @@
 
 use inc::Module::Install;
 
-perl_version    5.004;
+perl_version    5.008;
 
 name		('perl-ldap');
 module_name	('Net::LDAP');
@@ -12,7 +12,7 @@ license		('perl');
 abstract	('LDAP client library');
 
 resources  homepage    => 'http://ldap.perl.org/';
-resources  repository  => 'http://git.goingon.net/?p=perl-lda.git;a=summary';
+resources  repository  => 'http://git.goingon.net/?p=perl-ldap.git;a=summary';
 resources  MailingList => 'http://lists.cpan.org/showlist.cgi?name=perl-ldap';
 resources  ListArchive => 'http://perl.markmail.org/search/list:perl-ldap';
 
@@ -39,7 +39,7 @@ features(
   ],
   'LDAPS' => [
     -default => 0,
-    'IO::Socket::SSL' => 0.81,
+    'IO::Socket::SSL' => 0.93,
   ],
   'Read/Write DSML files' => [
     -default => 0,

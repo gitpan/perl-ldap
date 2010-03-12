@@ -60,6 +60,7 @@ INSTALL
 install-nomake
 lib/Bundle/Net/LDAP.pm
 lib/LWP/Protocol/ldap.pm
+lib/LWP/Protocol/ldaps.pm
 lib/Net/LDAP.pm
 lib/Net/LDAP.pod
 lib/Net/LDAP/ASN.pm
@@ -86,6 +87,7 @@ lib/Net/LDAP/Entry.pm
 lib/Net/LDAP/Entry.pod
 lib/Net/LDAP/Examples.pod
 lib/Net/LDAP/Extension.pm
+lib/Net/LDAP/Extension/Refresh.pm
 lib/Net/LDAP/Extension/SetPassword.pm
 lib/Net/LDAP/Extension/WhoAmI.pm
 lib/Net/LDAP/Extra.pm
@@ -111,9 +113,8 @@ lib/Net/LDAP/Util.pm
 lib/Net/LDAPI.pm
 lib/Net/LDAPS.pm
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
 MANIFEST.SKIP
-META.yml
 README
 SIGNATURE
 t/00ldif-entry.t
@@ -131,6 +132,7 @@ t/54dse.t
 t/55ssl.t
 t/56ipc.t
 t/57url.t
+t/58lwp.t
 t/70sortctrl.t
 t/common.pl
 test.cfg

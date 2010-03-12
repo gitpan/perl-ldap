@@ -3,3 +3,7 @@ Makefile
 _test
 temp
 *.bak
+.*.swp
+my.cfg
+MANIFEST
+SIGNATURE

@@ -126,6 +126,7 @@ sub _read_lines {
     }
   }
   $self->eof(1)  if (!defined($ln));
+  $self->{_current_lines} = $entry;
   $entry =~ s/\r?\n //sgo;	# un-wrap wrapped lines
   $entry =~ s/\r?\n\t/ /sgo;	# OpenLDAP extension !!!
   @ldif = split(/^/, $entry);
@@ -445,6 +446,7 @@ sub _write_dn {
       # Canonicalizer won't fix leading spaces, colons or less-thans, which
       # are special in LDIF, so we fix those up here.
       $dn =~ s/^([ :<])/\\$1/;
+      $dn = "dn: $dn";
     } elsif ($encode =~ /base64/i) {
       require MIME::Base64;
       $dn = "dn:: " . MIME::Base64::encode($dn,"");

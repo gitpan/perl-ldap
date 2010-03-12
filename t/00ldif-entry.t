@@ -5,7 +5,7 @@ BEGIN {
 }
 
 
-print "1..11\n";
+print "1..16\n";
 
 use Net::LDAP::LDIF;
 
@@ -17,7 +17,35 @@ my $cmpfile2 = $infile;
 
 my $ldif = Net::LDAP::LDIF->new($infile,"r");
 
-@entry = $ldif->read;
+my $entry0_ldif = <<'LDIF';
+dn: o=University of Michigan, c=US
+objectclass: top
+objectclass: organization
+objectclass: domainRelatedObject
+objectclass: quipuObject
+objectclass: quipuNonLeafObject
+l: Ann Arbor, Michigan
+st: Michigan
+streetaddress: 535 West William St.
+o: University of Michigan
+o: UMICH
+o: UM
+o: U-M
+o: U of M
+description: The University of Michigan at Ann Arbor
+postaladdress: University of Michigan $ 535 W. William St. $ Ann Arbor, MI 481
+ 09 $ USpostalcode: 48109
+telephonenumber: +1 313 764-1817
+lastmodifiedtime: 930106182800Z
+lastmodifiedby: cn=manager, o=university of michigan, c=US
+associateddomain: umich.edu
+LDIF
+
+my $e = $ldif->read_entry;
+my @lines = $ldif->current_lines;
+is(join("",@lines),$entry0_ldif,"ldif lines");
+
+my @entry = ($e, $ldif->read);
 
 ok($ldif->version == 1, "version == 1");
 
@@ -28,7 +56,36 @@ ok(!compare($cmpfile1,$outfile1), $cmpfile1);
 
 ok(!compare($cmpfile2,$outfile2), $cmpfile2);
 
-$e = $entry[0];
+
+is($e->ldif, "\n$entry0_ldif", "ldif method");
+
+
+is($e->ldif(change => 1), <<'LDIF', "ldif method");
+
+dn: o=University of Michigan, c=US
+changetype: add
+objectclass: top
+objectclass: organization
+objectclass: domainRelatedObject
+objectclass: quipuObject
+objectclass: quipuNonLeafObject
+l: Ann Arbor, Michigan
+st: Michigan
+streetaddress: 535 West William St.
+o: University of Michigan
+o: UMICH
+o: UM
+o: U-M
+o: U of M
+description: The University of Michigan at Ann Arbor
+postaladdress: University of Michigan $ 535 W. William St. $ Ann Arbor, MI 481
+ 09 $ USpostalcode: 48109
+telephonenumber: +1 313 764-1817
+lastmodifiedtime: 930106182800Z
+lastmodifiedby: cn=manager, o=university of michigan, c=US
+associateddomain: umich.edu
+LDIF
+
 
 $e->changetype('modify');
 $e->delete('objectclass');
@@ -36,6 +93,62 @@ $e->delete('o',['UM']);
 $e->add('counting',[qw(one two three)]);
 $e->add('first',[qw(1 2 3)], 'second',[qw(a b c)]);
 $e->replace('telephonenumber' => ['911']);
+
+is($e->ldif, <<'LDIF',"changes ldif");
+
+dn: o=University of Michigan, c=US
+changetype: modify
+delete: objectclass
+-
+delete: o
+o: UM
+-
+add: counting
+counting: one
+counting: two
+counting: three
+-
+add: first
+first: 1
+first: 2
+first: 3
+-
+add: second
+second: a
+second: b
+second: c
+-
+replace: telephonenumber
+telephonenumber: 911
+LDIF
+
+is($e->ldif(change => 0), <<'LDIF',"changes ldif");
+
+dn: o=University of Michigan, c=US
+l: Ann Arbor, Michigan
+st: Michigan
+streetaddress: 535 West William St.
+o: University of Michigan
+o: UMICH
+o: U-M
+o: U of M
+description: The University of Michigan at Ann Arbor
+postaladdress: University of Michigan $ 535 W. William St. $ Ann Arbor, MI 481
+ 09 $ USpostalcode: 48109
+telephonenumber: 911
+lastmodifiedtime: 930106182800Z
+lastmodifiedby: cn=manager, o=university of michigan, c=US
+associateddomain: umich.edu
+counting: one
+counting: two
+counting: three
+first: 1
+first: 2
+first: 3
+second: a
+second: b
+second: c
+LDIF
 
 $outfile = "$TEMPDIR/00-out3.ldif";
 $cmpfile = "data/00-cmp2.ldif";
