@@ -14,12 +14,13 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 dea95c7ba0dfc056a3bdaffcff2ea076fe031bc7 .gitignore
+SHA1 75195d53bcf7f4ce87d3c02d3e107bd4e3a2ba2e .gitignore
 SHA1 b3d7b971ea6fc7fbb96cdf4cea3d1cdf68f4d24f CREDITS
-SHA1 68ecb7fc82cf6533c7de371191e34e292265a190 Changes
+SHA1 33fc885a233b5772286f17811851cbff01708149 Changes
 SHA1 18422f27b2f17b10e9d18b4e482d7bfc95c8df86 INSTALL
-SHA1 c22efbfe2c9dda6f54ea0ef8d6fac7b934bcb547 MANIFEST
-SHA1 b3370755529928e0db0a449e3b618f258b85a952 MANIFEST.SKIP
+SHA1 26c79f8a050890bd926e1b5e1da4755859cf3284 MANIFEST
+SHA1 117c1c8aaff03c8fde885f47d7eec7bfb3e6c972 MANIFEST.SKIP
+SHA1 4ee15c62f19cb83e4b7a6bcc6a2b1ecd30f6d8d1 META.yml
 SHA1 5d4c016d3a7ceb12df84c8bb40bbd9aadd64519a Makefile.PL
 SHA1 f3b66414a0872801f3c4c38a93499d0fe48509ef README
 SHA1 6c5729e4c6bb46c66fcc33dbb8231292d1c14dee TODO
@@ -63,26 +64,22 @@ SHA1 b88f0a3a70d3e7f2273cc0747dc090fe5c000efa data/slapd-conf.in
 SHA1 452b956531f884178323c9c2fd975bea711749b5 data/slapd.at.conf
 SHA1 bcbeffecb030cabedb950ad002560aadce17bab3 data/slapd.oc.conf
 SHA1 6c43ebd79740ee71ccfba5bbf23c96d95182cfaa data/slapd2-conf.in
-SHA1 603bb9de29fb8cba7f13409c546750972eff645d inc/Module/AutoInstall.pm
-SHA1 f0577f8f88a6703e9bca2d10196cfd293f3d6f2f inc/Module/Install.pm
-SHA1 b2a2c9b6cb4b1bcd119825acc707f45946d8b126 inc/Module/Install/AutoInstall.pm
-SHA1 5d574849849860b8cf06035cc6f1a306c66cb326 inc/Module/Install/Base.pm
-SHA1 c30f50bc2a1542dff17f84a54d9316f3c3c6299e inc/Module/Install/Can.pm
-SHA1 9b618efcd783f6ed4bab84fa22b31886fcc38d57 inc/Module/Install/Fetch.pm
-SHA1 808d4b2d764185a34c89e675bb4eaad18c075b14 inc/Module/Install/Include.pm
-SHA1 cd14c8de2a67b0f14df9bc20c27f3edabd359d1b inc/Module/Install/Makefile.pm
-SHA1 a2162aec678d21988fce47ab805cf01773196292 inc/Module/Install/Metadata.pm
-SHA1 4ae5d56e11e640bd9520634dde6d563926f6d98a inc/Module/Install/Win32.pm
-SHA1 587cc94b52b640fe2d4972253b6369aa951e2210 inc/Module/Install/WriteAll.pm
-SHA1 fb711fed1e4269f7569da5d09980648acf47a750 inc/Test/Builder.pm
-SHA1 028954a5cb377df3f660a7ade8631c265df026cc inc/Test/Builder/Module.pm
-SHA1 0781d008b60551d1bd74d56bf065861f4d84cf9d inc/Test/More.pm
-SHA1 a3b43f30a4aa19adb8cda1ceaf5b19da0a5e1cae inc/attributes.pm
+SHA1 8842ca38ce27ccf75e1ce8f5dfb93fa62d933b2e inc/Module/AutoInstall.pm
+SHA1 1ebec4119486a032a5612a403e8d7b7be973e938 inc/Module/Install.pm
+SHA1 bec3c7f9af6e1a3cb4d143249956c98af30f0552 inc/Module/Install/AutoInstall.pm
+SHA1 24038af925a69df41972971356ccce885b0fe2ad inc/Module/Install/Base.pm
+SHA1 8f96eddfef548c9328457fbb17a121631cda356b inc/Module/Install/Can.pm
+SHA1 ec29048e48edd9c9c55f9de7b773bd7c904335ad inc/Module/Install/Fetch.pm
+SHA1 01862227830d2547f38275eaee0eb9f5add5a252 inc/Module/Install/Include.pm
+SHA1 0384525d85d51e99532e3ad8729d870113646d14 inc/Module/Install/Makefile.pm
+SHA1 38c657de4d91f5a60ff8e6c6f6a5547daf7c4ab2 inc/Module/Install/Metadata.pm
+SHA1 5c25f1104c0038041e3b93e0660c39171e4caf2b inc/Module/Install/Win32.pm
+SHA1 94d47349c803c4bd2a9230d25e4db0b6aaf1acd8 inc/Module/Install/WriteAll.pm
 SHA1 4dde3f6e30c239c15c234309b7c32dd5a7d409a9 install-nomake
 SHA1 da956a83d04192b551118b6ddffc32977cff5427 lib/Bundle/Net/LDAP.pm
 SHA1 804cae1ef32a88a678304650084d28992bdd369f lib/LWP/Protocol/ldap.pm
 SHA1 e12371df37feae4a8c6b3d5bcc6a91df37ca47c6 lib/LWP/Protocol/ldaps.pm
-SHA1 60122649f15c02195494d280d93b97461c8c39ab lib/Net/LDAP.pm
+SHA1 37b6b380df114ae2d02e15f0b4cb09e786fd3b2d lib/Net/LDAP.pm
 SHA1 b8cac35d692658f82aeb6ccda5cdb57102e0ec30 lib/Net/LDAP.pod
 SHA1 1fb74f66d0ed5ba26e468d6a2b99e5eb769c2411 lib/Net/LDAP/ASN.pm
 SHA1 4b1f29fd2ca60e4bf1bcf6ae8d97f56c2442eb56 lib/Net/LDAP/Bind.pm
@@ -155,7 +152,7 @@ SHA1 f42fd99bb5a5a42c95423ff0b971ef2808e389f0 test.cfg
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (Darwin)
 
-iEYEARECAAYFAkuZrmcACgkQR0BL4gbYw3StVwCdGfMHapcWGwDdHUw8RFVJC+7I
-FAUAoJND0XB6Sd2Tld6PiapxuFl5XbXW
-=W7dG
+iEYEARECAAYFAkuqbssACgkQR0BL4gbYw3RwHwCfVC/lwO7A8Enx9B5FPm0cQcEJ
+i8IAn0ae/0y3xMI7OsSru2RxlHvopw/Y
+=JCBz
 -----END PGP SIGNATURE-----

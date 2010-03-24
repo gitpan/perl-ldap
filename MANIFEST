@@ -41,7 +41,6 @@ data/slapd-conf.in
 data/slapd.at.conf
 data/slapd.oc.conf
 data/slapd2-conf.in
-inc/attributes.pm
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AutoInstall.pm
@@ -53,9 +52,6 @@ inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
-inc/Test/Builder.pm
-inc/Test/Builder/Module.pm
-inc/Test/More.pm
 INSTALL
 install-nomake
 lib/Bundle/Net/LDAP.pm
@@ -115,6 +111,7 @@ lib/Net/LDAPS.pm
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
+META.yml
 README
 SIGNATURE
 t/00ldif-entry.t

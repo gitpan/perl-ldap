@@ -1,0 +1,30 @@
+---
+abstract: 'LDAP client library'
+author:
+  - 'Graham Barr <gbarr@cpan.org>'
+build_requires:
+  ExtUtils::MakeMaker: 6.42
+configure_requires:
+  ExtUtils::MakeMaker: 6.42
+distribution_type: module
+generated_by: 'Module::Install version 0.95'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+module_name: Net::LDAP
+name: perl-ldap
+no_index:
+  directory:
+    - inc
+    - t
+requires:
+  Convert::ASN1: 0.07
+  perl: 5.8.0
+resources:
+  ListArchive: http://perl.markmail.org/search/list:perl-ldap
+  MailingList: http://lists.cpan.org/showlist.cgi?name=perl-ldap
+  homepage: http://ldap.perl.org/
+  license: http://dev.perl.org/licenses/
+  repository: http://git.goingon.net/?p=perl-ldap.git;a=summary
+version: 0.4001
