@@ -1,3 +1,4 @@
+.Changes.swp
 .gitignore
 bin/ldapdelete
 bin/ldapmodrdn
@@ -57,6 +58,7 @@ install-nomake
 lib/Bundle/Net/LDAP.pm
 lib/LWP/Protocol/ldap.pm
 lib/LWP/Protocol/ldaps.pm
+lib/Net/.LDAP.pm.swp
 lib/Net/LDAP.pm
 lib/Net/LDAP.pod
 lib/Net/LDAP/ASN.pm
@@ -111,7 +113,6 @@ lib/Net/LDAPS.pm
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
-META.yml
 README
 SIGNATURE
 t/00ldif-entry.t
