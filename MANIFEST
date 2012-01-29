@@ -1,4 +1,3 @@
-.gitignore
 bin/ldapdelete
 bin/ldapmodrdn
 bin/ldapsearch
@@ -63,8 +62,10 @@ lib/Net/LDAP/ASN.pm
 lib/Net/LDAP/Bind.pm
 lib/Net/LDAP/Constant.pm
 lib/Net/LDAP/Control.pm
+lib/Net/LDAP/Control/Assertion.pm
 lib/Net/LDAP/Control/EntryChange.pm
 lib/Net/LDAP/Control/ManageDsaIT.pm
+lib/Net/LDAP/Control/MatchedValues.pm
 lib/Net/LDAP/Control/Paged.pm
 lib/Net/LDAP/Control/PasswordPolicy.pm
 lib/Net/LDAP/Control/PersistentSearch.pm
@@ -83,6 +84,7 @@ lib/Net/LDAP/Entry.pm
 lib/Net/LDAP/Entry.pod
 lib/Net/LDAP/Examples.pod
 lib/Net/LDAP/Extension.pm
+lib/Net/LDAP/Extension/Cancel.pm
 lib/Net/LDAP/Extension/Refresh.pm
 lib/Net/LDAP/Extension/SetPassword.pm
 lib/Net/LDAP/Extension/WhoAmI.pm
