@@ -148,10 +148,11 @@ sub decode { # $self, $pdu, $control
 
     my $intermediate = Net::LDAP::Intermediate->from_asn($data);
 
-    push(@{$self->{'intermediate'} ||= []}, $intermediate);
-
-    $self->{callback}->($self, $intermediate)
-      if (defined $self->{callback});
+    if (defined $self->{callback}) {
+      $self->{callback}->($self, $intermediate)
+    } else {
+      push(@{$self->{'intermediate'} ||= []}, $intermediate);
+    }
 
     return $self;
   } else {
@@ -251,6 +252,15 @@ sub Net::LDAP::Compare::is_error {
   use vars qw(@ISA);
   @ISA = qw(Net::LDAP::Message);
   use Net::LDAP::Constant qw(LDAP_SUCCESS);
+
+  sub new {
+    my $self   = shift;
+    my $type   = ref($self) || $self;
+
+    $self = bless {}, $type;
+
+    $self;
+  }
 
   sub sync    { shift }
   sub decode  { shift }

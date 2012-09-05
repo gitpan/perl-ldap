@@ -161,16 +161,14 @@ perl-ldap.
 
 Example: raw =E<gt> qr/(?i:^jpegPhoto|;binary)/
 
+=item inet4 =E<gt> N
 =item inet6 =E<gt> N
 
-Try to connect to the server using IPv6 if C<HOST> resolves to an 
-IPv6 target address.
-If it resolves to an IPv4 address, the connection is tried using IPv4,
-the same way as if this option was not given.
+Try to connect to the server using the specified IP protocol only,
+i.e. either IPv4 or IPv6.
+If the protocol selected is not supported, connecting will fail.
 
-Please note that IPv6 support is considered experimental in
-IO::Socket::SSL, which is used of SSL/TLS support, and there are a few
-issues to take care of. See L<IO::Socket::SSL/IPv6> for details.
+The default is to use any of the two protocols.
 
 =back
 
@@ -180,7 +178,7 @@ B<Example>
 
 LDAPS connections have some extra valid options, see the
 L<start_tls|/start_tls> method for details. Note the default value for
-'sslversion' for LDAPS is 'sslv2/3', and the default port for LDAPS
+'sslversion' for LDAPS is 'sslv23', and the default port for LDAPS
 is 636.
 
 For LDAPI connections, HOST is actually the location of a UNIX domain
@@ -755,7 +753,7 @@ The server must provide a certificate, and it must be valid.
 If you set verify to optional or require, you must also set either
 cafile or capath. The most secure option is B<require>.
 
-=item sslversion =E<gt> 'sslv2' | 'sslv3' | 'sslv2/3' | 'tlsv1'
+=item sslversion =E<gt> 'sslv2' | 'sslv3' | 'sslv23' | 'tlsv1'
 
 This defines the version of the SSL/TLS protocol to use. Defaults to
 B<'tlsv1'>.
@@ -831,6 +829,11 @@ with another DN and password, without unbind-ing, will generally work.
 B<Example>
 
  $mesg = $ldap->unbind;
+
+=item done ( )
+
+Convencience alias for C<unbind()>, named after the clean-up method
+of L<Net::LDAP::LDIF>.
 
 =back
 

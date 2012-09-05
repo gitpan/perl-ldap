@@ -53,6 +53,7 @@ inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 INSTALL
 install-nomake
+ldapi-starttls.pl
 lib/Bundle/Net/LDAP.pm
 lib/LWP/Protocol/ldap.pm
 lib/LWP/Protocol/ldaps.pm
