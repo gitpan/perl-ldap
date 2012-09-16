@@ -10,6 +10,7 @@ contrib/ldapmodify.pl
 contrib/ldifdiff.pl
 contrib/ldifsort.pl
 contrib/ldifuniq.pl
+contrib/LWPsearch.pl
 contrib/printMembers.pl
 contrib/README
 contrib/recursive-ldap-delete.pl
@@ -56,6 +57,7 @@ install-nomake
 ldapi-starttls.pl
 lib/Bundle/Net/LDAP.pm
 lib/LWP/Protocol/ldap.pm
+lib/LWP/Protocol/ldapi.pm
 lib/LWP/Protocol/ldaps.pm
 lib/Net/LDAP.pm
 lib/Net/LDAP.pod
@@ -116,6 +118,7 @@ MANIFEST			This list of files
 MANIFEST.SKIP
 README
 SIGNATURE
+sockettest.pl
 t/00ldif-entry.t
 t/01canon_dn.t
 t/02filter.t
