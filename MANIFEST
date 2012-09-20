@@ -36,11 +36,9 @@ data/core.schema
 data/cosine.schema
 data/inetorgperson.schema
 data/key.pem
+data/openldap.schema
 data/schema.in
-data/slapd-conf.in
-data/slapd.at.conf
-data/slapd.oc.conf
-data/slapd2-conf.in
+data/slapd.conf.in
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AutoInstall.pm
@@ -54,7 +52,6 @@ inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 INSTALL
 install-nomake
-ldapi-starttls.pl
 lib/Bundle/Net/LDAP.pm
 lib/LWP/Protocol/ldap.pm
 lib/LWP/Protocol/ldapi.pm
@@ -118,7 +115,6 @@ MANIFEST			This list of files
 MANIFEST.SKIP
 README
 SIGNATURE
-sockettest.pl
 t/00ldif-entry.t
 t/01canon_dn.t
 t/02filter.t
