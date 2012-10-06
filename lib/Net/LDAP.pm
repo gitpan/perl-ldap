@@ -31,7 +31,7 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 
 use constant CAN_IPV6 => eval { require IO::Socket::INET6 } ? 1 : 0;
 
-$VERSION 	= "0.48";
+$VERSION 	= "0.49";
 @ISA     	= qw(Tie::StdHash Net::LDAP::Extra);
 $LDAP_VERSION 	= 3;      # default LDAP protocol version
 
@@ -271,7 +271,19 @@ sub connect_ldapi {
 		 : 120
   ) or return undef;
 
-  $ldap->{net_ldap_host} = 'localhost';
+  # try to get canonical host name [to allow start_tls on the connection]
+  require Socket;
+  if (Socket->can('getnameinfo') && Socket->can('getaddrinfo')) {
+    my @addrs;
+    my ($err,$host,$path) = Socket::getnameinfo($ldap->{net_ldap_socket}->peername, &Socket::AI_CANONNAME);
+
+    ($err, @addrs) = Socket::getaddrinfo($host, 0, { flags => &Socket::AI_CANONNAME } )
+      unless ($err);
+    map { $ldap->{net_ldap_host} = $_->{canonname}  if ($_->{canonname}) }  @addrs
+      unless ($err);
+  }
+
+  $ldap->{net_ldap_host} ||= 'localhost';
   $ldap->{net_ldap_peer} = $peer;
 }
 
@@ -920,6 +932,7 @@ sub _drop_conn {
 
   if (my $msgs = delete $self->{net_ldap_mesg}) {
     foreach my $mesg (values %$msgs) {
+      next unless (defined $mesg);
       $mesg->set_error($err, $etxt);
     }
   }
