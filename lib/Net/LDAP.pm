@@ -30,7 +30,7 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 
 use constant CAN_IPV6 => eval { require IO::Socket::INET6 } ? 1 : 0;
 
-our $VERSION 	= "0.50_01";
+our $VERSION 	= "0.50";
 our @ISA     	= qw(Tie::StdHash Net::LDAP::Extra);
 our $LDAP_VERSION 	= 3;      # default LDAP protocol version
 
@@ -106,10 +106,13 @@ sub new {
 
   foreach my $uri (ref($host) ? @$host : ($host)) {
     my $scheme = $arg->{scheme} || 'ldap';
-    (my $h = $uri) =~ s,^(\w+)://,, and $scheme = $1;
+    my $h = $uri;
+    if (defined($h)) {
+      $h =~ s,^(\w+)://,, and $scheme = $1;
+      $h =~ s,/.*,,; # remove path part
+      $h =~ s/%([A-Fa-f0-9]{2})/chr(hex($1))/eg; # unescape
+    }
     my $meth = $obj->can("connect_$scheme") or next;
-    $h =~ s,/.*,,; # remove path part
-    $h =~ s/%([A-Fa-f0-9]{2})/chr(hex($1))/eg; # unescape
     if (&$meth($obj, $h, $arg)) {
       $obj->{net_ldap_uri} = $uri;
       $obj->{net_ldap_scheme} = $scheme;
