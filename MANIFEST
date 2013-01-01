@@ -37,11 +37,13 @@ data/core.schema
 data/cosine.schema
 data/inetorgperson.schema
 data/key.pem
+data/man.jpg
 data/openldap.schema
 data/openssl.cnf
 data/regenerate_cert.sh
 data/schema.in
 data/slapd.conf.in
+data/woman.jpg
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
 inc/Module/Install/AutoInstall.pm
@@ -139,6 +141,8 @@ t/48url.t
 t/49lwp.t
 t/60cancel.t
 t/70sortctrl.t
+t/71preread.t
+t/72postread.t
 t/common.pl
 test.cfg
 TODO
