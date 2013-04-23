@@ -10,7 +10,7 @@ use Net::LDAP::RootDSE;
 require Net::LDAP::Extension;
 
 our @ISA = qw(Net::LDAP::Extension);
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 our @EXPORT = qw(is_eDirectory
                  list_replicas
@@ -112,7 +112,7 @@ sub replica_info {
   undef;
 }
 
-use constant { 
+use constant {
   EDIR_BK_PROCESS_BKLINKER    => 1,
   EDIR_BK_PROCESS_JANITOR     => 2,
   EDIR_BK_PROCESS_LIMBER      => 3,
@@ -275,7 +275,7 @@ Trigger refreshing the NLDAP service.
 
 =head1 AUTHOR
 
-Peter Marschall E<lt>peter@adpm.de<gt>
+Peter Marschall E<lt>peter@adpm.deE<gt>
 
 =head1 COPYRIGHT
 

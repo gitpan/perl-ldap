@@ -77,6 +77,7 @@ lib/Net/LDAP/Control/PersistentSearch.pm
 lib/Net/LDAP/Control/PostRead.pm
 lib/Net/LDAP/Control/PreRead.pm
 lib/Net/LDAP/Control/ProxyAuth.pm
+lib/Net/LDAP/Control/Relax.pm
 lib/Net/LDAP/Control/Sort.pm
 lib/Net/LDAP/Control/SortResult.pm
 lib/Net/LDAP/Control/SyncDone.pm

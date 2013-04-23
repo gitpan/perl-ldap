@@ -7,7 +7,7 @@ package Net::LDAP::Control::PersistentSearch;
 use Net::LDAP::Control;
 
 our @ISA = qw(Net::LDAP::Control);
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use Net::LDAP::ASN qw(PersistentSearch);
 use strict;
@@ -97,6 +97,9 @@ Net::LDAP::Control::PersistentSearch - LDAPv3 Persistent Search control object
    my $entry = shift;
 
    print $entry->dn()."\n";
+
+   # reduce memory usage
+   $message->pop_entry();
  }
 
 
