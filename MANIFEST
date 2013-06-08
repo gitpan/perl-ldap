@@ -145,6 +145,8 @@ t/60cancel.t
 t/70sortctrl.t
 t/71preread.t
 t/72postread.t
+t/73assert.t
+t/74matchedvalues.t
 t/common.pl
 test.cfg
 TODO

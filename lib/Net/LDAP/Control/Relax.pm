@@ -7,7 +7,7 @@ package Net::LDAP::Control::Relax;
 use Net::LDAP::Control;
 
 our @ISA = qw(Net::LDAP::Control);
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use strict;
 
@@ -58,7 +58,7 @@ and manipulation of objects that represent the C<Relax> control as
 described by draft-zeilenga-ldap-relax-03.txt
 
 The presence of the Relax control in an LDAP update request
-indicates the server temporarily relax X.500 model contraints
+indicates the server temporarily relax X.500 model constraints
 during performance of the directory update.
 
 The control is appropriate for all LDAP update requests, including

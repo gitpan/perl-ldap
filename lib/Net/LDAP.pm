@@ -30,7 +30,7 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 
 use constant CAN_IPV6 => eval { require IO::Socket::INET6 } ? 1 : 0;
 
-our $VERSION 	= '0.55';
+our $VERSION 	= '0.56';
 our @ISA     	= qw(Tie::StdHash Net::LDAP::Extra);
 our $LDAP_VERSION 	= 3;      # default LDAP protocol version
 
@@ -865,6 +865,14 @@ sub _sendmesg {
   $sync && $ldap->{net_ldap_onerror} && $mesg->is_error
     ? scalar &{$ldap->{net_ldap_onerror}}($mesg)
     : $mesg;
+}
+
+sub data_ready {
+  my $ldap = shift;
+  my $sock = $ldap->socket  or return;
+  my $sel = IO::Select->new($sock);
+
+  return defined $sel->can_read(0) || (ref($sock) eq 'IO::Socket::SSL' && $sock->pending());
 }
 
 sub process {
