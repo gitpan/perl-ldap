@@ -7,7 +7,7 @@ package Net::LDAP::Control::SyncState;
 use Net::LDAP::Control;
 
 our @ISA = qw(Net::LDAP::Control);
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use Net::LDAP::ASN qw(syncStateValue);
 use strict;
@@ -94,7 +94,7 @@ L<Net::LDAP::Control> the following are provided.
 
 =item state
 
-=item entryUIID
+=item entryUUID
 
 =item cookie
 

@@ -7,7 +7,7 @@ package Net::LDAP::Control::PersistentSearch;
 use Net::LDAP::Control;
 
 our @ISA = qw(Net::LDAP::Control);
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use Net::LDAP::ASN qw(PersistentSearch);
 use strict;
@@ -138,10 +138,10 @@ If it is not given it defaults to 15 meaning all changes.
 
 =item changesOnly
 
-A boolean value telling whether the server may return
+A Boolean value telling whether the server may return
 entries that match the search criteria.
 
-If C<TRUE> the server must not return return any existing
+If C<TRUE> the server must not return any existing
 entries that match the search criteria.  Entries are only
 returned when they are changed (added, modified, deleted, or
 subject to a modifyDN operation)

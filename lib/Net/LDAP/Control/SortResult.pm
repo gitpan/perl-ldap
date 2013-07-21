@@ -8,7 +8,7 @@ use Net::LDAP::ASN qw(SortResult);
 use Net::LDAP::Control;
 
 our @ISA = qw(Net::LDAP::Control);
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub init {
   my($self) = @_;
@@ -107,7 +107,7 @@ the name of the attribute causing the problem.
 
 =item result
 
-This is the result code that describes if the sort operation was sucessful. If will
+This is the result code that describes if the sort operation was successful. If will
 be one of the result codes describes below.
 
 =back

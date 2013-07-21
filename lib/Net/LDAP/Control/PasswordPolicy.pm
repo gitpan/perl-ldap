@@ -7,7 +7,7 @@ package Net::LDAP::Control::PasswordPolicy;
 use Net::LDAP::Control;
 
 our @ISA = qw(Net::LDAP::Control);
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use Net::LDAP::ASN qw(ppControlResponse);
 use strict;
@@ -114,7 +114,7 @@ Net::LDAP::Control::PasswordPolicy - LDAPv3 Password Policy control object
                       password => "secret",
                       control => [ $pp ] );
 
- # Get password policy reponse
+ # Get password policy response
  my($resp)  = $mesg->control( LDAP_CONTROL_PASSWORDPOLICY );
 
  if (defined($resp)) {

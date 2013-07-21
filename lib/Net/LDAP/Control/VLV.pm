@@ -7,7 +7,7 @@ package Net::LDAP::Control::VLV;
 use Net::LDAP::Control;
 
 our @ISA = qw(Net::LDAP::Control);
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use Net::LDAP::ASN qw(VirtualListViewRequest);
 use strict;
@@ -371,7 +371,7 @@ C<scroll> with C<NUM * $page_size>
 =item start
 
 Set the target entry to the start of the list. This method will change the C<before> and C<after>
-attributes to the the target entry is the first entry in the page.
+attributes to the target entry is the first entry in the page.
 
 =back
 

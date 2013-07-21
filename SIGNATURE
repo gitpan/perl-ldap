@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.68.
+signed via the Module::Signature module, version 0.73.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -15,7 +15,7 @@ not run its Makefile.PL or Build.PL.
 Hash: SHA256
 
 SHA1 b3d7b971ea6fc7fbb96cdf4cea3d1cdf68f4d24f CREDITS
-SHA1 d4d3b83c13801b3b7cefbb9274201983e95293e6 Changes
+SHA1 9c7973cfe5f9856d7b8267647860f4a246839266 Changes
 SHA1 18422f27b2f17b10e9d18b4e482d7bfc95c8df86 INSTALL
 SHA1 ce0de6005e85064fcab1c755f02cb46094523aa7 MANIFEST
 SHA1 b1dde8d68f20d9f0353c7a891f4efbaa20882305 MANIFEST.SKIP
@@ -25,7 +25,7 @@ SHA1 45d3c0297db0a7e960a2456ece90ea3e37242919 TODO
 SHA1 8e15e7abefa826736358685aa1115810baaa9b4a bin/ldapdelete
 SHA1 fb042e706fb1f873b39138c95b8f362a8f1bea8d bin/ldapmodrdn
 SHA1 212b83f5dae352596008329dc6bfac445a3ab4ac bin/ldapsearch
-SHA1 d6f73d37b206e6a6e4d4c226cf3c1acb4aadea7a contrib/LWPsearch.pl
+SHA1 0820488b025a7d48333e6f8ec640993be155d3cd contrib/LWPsearch.pl
 SHA1 4fe62673c3d2d30fcf6ce320ed303695e5cba078 contrib/README
 SHA1 a74eca9ed266c3bf2280744a3c05aecaaf0c222a contrib/dot.tklkup
 SHA1 c1528100aa9eae5d5e98f778820e83af7c584fa2 contrib/isMember.pl
@@ -39,7 +39,7 @@ SHA1 eacb3515921f5843240603f949c83e3b1c1f725e contrib/printMembers.pl
 SHA1 6950da15067e5b7c27bfb29158ebdbd503eb3485 contrib/recursive-ldap-delete.pl
 SHA1 3b6aac6e5e237307efa3506a6c8e0ca7d60208a0 contrib/schema2ad.pl
 SHA1 df87a8de85e4952f48325c4d8d218b7ec46ccb6b contrib/simple-proxy.pl
-SHA1 78fa4fa862022ff06c612b5620c0f802b9c7b5a7 contrib/tklkup
+SHA1 ba3288445bdf161914b9632f20c81c09c0800bf5 contrib/tklkup
 SHA1 6294227b00010f90afc17c2c6f114a0ef7610c15 data/00-cmp.ldif
 SHA1 1739c30b959c46cf0402447f79a555235b7992e7 data/00-cmp2.ldif
 SHA1 25488cd6943fc31cdce5dcc57e2ab0e71b0af6fa data/00-in.ldif
@@ -82,61 +82,61 @@ SHA1 ae47bafae19103063a8903d071843e4276cfbb02 lib/Bundle/Net/LDAP.pm
 SHA1 02cd466b104a15a17819289f9e2c4f9def4df485 lib/LWP/Protocol/ldap.pm
 SHA1 4c0725acda3f08370b63824a62a9cca2dc52b858 lib/LWP/Protocol/ldapi.pm
 SHA1 1cb4c54544fda3f59b11470c3e21c8d2022b40b9 lib/LWP/Protocol/ldaps.pm
-SHA1 f701466c59f840560192398e2bdcd4e526bb70c1 lib/Net/LDAP.pm
-SHA1 76c48e2b5f2c00045837e403701130befcc2b6a1 lib/Net/LDAP.pod
+SHA1 805941b0f374b80632212d9e1a233bf17af30297 lib/Net/LDAP.pm
+SHA1 bba287f34fbebdf1915c645154ab3ea4bd484ab1 lib/Net/LDAP.pod
 SHA1 4cf74c0f17bd8bd684e1775bbc361f0eba5fd829 lib/Net/LDAP/ASN.pm
 SHA1 941fb60d0aade9b827cf1df3ed37c8ec9d9d70ab lib/Net/LDAP/Bind.pm
-SHA1 cdbf5a7e6184cb3d146d59d51a426f8c48c7e49e lib/Net/LDAP/Constant.pm
-SHA1 5a1112c6cc4797e5ed674e627169732b48b1fba5 lib/Net/LDAP/Control.pm
+SHA1 71aef762d20299c8621b3dac81e98cb143f2b7fd lib/Net/LDAP/Constant.pm
+SHA1 6c8135c8b886bf58dff0da6dfa37a7c55f0ace5a lib/Net/LDAP/Control.pm
 SHA1 8d9e40e9d0bb94f9b2cdb865b10c4bd7db5b96b0 lib/Net/LDAP/Control/Assertion.pm
 SHA1 132de095e47c3937e46e40061f4589780bb913ca lib/Net/LDAP/Control/EntryChange.pm
 SHA1 cd635c78479d2d9550147633e81d0a55ced85050 lib/Net/LDAP/Control/ManageDsaIT.pm
 SHA1 dec36f3e05b369725ba4c10ee41924a5742c68e9 lib/Net/LDAP/Control/MatchedValues.pm
 SHA1 aef3fcb7a02fe8b338856dec9268c2d2ea62397b lib/Net/LDAP/Control/Paged.pm
-SHA1 552d36791819022b7dd47e5401432faf6092002c lib/Net/LDAP/Control/PasswordPolicy.pm
-SHA1 8d2443d740d24b07e6c953fc0fedbdc9e1ab3d59 lib/Net/LDAP/Control/PersistentSearch.pm
-SHA1 b6e3d5e704041dbfbce12aa126b9c4ff3a60077a lib/Net/LDAP/Control/PostRead.pm
-SHA1 e6b51d2ec2894e071a85a126799d95f97d48bdbb lib/Net/LDAP/Control/PreRead.pm
+SHA1 5def1a80ac4f2d4d54a7e58eeaabc709809ba056 lib/Net/LDAP/Control/PasswordPolicy.pm
+SHA1 7c35ec08c53f6d91696e96d8a8dad24131f34f23 lib/Net/LDAP/Control/PersistentSearch.pm
+SHA1 66b21ddd57d5d609510bc1bc1f5e65c1c3ddb6b2 lib/Net/LDAP/Control/PostRead.pm
+SHA1 f4344e69b392a0aed91b77cfe478bc3b58b9ae36 lib/Net/LDAP/Control/PreRead.pm
 SHA1 c440e1cf6334da809e038f3c03377ae199a1c1f8 lib/Net/LDAP/Control/ProxyAuth.pm
 SHA1 d192ab5e04c2ca9aa56af0920c9006ee84cb86e9 lib/Net/LDAP/Control/Relax.pm
-SHA1 fe7a68f873c800a6820079f8d9608aa24f86d62b lib/Net/LDAP/Control/Sort.pm
-SHA1 1b42036cb4bc6abbb3a5f9d2f83d693e65b2e678 lib/Net/LDAP/Control/SortResult.pm
+SHA1 1a7e82c52c01348a3b7b6c8e5e573832506e59e3 lib/Net/LDAP/Control/Sort.pm
+SHA1 cfba44f46dfd51d479f63c1c258f90788dd32b6b lib/Net/LDAP/Control/SortResult.pm
 SHA1 89f0666fdfbb1ca6a511dcaf7b33bfa91876b81e lib/Net/LDAP/Control/SyncDone.pm
 SHA1 bc7cfcc6ecaeac461142335b7a67826e99fe332c lib/Net/LDAP/Control/SyncRequest.pm
-SHA1 e713d8a889572c84db48766f78bec8f48ff21da9 lib/Net/LDAP/Control/SyncState.pm
-SHA1 9a19a87b41b413ccf9b386c23388c78c939ea5ed lib/Net/LDAP/Control/VLV.pm
+SHA1 4e3b116d79176b0fb2a2be3b04a5afff32763552 lib/Net/LDAP/Control/SyncState.pm
+SHA1 58995bbcf92be6c14bcca2c1263f4ede80f3dcb9 lib/Net/LDAP/Control/VLV.pm
 SHA1 a895fb1e2a244c3adb312e9efb1ee40b89dabe58 lib/Net/LDAP/Control/VLVResponse.pm
-SHA1 294132201a9adfb56ff47e1e02f89d9441cbe6ec lib/Net/LDAP/DSML.pm
-SHA1 c1568c0faac9eed33e9ff0c40d6d59bba9201af7 lib/Net/LDAP/Entry.pm
-SHA1 f98faa996b8a3abc0e54fd559cce990f32da163a lib/Net/LDAP/Entry.pod
-SHA1 f33c11021c4ea9bd810af79aa0988287786af64b lib/Net/LDAP/Examples.pod
+SHA1 112661b6bf1adac0ee09001e6bf4ff2f49481da4 lib/Net/LDAP/DSML.pm
+SHA1 c0076ece64d05984c24b5e4ab652bc09aa751bab lib/Net/LDAP/Entry.pm
+SHA1 57cfacf76de2976a7cf83c76e37388f051eb68e7 lib/Net/LDAP/Entry.pod
+SHA1 2a20c984e7ff49a53a95d2233374ba18a446e5dc lib/Net/LDAP/Examples.pod
 SHA1 0195e6ab43507bceb5fe0797c751e85f9cbf4fbf lib/Net/LDAP/Extension.pm
 SHA1 94a97cdb53a2437d8fca5805f679626ea66e9cf6 lib/Net/LDAP/Extension/Cancel.pm
 SHA1 912baab0794cb65538b91fb02cabd6fc95c3fc18 lib/Net/LDAP/Extension/Refresh.pm
-SHA1 44a37c12dc4e7974d08f2298dcc03c834af6830b lib/Net/LDAP/Extension/SetPassword.pm
+SHA1 a6db215b5ead03fd9981f0cc5402e5cba0a695ce lib/Net/LDAP/Extension/SetPassword.pm
 SHA1 9a6ba9fc53dcb41f216f277b3b89fbbbf29417c8 lib/Net/LDAP/Extension/WhoAmI.pm
 SHA1 f8a69d8a6c086fdf38c12a72816bcd3d624ac261 lib/Net/LDAP/Extra.pm
 SHA1 51f5c515a2cc660d5cda48e3a89f538b6f4c9d86 lib/Net/LDAP/Extra/AD.pm
-SHA1 fb5c259efaf529ef5cad9c9b4b9f80981059d001 lib/Net/LDAP/Extra/eDirectory.pm
-SHA1 06502cb3afe10af0838fd2f93de30ea0753522e2 lib/Net/LDAP/FAQ.pod
+SHA1 e8f760369f662f5b36cb1812282fb657f026bb18 lib/Net/LDAP/Extra/eDirectory.pm
+SHA1 d8300b672ec5ca1023ec157998bdd6009e875a5e lib/Net/LDAP/FAQ.pod
 SHA1 37174a971d6ffa5283b508f3c8fc657c624558c9 lib/Net/LDAP/Filter.pm
 SHA1 9bd32bf6f52bfca66b332270404beb38eec3d9f2 lib/Net/LDAP/Filter.pod
 SHA1 5bf16183794a235f2b7929ce350fe9032a8a1636 lib/Net/LDAP/FilterMatch.pm
-SHA1 2ecdfe42acc88391dc490d9593eb10d8b365d59d lib/Net/LDAP/Intermediate.pm
+SHA1 a1ae96a07309aeb49f0025a536d9074ae55b43c1 lib/Net/LDAP/Intermediate.pm
 SHA1 4a2cbf16a0436782db19f126d587c17799823714 lib/Net/LDAP/Intermediate/SyncInfo.pm
 SHA1 dfc7a7bac075ec9e8657a07f1a6b068d9e9cc282 lib/Net/LDAP/LDIF.pm
-SHA1 c86b32bd36f42218a3553c2e762c01a16e49e278 lib/Net/LDAP/LDIF.pod
+SHA1 f4c6fa55228cab320d79db6732edebadc176a420 lib/Net/LDAP/LDIF.pod
 SHA1 70255d10236d45ee645be63f51257f283af4db67 lib/Net/LDAP/Message.pm
 SHA1 6a8b2d30a43d6295de37771c2576cb66c7f10bfd lib/Net/LDAP/Message.pod
-SHA1 764be20b9c511b41ed62dcff3b0865ef7ec7f8ce lib/Net/LDAP/RFC.pod
+SHA1 76961fd1aa4b78c8c7ad6f9638c2cf0a3aefb281 lib/Net/LDAP/RFC.pod
 SHA1 4921a9eb85f595aaa4c5c2bf7261feae54440763 lib/Net/LDAP/Reference.pod
 SHA1 f8e82f88b6d0160d57730f7a38845060cdfb9e8a lib/Net/LDAP/RootDSE.pm
-SHA1 9e0ba7a6f68c4edb0c4bd4c99450231478b1ad90 lib/Net/LDAP/Schema.pm
-SHA1 d451b3c542bd3e37a15aa6664bc424aad1451b26 lib/Net/LDAP/Schema.pod
+SHA1 a0324440178fd8804b0268c4d3c5e82065667869 lib/Net/LDAP/Schema.pm
+SHA1 e3af23701aa0c14b21cc85e8fd9f50337ef908d1 lib/Net/LDAP/Schema.pod
 SHA1 1835813ea3a15daadd224a70bdc6d99afc2f37ed lib/Net/LDAP/Search.pm
 SHA1 7c982f3ea575be892eabe7a4bdbc83fa3d341530 lib/Net/LDAP/Search.pod
 SHA1 4b26cf51ff535d6e5bda888dded5962d59a7ce4a lib/Net/LDAP/Security.pod
-SHA1 0b91e1c9ec4f773f71a383594bc7ce4651a56726 lib/Net/LDAP/Util.pm
+SHA1 5eb6d3f90905f4bdbab29a25fefbaa77e3cd3477 lib/Net/LDAP/Util.pm
 SHA1 b69e822e4f2a2e6bf1f1a46febd64c38581f6b7d lib/Net/LDAPI.pm
 SHA1 e53f9b7b96c9a31d9a5a83309301c4a0b6b7400c lib/Net/LDAPS.pm
 SHA1 597ef9192f4a32a125393baa8afea48b17d88166 t/00ldif-entry.t
@@ -146,7 +146,7 @@ SHA1 597ad626d087446f18a971c89e4597abd48acc3c t/03schema.t
 SHA1 a37b37639de26666dc11a16492a86f82b620a34d t/04refloop.t
 SHA1 55afdcc98524242dc92abb13e1c651dffa3efef6 t/05dsml.t
 SHA1 3af9d72c25bb5092d2a6779cf086eb82bd5244f3 t/06constant.t
-SHA1 ce56348698056e92142b06026f377a7bfb64296a t/07filtermatch.t
+SHA1 4304acd9b08ecdeb0d7ba40f429f39df3670d670 t/07filtermatch.t
 SHA1 2d7028cb0e5b6c0012855f922a0e9116e5bed30b t/40connect.t
 SHA1 475e5cea559d71ad95e9b170faa82b4bc9f4eeb1 t/41populate.t
 SHA1 b555a519acb877d5d0192de19aa728f94b0256bb t/42search.t
@@ -168,11 +168,11 @@ SHA1 ea5c5379848a59de0912fbb9f65ae2e86b735b6e test.cfg
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.12 (GNU/Linux)
 
-iQEcBAEBCAAGBQJRsxTqAAoJEEp47DaHHvaS32sH/ikOTk3zYJg3VrM5hHP+6OcS
-PmAZ6VCd9n0kmeIdMOCPdLJ/3uFyRQ+lE/QPHcPJMQx91lhzpE1mqhWZFpLp041+
-LqA8ToJzuKF15+aWPNeI7FnA/sizsTQDffq1xTRGyau/HHf9j8Kvm3yUwL9uGuyJ
-asVsv4O9uWLTW2s+0OHyKTkm7KIUKdKmic1kVItmt1Ky4vStEM5vwg0hKC1IakUH
-1ZB7tYHwlH7q5auKm3ZpjudI/G+4iSaFJuq0ownvEDvWmX6a+Cuzo3qxvw7cnZFV
-ERN3KW445Brdjy90Pf9XaMaP/On3i7SatISGIlNa7/Z1nlE7YoeCAI1j3qPNb/g=
-=Fr61
+iQEcBAEBCAAGBQJR7BMSAAoJEEp47DaHHvaSyhgIAImk/emeTJwZTm31T33rHPlL
+XWc5cdZz0WaHqa2RensE2wGkwxOzqqEqYVugftUzGeubOM2BgiPN3ZdFOTIbpDeb
+huOQGYMgTdTl8Sq5CKUfIcRmuuk6/eiF8RcQ6qL1V9vkcHy1NuM9KU4abqW8SQKi
+LJam6QFKNJK6hRXl04Fe3qGzFNXfKrjaMib7eVKfD2Ar8obGivoZuqXRidlApMLH
+JL1jGA5jWG7kv3rr0uY4hyC6P5S8QW3iT4mqobBV9PvpjiE4CWw3D6SF3hG/1Ecb
+WWguGRj5AyZbFJ5E0gUTVqLiRpZDeprQPRaEevk0W3XFxieKYkdJnPOaNl/TLVo=
+=yqrx
 -----END PGP SIGNATURE-----
