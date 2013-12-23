@@ -30,13 +30,13 @@ use Net::LDAP::Constant qw(LDAP_SUCCESS
 
 use constant CAN_IPV6 => eval { require IO::Socket::INET6 } ? 1 : 0;
 
-our $VERSION 	= '0.57';
+our $VERSION 	= '0.58';
 our @ISA     	= qw(Tie::StdHash Net::LDAP::Extra);
 our $LDAP_VERSION 	= 3;      # default LDAP protocol version
 
 # Net::LDAP::Extra will only exist is someone use's the module. But we need
 # to ensure the package stash exists or perl will complain that we inherit
-# from a non-existant package. I could just use the module, but I did not
+# from a non-existent package. I could just use the module, but I did not
 # want to.
 
 $Net::LDAP::Extra::create = $Net::LDAP::Extra::create = 0;
@@ -185,6 +185,8 @@ sub connect_ldaps {
 
   # separate port from host overwriting given/default port
   $host =~ s/^([^:]+|\[.*\]):(\d+)$/$1/ and $port = $2;
+
+  $arg->{sslserver} = $host  unless defined $arg->{sslserver};
 
   $ldap->{net_ldap_socket} = IO::Socket::SSL->new(
     PeerAddr 	    => $host,
@@ -970,7 +972,7 @@ sub _forgetmesg {
 # corrected filter for subschema search.
 # added attributes to retrieve on subschema search.
 # added attributes to retrieve on rootDSE search.
-# changed several double qoute character to single quote
+# changed several double quote character to single quote
 # character, just to be consistent throughout the schema
 # and root_dse functions.
 #
@@ -1082,7 +1084,6 @@ sub start_tls {
   $arg->{sslversion} = 'tlsv1'  unless defined $arg->{sslversion};
   $arg->{sslserver} = $ldap->{net_ldap_host}  unless defined $arg->{sslserver};
 
-  IO::Socket::SSL::context_init( { _SSL_context_init_args($arg) } );
   my $sock_class = ref($sock);
 
   return $mesg

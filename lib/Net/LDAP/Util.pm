@@ -59,7 +59,7 @@ our %EXPORT_TAGS = (
 	time	=> [ qw(generalizedTime_to_time time_to_generalizedTime) ],
 );
 
-our $VERSION = '0.17';
+our $VERSION = '0.18';
 
 =item ldap_error_name ( ERR )
 
@@ -652,7 +652,7 @@ The default C<host> name for C<ldap> and C<ldaps> URLs is C<localhost>.
 
 When set to FALSE, no default values are used.
 
-This leaves all keys in th resulting hash undefined where the corresponding
+This leaves all keys in the resulting hash undefined where the corresponding
 URL element is empty.
 
 To distinguish between an empty base DN and an undefined base DN,

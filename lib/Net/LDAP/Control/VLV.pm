@@ -7,7 +7,7 @@ package Net::LDAP::Control::VLV;
 use Net::LDAP::Control;
 
 our @ISA = qw(Net::LDAP::Control);
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use Net::LDAP::ASN qw(VirtualListViewRequest);
 use strict;
@@ -350,7 +350,7 @@ and C<after> attributes so that the target entry is the last in the page.
 Set the attributes in the control as per VLV_RESPONSE. VLV_RESPONSE should be a control
 of type L<Net::LDAP::Control::VLVResponse> returned
 from the server. C<response> will populate the C<context>, C<offset> and C<content>
-attibutes of the control with the values from VLV_RESPONSE. Because this sets the
+attributes of the control with the values from VLV_RESPONSE. Because this sets the
 C<offset> attribute, any previous setting of the C<assert> attribute will be forgotten.
 
 =item scroll NUM

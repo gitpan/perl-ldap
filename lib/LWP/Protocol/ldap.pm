@@ -13,7 +13,7 @@ use LWP::MediaTypes ();
 require LWP::Protocol;
 
 our @ISA = qw(LWP::Protocol);
-our $VERSION = '1.24';
+our $VERSION = '1.25';
 
 use strict;
 eval {
@@ -79,7 +79,7 @@ sub request {
       # we only accept Basic authorization for now
       if ($authorization =~ /^Basic\s+([A-Z0-9+\/=]+)$/i) {
         require MIME::Base64;
-        ($user, $password) = split(/:/, MIME::Base64::decode_base64($1), 2);
+        ($user, $password) = split(/:/, MIME::Base64::decode($1), 2);
       }
     }
   }

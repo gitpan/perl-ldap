@@ -6,7 +6,7 @@ package Net::LDAP::Schema;
 
 use strict;
 
-our $VERSION = '0.9907';
+our $VERSION = '0.9908';
 
 #
 # Get schema from the server (or read from LDIF) and parse it into
@@ -222,7 +222,7 @@ sub nameform		{ _get(@_, 'nfm') }
 #
 # These next items are optimisations, to avoid always searching the OID
 # lists. Could be removed in theory. Each is a hash ref mapping
-# lowercase names to the hash stored in the oid struucture
+# lowercase names to the hash stored in the oid structure
 #
 # ->{at}
 # ->{oc}

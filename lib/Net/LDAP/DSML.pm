@@ -11,7 +11,7 @@ use XML::SAX::Base;
 use Net::LDAP::Entry;
 
 our @ISA = qw(XML::SAX::Base);
-our $VERSION = '0.15';
+our $VERSION = '0.16';
 
 # OO purists will hate this :)
 my %schema_typemap = qw(
@@ -296,7 +296,7 @@ sub characters {
   my $state = $self->{reader};
   if (my $sref = $state->{value}) {
     $$sref = ($state->{encoding}||'') eq 'base64'
-	? do { require MIME::Base64; MIME::Base64::decode_base64($data->{Data}) }
+	? do { require MIME::Base64; MIME::Base64::decode($data->{Data}) }
 	: $data->{Data};
   }
 }

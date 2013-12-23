@@ -4,7 +4,7 @@
 
 package Net::LDAP::Constant;
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 
 use Exporter qw(import);
 
@@ -437,6 +437,8 @@ Refresh Required.
 =item LDAP_CONTROL_SORTREQUEST (1.2.840.113556.1.4.473)
 
 =item LDAP_CONTROL_SORTRESULT (1.2.840.113556.1.4.474)
+
+=item LDAP_CONTROL_SORTRESPONSE (1.2.840.113556.1.4.474)
 
 =item LDAP_CONTROL_VLVREQUEST (2.16.840.1.113730.3.4.9)
 

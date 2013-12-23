@@ -6,7 +6,7 @@ use Encode;
 use Exporter qw(import);
 use Net::LDAP::RootDSE;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 our @EXPORT = qw(is_AD is_ADAM reset_ADpassword change_ADpassword);
 
 
@@ -44,8 +44,8 @@ sub change_ADpassword {
   $oldpw = encode('utf16le', '"'.decode('utf8', $oldpw).'"');
   $newpw = encode('utf16le', '"'.decode('utf8', $newpw).'"');
 
-  $self->modify($dn, changes => [ delete => { unicodePwd => $oldpw },
-                                  add    => { unicodePwd => $newpw } ]);
+  $self->modify($dn, changes => [ delete => [ unicodePwd => $oldpw ],
+                                  add    => [ unicodePwd => $newpw ] ]);
 }
 
 1;
