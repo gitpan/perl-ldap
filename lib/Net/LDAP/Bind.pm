@@ -9,7 +9,7 @@ use Net::LDAP qw(LDAP_SASL_BIND_IN_PROGRESS LDAP_DECODING_ERROR LDAP_SUCCESS
 		 LDAP_LOCAL_ERROR);
 use Net::LDAP::Message;
 
-our $VERSION = '1.04';
+our $VERSION = '1.05';
 our @ISA = qw(Net::LDAP::Message);
 
 sub _sasl_info {
@@ -35,9 +35,13 @@ sub decode {
 	  or $self->set_error(LDAP_DECODING_ERROR, 'LDAP decode error'), return;
   }
 
+  # Put the new layer over the raw socket, to get rid of any old layer,
+  # but only if we will be using a new layer. If we rebind but don't
+  # negotiate a new security layer, the old layer remains in place.
   if ($sasl and $bind->{resultCode} == LDAP_SUCCESS) {
     $sasl->property('ssf', 0)  if !$sasl->property('ssf');
-    $ldap->{net_ldap_socket} = $sasl->securesocket($ldap->{net_ldap_socket});
+    $ldap->{net_ldap_socket} = $sasl->securesocket($ldap->{net_ldap_rawsocket})
+      if ($sasl->property('ssf'));
   }
 
   return $self->SUPER::decode($result)
