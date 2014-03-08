@@ -15,32 +15,32 @@ not run its Makefile.PL or Build.PL.
 Hash: SHA256
 
 SHA1 b3d7b971ea6fc7fbb96cdf4cea3d1cdf68f4d24f CREDITS
-SHA1 6a9e92cd5d71921fce7c32b53094bde5326b8fcf Changes
+SHA1 bb09c0b5365d97117d49c8fd9a476565a163cd42 Changes
 SHA1 18422f27b2f17b10e9d18b4e482d7bfc95c8df86 INSTALL
 SHA1 037d70bd2535dc79bda1bafca57dad7682851ffc MANIFEST
 SHA1 b1dde8d68f20d9f0353c7a891f4efbaa20882305 MANIFEST.SKIP
-SHA1 39a5615ecc176a88e3643902302f91a26265edea META.json
+SHA1 a9ebf9c9bf3978f48f33e4bfaa54a0aa26366644 META.json
 SHA1 ffe82367f16b332f397246be40203027297afc34 Makefile.PL
-SHA1 dcc1167f3a731aa88d036f282bad68b23e5c2ac1 README
+SHA1 9336db57bbd198e5e91b51d8140f287b6ad75e3c README
 SHA1 45d3c0297db0a7e960a2456ece90ea3e37242919 TODO
 SHA1 8e15e7abefa826736358685aa1115810baaa9b4a bin/ldapdelete
 SHA1 fb042e706fb1f873b39138c95b8f362a8f1bea8d bin/ldapmodrdn
 SHA1 212b83f5dae352596008329dc6bfac445a3ab4ac bin/ldapsearch
 SHA1 0820488b025a7d48333e6f8ec640993be155d3cd contrib/LWPsearch.pl
-SHA1 4fe62673c3d2d30fcf6ce320ed303695e5cba078 contrib/README
-SHA1 a74eca9ed266c3bf2280744a3c05aecaaf0c222a contrib/dot.tklkup
-SHA1 c1528100aa9eae5d5e98f778820e83af7c584fa2 contrib/isMember.pl
-SHA1 1b11ae1f3e5cde0d577988fd8936c4895e0c6096 contrib/jpegDisplay.pl
-SHA1 45be5e0f79345b5e55e8b1b97c25615c8b43d547 contrib/jpegLoad.pl
-SHA1 848646da05eed8b27cb7d498cfb421ed1a67a5c5 contrib/ldapmodify.pl
-SHA1 7543799f405159a69f4394c59f35617efa1478d8 contrib/ldifdiff.pl
-SHA1 eb6932a765ae6f1ba47f75b1919dd1335cbb82f8 contrib/ldifsort.pl
-SHA1 9823ffdc3c2d75d0d4af5f3c1ec60bf6e8c5e037 contrib/ldifuniq.pl
-SHA1 eacb3515921f5843240603f949c83e3b1c1f725e contrib/printMembers.pl
-SHA1 6950da15067e5b7c27bfb29158ebdbd503eb3485 contrib/recursive-ldap-delete.pl
+SHA1 9a79b09a78fbf359ed819cded02a71154ef8e2b3 contrib/README
+SHA1 15c559d9d501ec4664ef420f97ec958a841d266f contrib/dot.tklkup
+SHA1 af504d7e6af5cad90fedcfa0df87fecb69cf37a7 contrib/isMember.pl
+SHA1 a132d3e39ec75b4451dbda2ce1c6df5092885989 contrib/jpegDisplay.pl
+SHA1 91dae5879db27450eae4fc50870671851c67e9e4 contrib/jpegLoad.pl
+SHA1 2235c04837a9f561b69717aebd1659fca71d87d0 contrib/ldapmodify.pl
+SHA1 2bcf4acae2198af5ced3985f20a123ada5c3a813 contrib/ldifdiff.pl
+SHA1 3dd34852187944c11277b272084decfdc7b39f74 contrib/ldifsort.pl
+SHA1 a47c2edbf920151e3761488a8baa1bead3b2ff57 contrib/ldifuniq.pl
+SHA1 af68dac3af68b1db44c6221056cb227c34a8c54a contrib/printMembers.pl
+SHA1 027a8921bdda837a060e24c2572992507605894e contrib/recursive-ldap-delete.pl
 SHA1 3b6aac6e5e237307efa3506a6c8e0ca7d60208a0 contrib/schema2ad.pl
-SHA1 df87a8de85e4952f48325c4d8d218b7ec46ccb6b contrib/simple-proxy.pl
-SHA1 ba3288445bdf161914b9632f20c81c09c0800bf5 contrib/tklkup
+SHA1 884c491c55195e60b448d5a1ba62c3c27be5c339 contrib/simple-proxy.pl
+SHA1 77e6ef6dc78cd1ac173b4827f5657232c1372c4b contrib/tklkup
 SHA1 6294227b00010f90afc17c2c6f114a0ef7610c15 data/00-cmp.ldif
 SHA1 1739c30b959c46cf0402447f79a555235b7992e7 data/00-cmp2.ldif
 SHA1 25488cd6943fc31cdce5dcc57e2ab0e71b0af6fa data/00-in.ldif
@@ -83,8 +83,8 @@ SHA1 ae47bafae19103063a8903d071843e4276cfbb02 lib/Bundle/Net/LDAP.pm
 SHA1 e3ae35cf39741a7fa85f11671b6c12cbcf8ffbd4 lib/LWP/Protocol/ldap.pm
 SHA1 4c0725acda3f08370b63824a62a9cca2dc52b858 lib/LWP/Protocol/ldapi.pm
 SHA1 1cb4c54544fda3f59b11470c3e21c8d2022b40b9 lib/LWP/Protocol/ldaps.pm
-SHA1 906e13647bddfa76fea6e94772bf0a98a52a9d69 lib/Net/LDAP.pm
-SHA1 21c762fa024ae4cdeb0e45f31b46cc6844af1348 lib/Net/LDAP.pod
+SHA1 73787d5feea335cf0d7c3ffac233bb881f512d1c lib/Net/LDAP.pm
+SHA1 e24a5ff53397b6c43a59e69c1f0ddd55f931c09a lib/Net/LDAP.pod
 SHA1 4cf74c0f17bd8bd684e1775bbc361f0eba5fd829 lib/Net/LDAP/ASN.pm
 SHA1 423e93cc380a526311bb91aa500d97d5fa4eb6da lib/Net/LDAP/Bind.pm
 SHA1 72208c59c57b8d687ca5541ed981195795105bb4 lib/Net/LDAP/Constant.pm
@@ -119,8 +119,8 @@ SHA1 9a6ba9fc53dcb41f216f277b3b89fbbbf29417c8 lib/Net/LDAP/Extension/WhoAmI.pm
 SHA1 f8a69d8a6c086fdf38c12a72816bcd3d624ac261 lib/Net/LDAP/Extra.pm
 SHA1 21863d25b0bff03ef279e10efe707539c7cd448c lib/Net/LDAP/Extra/AD.pm
 SHA1 e8f760369f662f5b36cb1812282fb657f026bb18 lib/Net/LDAP/Extra/eDirectory.pm
-SHA1 d8300b672ec5ca1023ec157998bdd6009e875a5e lib/Net/LDAP/FAQ.pod
-SHA1 37174a971d6ffa5283b508f3c8fc657c624558c9 lib/Net/LDAP/Filter.pm
+SHA1 8c11da5276e50b3e3ea2e0cbb10c3782d54697c1 lib/Net/LDAP/FAQ.pod
+SHA1 b3be6c23ac12314a7c2c5cedfabf68591303692b lib/Net/LDAP/Filter.pm
 SHA1 0209a4d3c52a6cb2330a15fc9db2a6d686f42c0e lib/Net/LDAP/Filter.pod
 SHA1 5bf16183794a235f2b7929ce350fe9032a8a1636 lib/Net/LDAP/FilterMatch.pm
 SHA1 a1ae96a07309aeb49f0025a536d9074ae55b43c1 lib/Net/LDAP/Intermediate.pm
@@ -148,7 +148,7 @@ SHA1 a37b37639de26666dc11a16492a86f82b620a34d t/04refloop.t
 SHA1 55afdcc98524242dc92abb13e1c651dffa3efef6 t/05dsml.t
 SHA1 3af9d72c25bb5092d2a6779cf086eb82bd5244f3 t/06constant.t
 SHA1 4304acd9b08ecdeb0d7ba40f429f39df3670d670 t/07filtermatch.t
-SHA1 2d7028cb0e5b6c0012855f922a0e9116e5bed30b t/40connect.t
+SHA1 85a17949f57c0c011a10be1cc84040f7cb0ead3a t/40connect.t
 SHA1 475e5cea559d71ad95e9b170faa82b4bc9f4eeb1 t/41populate.t
 SHA1 b555a519acb877d5d0192de19aa728f94b0256bb t/42search.t
 SHA1 a667c625b689452cc243256a2090e4093853cda8 t/43modify.t
@@ -169,11 +169,11 @@ SHA1 ea5c5379848a59de0912fbb9f65ae2e86b735b6e test.cfg
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQEcBAEBCAAGBQJTFfSHAAoJEEp47DaHHvaSMLwH/3cGOP//9odF2jVUhwnkpr5q
-dLp4nLR9t0IGK4O8xhPNhn+FdrQRjbiSEV8PrHoG61Z4q+V6l0jAmL/cfzalVyMJ
-3vhNju5D+eh2V2XmCzCiHOpTl20e1eoJW+zKnSOKNmj6+UE8TeMrIq7B+NeZsdd4
-t9Eg8Dmge5Iu8RRQUaQIyTvANEA4cNi/j1jTYsdT9VUPwtlbeLMWWZNiO85PhExG
-hpbLMZZtZuTUZG0n1lcW1ZdqFfqvFvSR/+rBpTBsznPN3WDn8L4mNvnJX2kQfBdk
-XrhwtVVrLW19A1Fqw3Gf3+kZO9g8yqSmck9IKxJMyNKIaPgrwMG2XFhiv5N3eHE=
-=jckc
+iQEcBAEBCAAGBQJTGxbEAAoJEEp47DaHHvaSORgIAJP9tINNFqF7cyBbvZCsPr+Z
+c/cqt/R4fd9O5/vO8UeoSJiXxen5CbKfsaFmVbpIaIfv/9a0j5TimG2Ru4FdCLvK
+fLRka4jS+KghOEJNf6xZZiNfgx+LBF2A9kBv46yt7J1BJU4C7zd9+WQ6FhByR+3A
+YJ6KQBhd2UJHf365U2moTfws570sAO3bT8uhxyCe62kffNmrvDqK/aoY6XlHy3LV
+q2FYDOp2+16JoLkrVkQY4hJyPIfNNuzap7Xw1GkuQxCmNntL4dI3RMMKC9+towEa
+KP2+EchhgbT5/zkyQI0n7txO2bhOy/7d9OrGeFsnpZ2u2PTmxrsX5Ma8KsRaSDk=
+=WjJj
 -----END PGP SIGNATURE-----

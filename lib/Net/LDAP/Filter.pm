@@ -6,7 +6,7 @@ package Net::LDAP::Filter;
 
 use strict;
 
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 # filter       = "(" filtercomp ")"
 # filtercomp   = and / or / not / item
@@ -28,9 +28,10 @@ our $VERSION = '0.19';
 # initial      = value
 # any          = "*" *(value "*")
 # final        = value
-# attr         = AttributeDescription from Section 4.1.5 of [1]
-# matchingrule = MatchingRuleId from Section 4.1.9 of [1]
-# value        = AttributeValue from Section 4.1.6 of [1]
+# attr         = AttributeDescription from Section 2.5 of RFC 4512
+# matchingrule = MatchingRuleId from Section 4.1.8 of RFC 4511
+# value        = AttributeValue from Section 4.1.6 of RFC 4511
+#                with some characters encoded, see below.
 #
 # Special Character encodings
 # ---------------------------
