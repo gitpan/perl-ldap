@@ -1,6 +1,6 @@
 {
    "name" : "perl-ldap",
-   "version" : "0.60",
+   "version" : "0.61",
    "abstract" : "LDAP client library",
    "author" : [
       "Graham Barr <gbarr@cpan.org>"
@@ -55,6 +55,7 @@
             "IO::Socket::IP" : "0.20",
             "XML::SAX::Writer" : "0",
             "XML::SAX::Base" : "0",
+            "LWP" : "0",
             "LWP::Protocol" : "0",
             "LWP::MediaTypes" : "0",
             "HTTP::Negotiate" : "0",

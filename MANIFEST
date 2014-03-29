@@ -22,6 +22,7 @@ data/00-cmp.ldif
 data/00-cmp2.ldif
 data/00-in.ldif
 data/05-cmp.dsml
+data/09-in.ldif
 data/40-cmp.ldif
 data/40-in.ldif
 data/41-in.ldif
@@ -40,6 +41,7 @@ data/key.pem
 data/man.jpg
 data/openldap.schema
 data/openssl.cnf
+data/postalAddress.txt
 data/regenerate_cert.sh
 data/schema.in
 data/slapd.conf.in
@@ -132,6 +134,8 @@ t/04refloop.t
 t/05dsml.t
 t/06constant.t
 t/07filtermatch.t
+t/08time.t
+t/09ldif-http-url.t
 t/40connect.t
 t/41populate.t
 t/42search.t

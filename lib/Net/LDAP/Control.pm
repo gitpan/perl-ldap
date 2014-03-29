@@ -27,7 +27,7 @@ use Net::LDAP::Constant qw(
   LDAP_CONTROL_RELAX
 );
 
-our $VERSION = '0.16';
+our $VERSION = '0.17';
 
 my %Pkg2Type = (
 
@@ -173,7 +173,7 @@ Net::LDAP::Control - LDAPv3 control object base class
 
 C<Net::LDAP::Control> is the base-class for LDAPv3 control objects.
 
-Controls provide a mechanism that allows to extend the semantics and
+Controls provide a mechanism that allows one to extend the semantics and
 arguments of LDAP operations.
 Controls may be attached to LDAP operations, and only affect the semantics
 of the operation they are attached to.

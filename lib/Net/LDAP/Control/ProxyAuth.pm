@@ -7,7 +7,7 @@ package Net::LDAP::Control::ProxyAuth;
 use Net::LDAP::Control;
 
 our @ISA = qw(Net::LDAP::Control);
-our $VERSION = '1.07';
+our $VERSION = '1.08';
 
 use Net::LDAP::Constant qw(LDAP_CONTROL_PROXYAUTHORIZATION);
 use Net::LDAP::ASN qw(proxyAuthValue);
@@ -23,12 +23,12 @@ sub init {
   if (defined($self->{proxyDN})) {
     $self->{type} = LDAP_CONTROL_PROXYAUTHORIZATION_OLD;
 
-    unless (exists $self->{value}) {
-      $self->{asn} = { proxyDN => $self->{proxyDN} || '' };
-    }
+    $self->{asn} = { proxyDN => $self->{proxyDN} || '' }
+      unless (exists $self->{value});
   }
   else {
-    $self->{value} = $self->{authzID} || '';
+    $self->{value} = $self->{authzID} || ''
+      unless (exists $self->{value});
   }
 
   # criticality must be set !
