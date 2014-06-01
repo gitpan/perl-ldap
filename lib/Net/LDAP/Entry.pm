@@ -15,7 +15,7 @@ BEGIN {
     if (CHECK_UTF8);
 }
 
-our $VERSION = '0.26';
+our $VERSION = '0.27';
 
 sub new {
   my $self = shift;
@@ -214,7 +214,7 @@ sub delete {
 
   unless (@_) {
     $self->changetype('delete');
-    return;
+    return $self;
   }
 
   my $cmd = $self->{changetype} eq 'modify' ? [] : undef;
@@ -288,7 +288,7 @@ sub update {
   }
   elsif (eval { $target->isa('Net::LDAP::LDIF') }) {
     require Net::LDAP::Message;
-    $target->write_entry($self);
+    $target->write_entry($self, %opt);
     $mesg = Net::LDAP::Message::Dummy->new();
     $mesg->set_error(LDAP_OTHER, $target->error())
       if ($target->error());

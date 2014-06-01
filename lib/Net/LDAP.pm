@@ -35,7 +35,7 @@ use constant CAN_IPV6 => eval { require IO::Socket::IP; IO::Socket::IP->VERSION(
 			   ? 'IO::Socket::INET6'
 			   : '';
 
-our $VERSION 	= '0.62';
+our $VERSION 	= '0.63';
 our @ISA     	= qw(Tie::StdHash Net::LDAP::Extra);
 our $LDAP_VERSION 	= 3;      # default LDAP protocol version
 
@@ -251,7 +251,8 @@ sub _SSL_context_init_args {
   }
 
   (
-    SSL_cipher_list     => defined $arg->{ciphers} ? $arg->{ciphers} : 'ALL',
+    defined $arg->{ciphers} ?
+        ( SSL_cipher_list     => defined $arg->{ciphers}) : (),
     SSL_ca_file         => exists  $arg->{cafile}  ? $arg->{cafile}  : '',
     SSL_ca_path         => exists  $arg->{capath}  ? $arg->{capath}  : '',
     SSL_key_file        => $clientcert ? $clientkey : undef,

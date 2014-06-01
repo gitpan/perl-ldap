@@ -22,7 +22,7 @@ data/00-cmp.ldif
 data/00-cmp2.ldif
 data/00-in.ldif
 data/05-cmp.dsml
-data/09-in.ldif
+data/10-in.ldif
 data/40-cmp.ldif
 data/40-in.ldif
 data/41-in.ldif
@@ -136,6 +136,7 @@ t/06constant.t
 t/07filtermatch.t
 t/08time.t
 t/09ldif-http-url.t
+t/10ldif-controls.t
 t/40connect.t
 t/41populate.t
 t/42search.t
