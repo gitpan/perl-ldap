@@ -14,7 +14,7 @@ BEGIN {
     if (CHECK_UTF8);
 }
 
-our $VERSION = '0.25';
+our $VERSION = '0.26';
 
 # allow the letters r,w,a as mode letters
 my %modes = qw(r <  r+ +<  w >  w+ +>  a >>  a+ +>>);
@@ -608,7 +608,7 @@ sub _write_one
     my $type = $entry->changetype;
 
     # Skip entry if there is nothing to write
-    next  if ($type eq 'modify' and !@changes);
+    return $res  if ($type eq 'modify' and !@changes);
 
     $res &&= $self->write_version()  unless ($self->{write_count}++);
     $res &&= print $fh "\n";
